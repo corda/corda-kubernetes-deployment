@@ -1,0 +1,19 @@
+# file: ~/.gitignore_global
+
+# Comment the following row when you are making changes to values.yaml structure, but make sure you do not commit any of the user defined values!
+#helm/values.yaml
+
+helm/output/
+helm/files/certificates
+helm/files/cordapps
+helm/files/network
+
+corda-pki-generator/pki-firewall/bin
+corda-pki-generator/pki-firewall/certs
+
+docker-images/bin
+
+*.jar
+*.jks
+*.pem
+*.crl

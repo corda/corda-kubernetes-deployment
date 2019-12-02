@@ -1,0 +1,33 @@
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.config.resourceName }}-bridge-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.config.storage.azureFile.resourceName }}
+  volumeName: {{ .Values.config.resourceName }}-bridge-pv-volume
+  resources:
+    requests:
+      storage: {{ .Values.config.storage.bridge.size }}
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: {{ .Values.config.resourceName }}-bridge-pv-volume
+spec:
+  storageClassName: {{ .Values.config.storage.azureFile.resourceName }}
+  capacity:
+    storage: {{ .Values.config.storage.bridge.size }}
+  accessModes:
+    - ReadWriteOnce
+  azureFile:
+    secretName: {{ .Values.config.storage.azureFile.resourceName }}-secret
+    shareName: {{ .Values.config.storage.bridge.fileShareName }}
+    readOnly: false
+  mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=1000
+  - gid=1000
+

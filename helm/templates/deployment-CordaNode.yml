@@ -1,0 +1,107 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.config.resourceName }}-service
+spec:
+  loadBalancerIP: "{{ .Values.config.nodeLoadBalancerIP }}"
+  type: LoadBalancer
+  selector:
+    app: {{ .Values.config.resourceName }}-node
+  ports:
+  - name: p2p
+    protocol: TCP
+    port: {{ .Values.corda.node.conf.p2pPort }}
+    targetPort: {{ .Values.corda.node.conf.p2pPort }}
+  - name: rpc
+    protocol: TCP
+    port: {{ .Values.corda.node.conf.rpc.port }}
+    targetPort: {{ .Values.corda.node.conf.rpc.port }}
+{{- if .Values.corda.node.conf.ssh.enabled }}
+  - name: ssh
+    protocol: TCP
+    port: {{ .Values.corda.node.conf.ssh.sshdPort }}
+    targetPort: {{ .Values.corda.node.conf.ssh.sshdPort }}
+{{- end }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.config.resourceName }}-deployment
+  labels:
+    app: {{ .Values.config.resourceName }}-node
+spec:
+  replicas: 1   
+  selector:
+    matchLabels:
+      app: {{ .Values.config.resourceName }}-node
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.config.resourceName }}-node
+    spec:
+      volumes:
+      - name: {{ .Values.config.resourceName }}-pv
+        persistentVolumeClaim:
+          claimName: {{ .Values.config.resourceName }}-pvc
+      - name: node-config-volume
+        configMap:
+          name: {{ .Values.config.resourceName }}-corda-configmap
+      imagePullSecrets:
+      - name: containerRegistry-secret
+      containers:
+      - name: {{ .Values.config.resourceName }}
+        image: {{ .Values.config.containerRegistry.serverAddress }}/{{ .Values.config.dockerImageNode }}
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "1Gi"
+            cpu: "500m"
+          limits:
+            memory: "2Gi"
+            cpu: "1000m"
+        ports:
+        - containerPort: {{ .Values.corda.node.conf.p2pPort }} 
+        - containerPort: {{ .Values.corda.node.conf.rpc.port }} 
+        - containerPort: {{ .Values.corda.node.conf.sshdPort }} 
+        volumeMounts:
+        - mountPath: "/opt/corda/workspace"
+          name: {{ .Values.config.resourceName }}-pv
+        - mountPath: /opt/corda/workspace/ping.sh
+          name: node-config-volume
+          subPath: ping.sh
+          readOnly: true
+        - mountPath: /opt/corda/workspace/node.conf
+          name: node-config-volume
+          subPath: node.conf
+          readOnly: true
+        - mountPath: /opt/corda/workspace/bridge.conf
+          name: node-config-volume
+          subPath: bridge.conf
+          readOnly: true
+        - mountPath: /opt/corda/workspace/float.conf
+          name: node-config-volume
+          subPath: float.conf
+          readOnly: true
+        - mountPath: /opt/corda/workspace/networkRootTrustStore.jks
+          name: node-config-volume
+          subPath: networkRootTrustStore.jks
+          readOnly: true
+        - mountPath: /opt/corda/workspace/certificates/nodekeystore.jks
+          name: node-config-volume
+          subPath: nodekeystore.jks
+          readOnly: true
+        - mountPath: /opt/corda/workspace/certificates/sslkeystore.jks
+          name: node-config-volume
+          subPath: sslkeystore.jks
+          readOnly: true
+        - mountPath: /opt/corda/workspace/certificates/truststore.jks
+          name: node-config-volume
+          subPath: truststore.jks
+          readOnly: true
+        env:
+        - name: IDENTITY_MANAGER_ADDRESS
+          value: "{{ .Values.corda.node.conf.identityManagerAddress }}"
+        - name: NETMAP_ADDRESS
+          value: "{{ .Values.corda.node.conf.networkmapAddress }}"
+        - name: TRUSTSTORE_PASSWORD
+          value: "{{ .Values.corda.node.conf.truststorePassword }}"

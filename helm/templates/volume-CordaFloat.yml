@@ -1,0 +1,34 @@
+{{- if .Values.setup.firewall.destination.internalKubernetesCluster.enabled }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ .Values.config.resourceName }}-float-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: {{ .Values.config.storage.azureFile.resourceName }}
+  volumeName: {{ .Values.config.resourceName }}-float-pv-volume
+  resources:
+    requests:
+      storage: {{ .Values.config.storage.float.size }}
+---
+kind: PersistentVolume
+apiVersion: v1
+metadata:
+  name: {{ .Values.config.resourceName }}-float-pv-volume
+spec:
+  storageClassName: {{ .Values.config.storage.azureFile.resourceName }}
+  capacity:
+    storage: {{ .Values.config.storage.float.size }}
+  accessModes:
+    - ReadWriteOnce
+  azureFile:
+    secretName: {{ .Values.config.storage.azureFile.resourceName }}-secret
+    shareName: {{ .Values.config.storage.float.fileShareName }}
+    readOnly: false
+  mountOptions:
+  - dir_mode=0777
+  - file_mode=0777
+  - uid=1000
+  - gid=1000
+{{- end }}

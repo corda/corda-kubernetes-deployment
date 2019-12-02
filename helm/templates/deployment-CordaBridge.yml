@@ -1,0 +1,80 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.config.resourceName }}-bridge-service
+spec:
+  selector:
+    app: {{ .Values.config.resourceName }}-bridge
+  ports:
+  - name: p2p
+    protocol: TCP
+    port: {{ .Values.corda.node.conf.p2pPort }}
+    targetPort: {{ .Values.corda.node.conf.p2pPort }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.config.resourceName }}-bridge-deployment
+  labels:
+    app: {{ .Values.config.resourceName }}-bridge
+spec:
+  replicas: 1   
+  selector:
+    matchLabels:
+      app: {{ .Values.config.resourceName }}-bridge
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.config.resourceName }}-bridge
+    spec:
+      volumes:
+      - name: {{ .Values.config.resourceName }}-bridge-pv
+        persistentVolumeClaim:
+          claimName: {{ .Values.config.resourceName }}-bridge-pvc
+      - name: bridge-config-volume
+        configMap:
+          name: {{ .Values.config.resourceName }}-corda-configmap
+      containers:
+      - name: {{ .Values.config.resourceName }}-bridge
+        image: {{ .Values.config.containerRegistry.serverAddress }}/{{ .Values.config.dockerImageFirewall }}
+        imagePullPolicy: Always
+        resources:
+          requests:
+            memory: "500Mi"
+            cpu: "500m"
+          limits:
+            memory: "1Gi"
+            cpu: "1000m"
+        ports:
+        - containerPort: {{ .Values.corda.node.conf.p2pPort }} 
+        volumeMounts:
+        - mountPath: "/opt/corda/workspace"
+          name: {{ .Values.config.resourceName }}-bridge-pv
+        - mountPath: /opt/corda/workspace/network-parameters
+          name: bridge-config-volume
+          subPath: network-parameters.file
+          readOnly: true
+        - mountPath: /opt/corda/workspace/ping.sh
+          name: bridge-config-volume
+          subPath: ping.sh
+          readOnly: true
+        - mountPath: /opt/corda/workspace/firewall.conf
+          name: bridge-config-volume
+          subPath: bridge.conf
+          readOnly: true
+        - mountPath: /opt/corda/workspace/certificates/bridge.jks
+          name: bridge-config-volume
+          subPath: bridge.jks
+          readOnly: true
+        - mountPath: /opt/corda/workspace/certificates/sslkeystore.jks
+          name: bridge-config-volume
+          subPath: sslkeystore.jks
+          readOnly: true
+        - mountPath: /opt/corda/workspace/certificates/trust.jks
+          name: bridge-config-volume
+          subPath: trust.jks
+          readOnly: true
+        - mountPath: /opt/corda/workspace/certificates/truststore.jks
+          name: bridge-config-volume
+          subPath: truststore.jks
+          readOnly: true

@@ -1,0 +1,177 @@
+# Global values
+global: {}
+
+# Setup options
+setup:
+  # initialRegistration defines if we should perform the initial registration tasks or not
+  initialRegistration:
+    # enabled is a boolean value for the above parameter
+    enabled: true
+  # firewall defines if we should activate the Corda Firewall component as part of the installation or not
+  firewall:
+    # enabled is a boolean value for the above parameter
+    enabled: true
+    # destination defines where the Float will be deployed
+    destination: 
+      # internalKubernetesCluster defines if the Float should be installed in the same cluster as Node & Bridge (not best security practice, but good for testing)
+      internalKubernetesCluster:
+        # enabled is a boolean value for the above parameter
+        enabled: true
+      # external-kubernetes-cluster defines if the Float should be installed in a separate Kubernetes cluster from Node & Bridge (true DMZ)
+      external-kubernetes-cluster:
+        # enabled is a boolean value for the above parameter
+        enabled: false
+      # external-vm defines if the Float should be installed on a separate VM from Node & Bridge (true DMZ)
+      external-vm:
+        # enabled is a boolean value for the above parameter
+        enabled: false
+  # hsm defines if we should use an HSM to store the private keys for the certificates in
+  hsm:
+    # enabled is a boolean value for the above parameter
+    enabled: true
+  # artemis defines if we should set up out-of-process Artemis as part of the deployment or not
+  artemis:
+    # enabled is a boolean value for the above parameter
+    enabled: false
+  # cloudProvider defines what provider the deployment should be targeting, a lot of options are provider specific. Use 'local' for doing local deployments. Accepted options: 'azure'
+  cloudProvider: "azure"
+
+# config defines the options that relate to the deployment but not specifically to the Corda Node
+config:
+  # resourceName defines the Kubernetes resource Name that all resources will share (with some added extensions to differentiate the different resources)
+  resourceName: "corda-node-1" # Does not need editing unless deploying multiple nodes which should use unique resource names
+  # dockerImageNode defines the Docker Image we will be deploying for the Corda Node
+  dockerImageNode: "corda_image_ent_4.0:v1.00"
+  # dockerImageFirewall defines the Docker Image we will be deploying for the Corda Firewall
+  dockerImageFirewall: "corda_image_firewall_4.0:v1.00"
+  # containerRegistry defines the Container Registry options
+  containerRegistry: 
+    # serverAddress is the name of the server that corresponds with the Container Registry
+    serverAddress: ""
+    # username is the username for the Container Registry access
+    username: ""
+    # password is the BASE64 encoded password for the Container Registry access
+    password: ""
+    # email is the email address corresponding to the Container Registry
+    email: ""
+  # nodeLoadBalancerIP defines the public / private IP address for the Kubernetes Cluster on which there will be an ingress to the Corda Nodes RPC endpoint
+  nodeLoadBalancerIP: ""
+  # floatLoadBalancerIP defines the public / private IP address for the Kubernetes Cluster on which there will be an ingress to the Corda Firewalls Float endpoint
+  floatLoadBalancerIP: ""
+  # storage defines the Storage options
+  storage:
+    # local defines the local storage options, only used if it is enabled
+    local: 
+      # enabled is a boolean value for the above parameter
+      enabled: true
+      # provisioner defines the type of storage being used (https://kubernetes.io/docs/concepts/storage/storage-classes/)
+      provisioner: "no-provisioner"
+      # resourceName defines the Kubernetes resource Name to use for this resource
+      resourceName: "local-storage" # Does not need editing unless deploying multiple nodes which should use unique resource names    
+    # azureFile defines the Azure specific storage options, only used if it is enabled
+    azureFile:
+      # enabled is a boolean value for the above parameter
+      enabled: true
+      # provisioner defines the type of storage being used (https://kubernetes.io/docs/concepts/storage/storage-classes/)
+      provisioner: "azure-file"
+      # resourceName defines the Kubernetes resource Name to use for this resource
+      resourceName: "azurefile-1" # Does not need editing unless deploying multiple nodes which should use unique resource names
+      # skuName defines the  Azure specific skuName
+      skuName: "Standard_LRS"
+      # skuName defines the  Azure specific account
+      account: ""
+      # skuName defines the  Azure specific location
+      location: "westeurope"
+      # azureStorageAccountName is only used if provisioner = azure-file, it determines the BASE64 encoded Azure storage account name
+      azureStorageAccountName: ""
+      # azurestorageaccountkey is only used if provisioner = azure-file, it determines the BASE64 encoded Azure storage account key
+      azureStorageAccountKey: ""
+    # node defines the storage options for the Node information
+    node:
+      # fileShareName defines the volume share name, with which Kubernetes will be able to map the volume to the Deployment
+      fileShareName: "node-storage" # Does not need editing unless deploying multiple nodes which should use unique share names
+      # size specifies the size to reserve for this volume
+      size: "2Gi"
+    # bridge defines the storage options for the Bridge information
+    bridge:
+      # fileShareName defines the volume share name, with which Kubernetes will be able to map the volume to the Deployment
+      fileShareName: "bridge-storage" # Does not need editing unless deploying multiple nodes which should use unique share names
+      # size specifies the size to reserve for this volume
+      size: "1Gi"
+    # float defines the storage options for the float information
+    float:
+      # fileShareName defines the volume share name, with which Kubernetes will be able to map the volume to the Deployment
+      fileShareName: "float-storage" # Does not need editing unless deploying multiple nodes which should use unique share names
+      # size specifies the size to reserve for this volume
+      size: "1Gi"
+
+# corda is the Corda specific deployment options
+corda:
+  # node is the options that define how to define the node.conf file which defines how the Corda Node will function
+  node: 
+    # Values that will end up in the node.conf file
+    conf: 
+      # legalName defines the X500 Node identity name (https://docs.corda.net/node-naming.html#node-naming)
+      legalName: "O=,L=London,C=GB"
+      # emailAddress defines the email address of the Node administrator, preferrably an impersonal address (e.g. node-admin@business.com)
+      emailAddress: ""
+      # bridgeTunnelPort defines the port number that the Bridge will connect to the Float on
+      bridgeTunnelPort: 39999
+      # p2pPort defines the port number of inbound connections
+      p2pPort: 40000
+      # p2pAddress defines the public facing IP address (domain name recommended) and port number of the Node, in the case of using a Float, this address should correspond to the public IP address of the float
+      p2pAddress: ""
+      # floatInternalAddress defines the Floats private IP address, that the Bridge will use to set up the Corda Firewall tunnel between the Bridge and the Float
+      floatInternalAddress: "" # Address that the Bridge service will connect to, if empty uses the public p2p address (above)
+      # identityManagerAddress defines the accesspoint for the Identity Manager server (public domain name+port)
+      identityManagerAddress: ""
+      # networkmapAddress defines the accesspoint for the Network Map server (public domain name+port)
+      networkmapAddress: ""
+      # truststorePassword defines the password with which to unlock the network root truststore file usually named 'networkRootTrustStore.jks'.
+      truststorePassword: "trustpass"
+      # crlCheckSoftFail defines if CRL failure is a critical error or if we can just fail softly (by logging an error) and continuing
+      crlCheckSoftFail: true
+      # tlsCertCrlDistPoint defines the endpoint for retrieving the CRL (Certificate Revocation List) of the Corda Network, if empty "", not used
+      tlsCertCrlDistPoint: "" # Example from Corda Network UAT network: http://crl.uat.corda.network/nodetls.crl
+      # tlsCertCrlIssuer defines the X500 name of the trusted CRL issuer of the Corda Network, example from the Corda Network UAT network
+      tlsCertCrlIssuer: "CN=Corda TLS CRL Authority,OU=Corda UAT,O=R3 HoldCo LLC,L=New York,C=US"
+      # devMode defines if Corda Node is running in developer mode or not, this setting should NEVER be enabled in a production setting!
+      devMode: false
+      # ssh defines the SSH access options
+      ssh:
+        # enabled is a boolean value for the above parameter
+        enabled: false
+        # sshdPort is the Node Shell access port (https://docs.corda.net/shell.html)
+        sshdPort: 2223
+      # rpc defines the RPC options
+      rpc:
+        # port is the RPC endpoint that the user interface will access to direct the CorDapp on the Corda Node
+        port: 30000
+        # adminPort is the RPC admin endpoint that can be used to do administrative tasks on the Corda Node, normally disabled
+        adminPort: 30009
+        # users defines the list of RPC users and the permissions they have (see https://docs.corda.net/clientrpc.html#granting-flow-permissions)
+        users:
+        - name: user1
+          password: test
+          permissions: ALL
+      # dataSource defines the database options
+      dataSource:
+        # className defines which database to use, empty ("") defines H2
+        className: ""
+        # url defines where to reach the database at. empty ("") defines H2 local database access
+        url: ""
+        # user defines the username for the access to the database
+        user: "user1"
+        # password defines the password for the access to the database
+        password: "test"
+      # monitoring defines the monitoring options
+      monitoring:
+        # enabled is a boolean value for the above parameter
+        enabled: true
+        # port defines the port on which the monitoring information will be available
+        port: 8090
+      # allowDevCorDapps defines if CorDapps that are signed with developer keys will be allowed to load or not (it clears the cordappSignerKeyFingerprintBlacklist if enabled)
+      allowDevCorDapps:
+        # enabled is a boolean value for the above parameter
+        enabled: true
+# fin.

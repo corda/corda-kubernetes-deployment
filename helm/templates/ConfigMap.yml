@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.config.resourceName }}-corda-configmap
+data:
+  node.conf: |+
+{{ tpl (.Files.Get "files/node.conf") . | indent 4 }}
+  bridge.conf: |+
+{{ tpl (.Files.Get "files/bridge.conf") . | indent 4 }}
+  float.conf: |+
+{{ tpl (.Files.Get "files/float.conf") . | indent 4 }}
+  ping.sh: |+
+{{ tpl (.Files.Get "files/ping.sh") . | indent 4 }}
+binaryData:
+  networkRootTrustStore.jks:
+{{ .Files.Get "files/network/networkRootTrustStore.jks" | b64enc | quote | indent 4 }}   
+  network-parameters.file:
+{{ .Files.Get "files/network/network-parameters.file" | b64enc | quote | indent 4 }}
+{{- $root := .}}
+{{- range $path, $bytes := .Files.Glob "files/certificates/firewall_tunnel/**.jks" }}
+{{ $path | base | indent 2 }}:
+{{ $root.Files.Get $path | b64enc | quote | indent 4  }}
+{{- end }}
+{{- range $path, $bytes := .Files.Glob "files/certificates/node/**.jks" }}
+{{ $path | base | indent 2 }}:
+{{ $root.Files.Get $path | b64enc | quote | indent 4  }}
+{{- end }}

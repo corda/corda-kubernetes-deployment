@@ -1,0 +1,12 @@
+#!/bin/sh
+
+set -eux
+
+ABS_PATH=$(readlink -f "$0")
+DIR=$(dirname "$ABS_PATH")
+
+APP={{ .Values.config.resourceName }}-node
+POD=$(kubectl get pod -l app=$APP -o jsonpath="{.items[0].metadata.name}")
+CORDAPPS_PATH=$(readlink -f "$DIR/../../../files/cordapps")
+# Can run into issues if CorDapps locked by Corda process. TODO: refactor into a new manner of deploying CorDapps.
+kubectl cp "$CORDAPPS_PATH" "$POD:/opt/corda/workspace/"
