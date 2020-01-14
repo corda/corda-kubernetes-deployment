@@ -60,9 +60,11 @@ spec:
             memory: "2Gi"
             cpu: "1000m"
         ports:
-        - containerPort: {{ .Values.corda.node.conf.p2pPort }} 
-        - containerPort: {{ .Values.corda.node.conf.rpc.port }} 
-        - containerPort: {{ .Values.corda.node.conf.sshdPort }} 
+        - containerPort: {{ .Values.corda.node.conf.p2pPort }}
+        - containerPort: {{ .Values.corda.node.conf.rpc.port }}
+{{- if .Values.corda.node.conf.ssh.enabled }}
+        - containerPort: {{ .Values.corda.node.conf.ssh.sshdPort }}
+{{- end }}
         volumeMounts:
         - mountPath: "/opt/corda/workspace"
           name: {{ .Values.config.resourceName }}-pv
