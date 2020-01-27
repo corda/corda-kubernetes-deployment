@@ -10,6 +10,25 @@ rm $WORKDIR/* -rf
 
 # C:\Program Files\Java\jre1.8.0_201\bin or if in PATH just keytool.exe
 KEYTOOL_EXE=$DIR/bin/keytool.exe
+
+# Make sure KEYTOOL is ready
+if [ ! -f "$KEYTOOL_EXE" ]
+then
+	echo "!!! Keytool not found, make sure your Keytool is configured correctly !!!"
+	exit 1
+fi
+
+$KEYTOOL_EXE &>/dev/null
+status=$?
+if [ $status -eq 0 ]
+then
+	echo "Keytool is ready..."
+else
+	echo "!!! Keytool is not available, make sure your Keytool is configured correctly !!!"
+	exit 1
+fi
+
+
 CERTIFICATE_VALIDITY_DAYS=3650
 BRIDGE_PASSWORD=bridgepass
 FLOAT_PASSWORD=floatpass

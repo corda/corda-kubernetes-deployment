@@ -8,6 +8,18 @@ ABS_PATH=$(readlink -f "$0")
 DIR=$(dirname "$ABS_PATH")
 source $DIR/docker_config.sh
 
+# Make sure Docker is ready
+docker ps &>/dev/null
+status=$?
+if [ $status -eq 0 ]
+then
+	echo "Docker is ready..."
+else
+	echo "!!! Docker engine not available, make sure your Docker is running and responds to command 'docker ps' !!!"
+	exit 1
+fi
+
+
 NO_CACHE=
 if [ "${1-}" == "no-cache" ]
 then
