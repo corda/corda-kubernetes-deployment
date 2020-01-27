@@ -5,11 +5,7 @@
 helm/values.yaml
 
 helm/output/
-helm/files/certificates
-helm/files/cordapps
-helm/files/network
 
-corda-pki-generator/pki-firewall/bin
 corda-pki-generator/pki-firewall/certs
 
 *.jar
