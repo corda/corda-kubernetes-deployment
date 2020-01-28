@@ -1,0 +1,93 @@
+#!/bin/sh
+
+set -eux
+
+ABS_PATH=$(readlink -f "$0")
+DIR=$(dirname "$ABS_PATH")
+ROOT_FOLDER=$DIR/../../../../..
+
+checkStatus () {
+    local status=$1
+    if [ $status -eq 0 ]
+        then
+            echo "The Corda Node initial registration was completed successfully. The certificates will now be copied to the correct folders."
+        else
+            echo "The Corda Node initial registration has failed unexpectedly. MANUAL intervention is required!"
+            echo "You may have to clean out the workspace folder and start over with a new X500 name for your node. (depends on the error)"
+            exit 1
+    fi
+    return 0
+}
+
+ensureFileExistsAndCopy () {
+    FROM=$1
+    TO=$2
+    if [ -f "$FROM" ]
+    then
+        if [ ! -f "$TO" ]
+        then
+            cp -f $FROM $TO
+        else
+            echo "File did not exist, probably an issue with initial-registration: $FROM"
+            exit 1
+        fi
+    else
+        echo "Existing certificate already existed, skipping copying as a safe-guard: $TO"
+        exit 1
+    fi
+}
+
+copyCertificates () {
+    CERTS_GENERATION_FOLDER=$ROOT_FOLDER/helm/initial_registration/output/corda/templates/workspace/certificates
+    TO_FOLDER=$ROOT_FOLDER/helm/files/certificates/node
+    ensureFileExistsAndCopy $CERTS_GENERATION_FOLDER/nodekeystore.jks $TO_FOLDER/nodekeystore.jks
+    ensureFileExistsAndCopy $CERTS_GENERATION_FOLDER/sslkeystore.jks $TO_FOLDER/sslkeystore.jks
+    ensureFileExistsAndCopy $CERTS_GENERATION_FOLDER/truststore.jks $TO_FOLDER/truststore.jks    
+}
+
+main () {
+    DOCKER_IMAGES_FOLDER=$ROOT_FOLDER/docker-images
+    # Load version numbers from docker_config.sh
+    source $DOCKER_IMAGES_FOLDER/docker_config.sh
+
+    BIN_DIR=$DOCKER_IMAGES_FOLDER/bin
+    CORDA_BIN=$BIN_DIR/$CORDA_VERSION.jar
+    TRUST_STORE=$ROOT_FOLDER/helm/files/network/networkRootTrustStore.jks
+    TRUST_STORE_PASSWORD={{ .Values.corda.node.conf.truststorePassword }}
+    NODE_CONF=$DIR/node.conf
+
+    echo "Starting Corda Node initial registration..."
+
+    if [ -d "$BIN_DIR" -a -f "$CORDA_BIN" ]
+    then
+        echo "Corda Enterprise binaries found $CORDA_BIN"
+        echo "Checking for $TRUST_STORE"
+        if [ -f "$TRUST_STORE" ]
+        then
+            echo "Corda Network root trust store file found."
+            echo "Checking that node.conf file exists in $NODE_CONF"
+            if [ -f "$NODE_CONF" ]
+            then
+                #echo "Cleaning any previous initial-registration runs..."
+                #rm -rf $DIR/workspace
+                
+                echo "Launching Corda Node with option initial_registration"
+                java -jar $CORDA_BIN initial-registration --network-root-truststore=$TRUST_STORE --network-root-truststore-password=$TRUST_STORE_PASSWORD --base-directory=$DIR/workspace --config-file=$NODE_CONF || checkStatus $?
+                checkStatus $?
+                
+                copyCertificates
+            else
+                echo "node.conf not found as $NODE_CONF"
+                exit
+            fi
+        else
+            echo "Corda Network root trust store file not found, expected: $TRUST_STORE"
+            exit
+        fi
+    else
+        echo "Corda Enterprise binaries not found in folder $BIN_DIR"
+        exit
+    fi
+}
+
+main 

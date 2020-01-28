@@ -1,4 +1,4 @@
-# CORDA KUBERNETES DEPLOYMENT OPTION
+# CORDA KUBERNETES DEPLOYMENT
 
 This repository (<http://github.com/corda/corda-deployments/kubernetes/)> contains the means with which you can stand up a Corda Node (<https://www.corda.net/).>
 
@@ -10,7 +10,7 @@ Licensed under Apache License, version 2.0 (<https://www.apache.org/licenses/LIC
 
 ## MORE INFORMATION
 
-Additional information on setup and usage of this Corda Kubernetes Deployment option can be found on the Corda Solutions Docs site: <https://solutions.corda.net/deployment/kubernetes/intro.html>
+Additional information on setup and usage of this Corda Kubernetes Deployment can be found on the Corda Solutions Docs site: <https://solutions.corda.net/deployment/kubernetes/intro.html>
 
 It is strongly recommended you review all of the documentation there before setting this up for the first time.
 
@@ -24,6 +24,17 @@ It is strongly recommended you review all of the documentation there before sett
 * kubectl is used to manage Kubernetes cluster (<https://kubernetes.io/docs/tasks/tools/install-kubectl/)>
 * Helm (<https://helm.sh/)>
 * Corda Enterprise jars downloaded and stored in 'bin' folder
+
+---
+
+## BINARIES
+
+This deployment is targeting an Enterprise deployment, which should include a Corda Node, but also the Corda Firewall, which is an Enterprise only feature.
+
+In order to execute the following scripts correctly, you will have to have access to the Corda Enterprise binaries.
+The files should be downloaded first and placed in the following folder: ``docker-images/bin``
+
+Please see ``docker-images/README.md`` for more information.
 
 ---
 
@@ -135,24 +146,28 @@ The following is performed by initiating an initial-registration step:
 - Contacts the Corda Network (<https://corda.network/)> or a private Corda Network with a request to join the network with a CSR (Certificate Signing Request).
 - Generates Node signing keys and TLS keys for communicating with other Nodes on the network
 
+The scripted initial-registration step can be found in the following folder ``helm/initial-registration/``.
+
+Just run script ``initial-registration.sh``
+
 The following steps should also be performed in a scripted manner, however, they are not implemented yet:
 
-- Generates PKI tunnel certificates for the Bridge & Float (if a Corda Firewall is being deployed as part of the deployment)
-- Places the Private keys corresponding to the above certificates in the HSM that is being used (if HSM is configured to be used)
+- Places the Private keys corresponding to the generated certificates in an HSM (if HSM is configured to be used)
 - Generates Artemis configuration with / without High-Availability setup
 
 ## USAGE
 
 1. Start by downloading the required binaries
-2. Generate the certificates
-3. Execute initial registration step and copy certificates to correct locations
-4. Build the docker images and push them to the Container Registry
-5. Customize the Helm ``values.yaml`` file according to your deployment
-6. Build Helm templates and install them onto the Kubernetes Cluster (by way of executing ``helm_compile.sh``)
-7. Ensure that the deployment has been successful
+2. Customize the Helm ``values.yaml`` file according to your deployment (this step is used by initial-registration and Helm compile, very important to fill in correctly and completely)
+3. Execute ``one-time-setup.sh`` which will do the following (you can also step through the steps on your own, just follow what the one-time-setup.sh would have done):
+	1. Generate the Corda Firewall PKI certificates
+	2. Execute initial registration step (which should copy certificates to the correct locations under ``helm/files``)
+	3. Build the docker images and push them to the Container Registry
+	4. Build Helm templates and install them onto the Kubernetes Cluster (by way of executing ``helm_compile.sh``)
+4. Ensure that the deployment has been successful
 
-For more details it is strongly recommended to visit the following page on the Corda Solutions docs site: 
-<https://solutions.corda.net/deployment/kubernetes/corda-kubernetes-deployment-option.html>
+For more details and instructions it is strongly recommended to visit the following page on the Corda Solutions docs site: 
+<https://solutions.corda.net/deployment/kubernetes/intro.html>
 
 ### Feedback
 
