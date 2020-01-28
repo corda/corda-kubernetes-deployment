@@ -50,8 +50,8 @@ config:
     serverAddress: ""
     # username is the username for the Container Registry access
     username: ""
-    password: ""
     # password is the password for the Container Registry access
+    password: ""
     # email is the email address corresponding to the Container Registry
     email: ""
   # nodeLoadBalancerIP defines the public / private IP address for the Kubernetes Cluster on which there will be an ingress to the Corda Nodes RPC endpoint
@@ -82,10 +82,10 @@ config:
       account: ""
       # skuName defines the  Azure specific location
       location: "westeurope"
-      azureStorageAccountName: ""
-      azureStorageAccountKey: ""
       # azureStorageAccountName is only used if provisioner = azure-file, it determines the Azure storage account name
+      azureStorageAccountName: ""
       # azureStorageAccountKey is only used if provisioner = azure-file, it determines the Azure storage account key
+      azureStorageAccountKey: ""
     # node defines the storage options for the Node information
     node:
       # fileShareName defines the volume share name, with which Kubernetes will be able to map the volume to the Deployment
