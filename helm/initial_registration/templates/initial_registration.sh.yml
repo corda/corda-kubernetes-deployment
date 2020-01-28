@@ -28,11 +28,11 @@ ensureFileExistsAndCopy () {
         then
             cp -f $FROM $TO
         else
-            echo "File did not exist, probably an issue with initial-registration: $FROM"
+            echo "Existing certificate already existed, skipping copying as a safe-guard: $TO"
             exit 1
         fi
     else
-        echo "Existing certificate already existed, skipping copying as a safe-guard: $TO"
+        echo "File did not exist, probably an issue with initial-registration: $FROM"
         exit 1
     fi
 }

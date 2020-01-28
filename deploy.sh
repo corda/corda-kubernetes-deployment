@@ -17,5 +17,5 @@ checkStatus () {
 	return 0
 }
 
-source $DIR/helm/helm_compile.sh
+$DIR/helm/helm_compile.sh
 checkStatus $?

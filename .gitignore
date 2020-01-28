@@ -4,8 +4,6 @@
 # Comment the following row when you are making changes to values.yaml structure, but make sure you do not commit any of the user defined values!
 helm/values.yaml
 
-helm/output/
-
 corda-pki-generator/pki-firewall/certs
 
 *.jar

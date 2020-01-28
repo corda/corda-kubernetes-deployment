@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -eux
 
@@ -17,11 +17,7 @@ checkStatus () {
 	return 0
 }
 
-$DIR/docker-images/build_docker_images.sh
+$DIR/pki-firewall/generate_pki.sh
 checkStatus $?
-$DIR/docker-images/push_docker_images.sh
-checkStatus $?
-$DIR/corda-pki-generator/pki-firewall/generate_pki.sh
-checkStatus $?
-$DIR/helm/initial_registration/initial_registration.sh
+$DIR/copy_certs_to_helm_files.sh
 checkStatus $?
