@@ -83,6 +83,54 @@ A guide on setting up Public IP addresses in Azure: [Create, change, or delete a
 
 ## SETUP
 
+### READ ME FIRST
+
+#### BINARIES
+
+The scripts contained within require you to have the necessary binaries in place, as previously mentioned in this document.
+
+#### CONFIGURATION VALUES
+
+You must completely fill out the ``helm/values.yaml`` file according to your configuration.
+
+Last time I ran this script in a fresh installation, I only had to modify the following fields:
+
+``config.``:
+
+* nodeLoadBalancerIP
+* floatLoadBalancerIP
+
+``config.containerRegistry.``:
+
+* serverAddress
+* username
+* password
+* email
+
+``config.storage.azureFile.``:
+
+* account
+* azureStorageAccountName
+* azureStorageAccountKey
+
+``corda.node.conf.``:
+
+* legalName
+* emailAddress
+* p2pAddress
+* identityManagerAddress
+* networkmapAddress
+
+For the rest of the options the defaults worked for me, but you may find that you have to modify more configuration options for your deployment.
+
+#### ONE-TIME SETUP
+
+There is an automated way to perform the one-time setup by executing ``one-time-setup.sh``, which does all the necessary steps, provided you have completed the previous sections.
+
+---
+
+## KEY CONCEPTS / TOOLS
+
 ### Docker image generation
 
 We need to have the relevant Docker images in the Container Registry for Kubernetes to access.
@@ -103,10 +151,6 @@ Running docker images "corda_*" should reveal the newly created image:
 	REPOSITORY		TAG	IMAGE ID	CREATED		SIZE
 	corda_image_ent_4.0	v1.0	4c037385e632	5 minutes ago	363MB
 ```
-
----
-
-## KEY CONCEPTS / TOOLS
 
 ### HELM
 
@@ -155,7 +199,7 @@ The following steps should also be performed in a scripted manner, however, they
 - Places the Private keys corresponding to the generated certificates in an HSM (if HSM is configured to be used)
 - Generates Artemis configuration with / without High-Availability setup
 
-## USAGE
+## USAGE (ALSO SEE ``SETUP`` above)
 
 1. Start by downloading the required binaries
 2. Customize the Helm ``values.yaml`` file according to your deployment (this step is used by initial-registration and Helm compile, very important to fill in correctly and completely)
@@ -163,8 +207,8 @@ The following steps should also be performed in a scripted manner, however, they
 	1. Generate the Corda Firewall PKI certificates
 	2. Execute initial registration step (which should copy certificates to the correct locations under ``helm/files``)
 	3. Build the docker images and push them to the Container Registry
-	4. Build Helm templates and install them onto the Kubernetes Cluster (by way of executing ``helm_compile.sh``)
-4. Ensure that the deployment has been successful
+4. Build Helm templates and install them onto the Kubernetes Cluster (by way of executing either ``deploy.sh`` or ``helm/helm_compile.sh``)
+5. Ensure that the deployment has been successful (log in to the pods and check that they are working correctly, please see below link for information on how to do that)
 
 For more details and instructions it is strongly recommended to visit the following page on the Corda Solutions docs site: 
 <https://solutions.corda.net/deployment/kubernetes/intro.html>
