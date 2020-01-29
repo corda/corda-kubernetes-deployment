@@ -4,7 +4,8 @@ This repository (<https://github.com/corda/corda-kubernetes-deployment)> contain
 
 This is meant to be a customizable version of the Node deployment that you can take as-is if it fits your needs or then customize it to your liking.
 
-** DISCLAIMER: THIS IS AN EXPERIMENTAL VERSION WHICH SHOULD NOT BE USED IN PRODUCTION. PLEASE USE IT IN DEVELOPMENT / FOR LEARNING ONLY. **
+**DISCLAIMER: THIS IS AN EXPERIMENTAL VERSION WHICH SHOULD NOT BE USED IN PRODUCTION.**
+**IT CAN BE USED TO SET UP TEST ENVIRONMENTS AND TO LEARN ABOUT DEPLOYING CORDA AND OTHER ENTERPRISE COMPONENTS.**
 
 Licensed under Apache License, version 2.0 (<https://www.apache.org/licenses/LICENSE-2.0).>
 
