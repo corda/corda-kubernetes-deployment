@@ -1,4 +1,4 @@
-# Corda Deployment Chart
+# Corda Kubernetes Deployment Chart
 
 This directory contains two Helm charts, one for initial registration of a Corda Node and one for deploying the Corda Node along  with optional Corda Firewall to a Kubernetes cluster.
 
@@ -6,7 +6,7 @@ This directory contains two Helm charts, one for initial registration of a Corda
 
 ## Prerequisites
 
-- Corda Enterprise binaries available in ``docker-images/bin`` folder as per previous steps in ``corda-deployments``
+- Corda Enterprise binaries available in ``docker-images/bin`` folder as per previous steps in ``corda-kubernetes-deployment``
 - Kubernetes cluster set up with access to a Docker Container Registry
 - Docker Container Registry
 - StorageClass linked to correctly set up Cloud storage
@@ -26,7 +26,7 @@ Please pay attention to correct spelling of the content of each variable.
 The one time registration of a Corda Node to a Corda Network has to be performed before deploying the Nodes to the Kubernetes cluster. 
 This can be done by executing the script ``initial_registration/initial_registration.sh`` 
 
-NOTE! Make sure you have completed ALL prerequisites (also in corda-deployments) and filled in ``values.yaml`` entirely
+NOTE! Make sure you have completed ALL prerequisites (also in corda-kubernetes-deployment) and filled in ``values.yaml`` entirely
 
 ## Installation
 

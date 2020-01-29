@@ -1,6 +1,6 @@
 # CORDA KUBERNETES DEPLOYMENT
 
-This repository (<http://github.com/corda/corda-deployments/kubernetes/)> contains the means with which you can stand up a Corda Node (<https://www.corda.net/).>
+This repository (<https://github.com/corda/corda-kubernetes-deployment)> contains the means with which you can stand up a Corda Node (<https://www.corda.net/).>
 
 This is meant to be a customizable version of the Node deployment that you can take as-is if it fits your needs or then customize it to your liking.
 
@@ -215,6 +215,6 @@ For more details and instructions it is strongly recommended to visit the follow
 
 ### Feedback
 
-Any suggestions / issues are welcome in the issues section: <https://github.com/corda/corda-deployments/issues/new>
+Any suggestions / issues are welcome in the issues section: <https://github.com/corda/corda-kubernetes-deployment/issues/new>
 
 Fin.
