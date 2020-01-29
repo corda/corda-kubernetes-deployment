@@ -45,16 +45,113 @@ copyCertificates () {
     ensureFileExistsAndCopy $CERTS_GENERATION_FOLDER/truststore.jks $TO_FOLDER/truststore.jks    
 }
 
+waitTillNetworkParametersIsAvailable () {
+    local NETWORK_PARAMETERS_EXISTS=0
+    while [ $NETWORK_PARAMETERS_EXISTS -eq 0 ]
+    do
+        sleep 2
+        echo "Checking for network-parameters file..."
+        if [ -f $DIR/workspace/network-parameters ]
+        then
+            echo "Found network-parameters file!"
+            NETWORK_PARAMETERS_EXISTS=1
+        fi
+    done
+    echo "waitTillNetworkParametersIsAvailable finished."
+}
+
+copyNetworkParameters () {
+    waitTillNetworkParametersIsAvailable
+    
+    echo "Copying network-parameters to helm/files/network (for Corda Firewall use)."
+    cp -u $DIR/workspace/network-parameters $ROOT_FOLDER/helm/files/network/network-parameters.file
+}
+
+waitForNetworkParametersOrTimeout () {
+    local NP_PID=$1
+    local CORDA_PID=$2
+    local LOOPING=1
+    while [ $LOOPING -eq 1 ]; do
+        sleep 10 # seconds
+        #NP_PROCESS_RESULT=$(kill -0 "$NP_PID" > /dev/null 2>&1)
+        #CORDA_PROCESS_RESULT=$(kill -0 "$CORDA_PID" > /dev/null 2>&1)
+        if ! kill -0 "$NP_PID" > /dev/null 2>&1; then
+            echo "network-parameters download has completed, time to ensure Corda Node process terminates as well"
+            
+            if kill -0 "$CORDA_PID" > /dev/null 2>&1; then
+                if kill "$CORDA_PID" > /dev/null 2>&1; then echo "Killed Corda Node process."; fi
+            else
+                # All background processes terminated, continue
+                LOOPING=0
+            fi
+        else
+            # network-parameters download is still ongoing, but we should check to see if Corda Node process is still active
+            if kill -0 "$CORDA_PID" > /dev/null 2>&1; then
+                echo "."
+            else
+                echo "Corda Node process terminated before network-parameters was completed. MANUAL investigation required."
+                LOOPING=0
+            fi
+        fi
+    done
+
+    # Ensure no running background processes gets left behind:
+    if kill $CORDA_PID > /dev/null 2>&1; then echo "!"; fi
+    if kill $NP_PID > /dev/null 2>&1; then echo "!"; fi
+    
+    if [ -f $ROOT_FOLDER/helm/files/network/network-parameters.file ]; then
+        echo "network-parameters file was downloaded successfully and we are ready to continue deployment."
+    else
+        echo "Unfortunately the network-parameters file was not downloaded/copied to the correct folder, MANUAL intervention is required."
+        exit 1
+    fi
+}
+
+downloadNetworkParameters () {
+    local CORDA_BIN=$1
+    local NODE_CONF=$2
+    echo "Next we will launch the Corda Node just in order to download network-parameters file. Please wait..."
+    # Launching the network-parameters copy function async to Corda Node execution:
+    copyNetworkParameters & NP_PID=$!
+    java -jar $CORDA_BIN --base-directory=$DIR/workspace --config-file=$NODE_CONF & CORDA_PID=$!
+    waitForNetworkParametersOrTimeout $NP_PID $CORDA_PID
+}
+
+initialRegistration () {
+    local CORDA_BIN=$1
+    local NODE_CONF=$2
+    local TRUST_STORE=$3
+    local TRUST_STORE_PASSWORD=$4
+    #echo "Cleaning any previous initial-registration runs..."
+    #rm -rf $DIR/workspace
+    
+    TRUSTSTORE_JKS=$ROOT_FOLDER/helm/files/certificates/node/truststore.jks
+    NODEKEYSTORE_JKS=$ROOT_FOLDER/helm/files/certificates/node/nodekeystore.jks
+    SSLKEYSTORE_JKS=$ROOT_FOLDER/helm/files/certificates/node/sslkeystore.jks
+    
+    echo "Checking if certificates already exist..."
+    if [ ! -f $TRUSTSTORE_JKS -a ! -f $NODEKEYSTORE_JKS -a ! -f $SSLKEYSTORE_JKS ]; then
+        echo "Launching Corda Node with option initial_registration to download certificates..."
+        java -jar $CORDA_BIN initial-registration --network-root-truststore=$TRUST_STORE --network-root-truststore-password=$TRUST_STORE_PASSWORD --base-directory=$DIR/workspace --config-file=$NODE_CONF || checkStatus $?
+        checkStatus $?
+        
+        echo "Copying certificates from initial-registration step to the helm/files/certificates/node folder"
+        copyCertificates
+    else
+        echo "Skipping initial-registration step because $ROOT_FOLDER/helm/files/certificates/node/ already contains the certificates."
+    fi
+}
+
 main () {
     DOCKER_IMAGES_FOLDER=$ROOT_FOLDER/docker-images
     # Load version numbers from docker_config.sh
     source $DOCKER_IMAGES_FOLDER/docker_config.sh
 
-    BIN_DIR=$DOCKER_IMAGES_FOLDER/bin
-    CORDA_BIN=$BIN_DIR/$CORDA_VERSION.jar
-    TRUST_STORE=$ROOT_FOLDER/helm/files/network/networkRootTrustStore.jks
-    TRUST_STORE_PASSWORD={{ .Values.corda.node.conf.truststorePassword }}
-    NODE_CONF=$DIR/node.conf
+    local BIN_DIR=$DOCKER_IMAGES_FOLDER/bin
+    local CORDA_BIN=$BIN_DIR/$CORDA_VERSION.jar
+    local NODE_CONF=$DIR/node.conf
+    local TRUST_STORE=$ROOT_FOLDER/helm/files/network/networkRootTrustStore.jks
+    local TRUST_STORE_PASSWORD=trustpass
 
     echo "Starting Corda Node initial registration..."
 
@@ -68,14 +165,11 @@ main () {
             echo "Checking that node.conf file exists in $NODE_CONF"
             if [ -f "$NODE_CONF" ]
             then
-                #echo "Cleaning any previous initial-registration runs..."
-                #rm -rf $DIR/workspace
+                echo "Corda Node initial-registration step"
+                initialRegistration $CORDA_BIN $NODE_CONF $TRUST_STORE $TRUST_STORE_PASSWORD
                 
-                echo "Launching Corda Node with option initial_registration"
-                java -jar $CORDA_BIN initial-registration --network-root-truststore=$TRUST_STORE --network-root-truststore-password=$TRUST_STORE_PASSWORD --base-directory=$DIR/workspace --config-file=$NODE_CONF || checkStatus $?
-                checkStatus $?
-                
-                copyCertificates
+                echo "Corda Node network-parameters step"
+                downloadNetworkParameters $CORDA_BIN $NODE_CONF
             else
                 echo "node.conf not found as $NODE_CONF"
                 exit
