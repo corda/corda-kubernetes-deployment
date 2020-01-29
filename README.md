@@ -1,10 +1,13 @@
 # CORDA KUBERNETES DEPLOYMENT
 
-This repository (<https://github.com/corda/corda-kubernetes-deployment)> contains the means with which you can stand up a Corda Node (<https://www.corda.net/).>
+This repository (<https://github.com/corda/corda-kubernetes-deployment>) contains the means with which you can stand up a Corda Node (<https://www.corda.net/).>
 
 This is meant to be a customizable version of the Node deployment that you can take as-is if it fits your needs or then customize it to your liking.
 
-**DISCLAIMER: THIS IS AN EXPERIMENTAL VERSION WHICH SHOULD NOT BE USED IN PRODUCTION.**
+**DISCLAIMER:**
+
+**THIS IS AN EXPERIMENTAL VERSION WHICH SHOULD NOT BE USED IN PRODUCTION.**
+
 **IT CAN BE USED TO SET UP TEST ENVIRONMENTS AND TO LEARN ABOUT DEPLOYING CORDA AND OTHER ENTERPRISE COMPONENTS.**
 
 Licensed under Apache License, version 2.0 (<https://www.apache.org/licenses/LICENSE-2.0).>
