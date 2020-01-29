@@ -110,11 +110,16 @@ waitForNetworkParametersOrTimeout () {
 downloadNetworkParameters () {
     local CORDA_BIN=$1
     local NODE_CONF=$2
-    echo "Next we will launch the Corda Node just in order to download network-parameters file. Please wait..."
-    # Launching the network-parameters copy function async to Corda Node execution:
-    copyNetworkParameters & NP_PID=$!
-    java -jar $CORDA_BIN --base-directory=$DIR/workspace --config-file=$NODE_CONF & CORDA_PID=$!
-    waitForNetworkParametersOrTimeout $NP_PID $CORDA_PID
+    
+    if [ -f $ROOT_FOLDER/helm/files/network/network-parameters.file ]; then
+        echo "network-parameters file already existed in the correct folder $ROOT_FOLDER/helm/files/network/, skipping new download."
+    else
+        echo "Next we will launch the Corda Node just in order to download network-parameters file. Please wait..."
+        # Launching the network-parameters copy function async to Corda Node execution:
+        copyNetworkParameters & NP_PID=$!
+        java -jar $CORDA_BIN --base-directory=$DIR/workspace --config-file=$NODE_CONF & CORDA_PID=$!
+        waitForNetworkParametersOrTimeout $NP_PID $CORDA_PID
+    fi
 }
 
 initialRegistration () {
