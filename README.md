@@ -6,9 +6,7 @@ This is meant to be a customizable version of the Node deployment that you can t
 
 **DISCLAIMER:**
 
-**THIS IS AN EXPERIMENTAL VERSION WHICH SHOULD NOT BE USED IN PRODUCTION.**
-
-**IT CAN BE USED TO SET UP TEST ENVIRONMENTS AND TO LEARN ABOUT DEPLOYING CORDA AND OTHER ENTERPRISE COMPONENTS.**
+This Kubernetes deployment for a Corda Node is considered **experimental** and should not be used in a production environment until sufficient testing has been done.
 
 Licensed under Apache License, version 2.0 (<https://www.apache.org/licenses/LICENSE-2.0).>
 
