@@ -88,3 +88,11 @@ An extensive set of performance tests should be executed on the deployment to fi
 ### Penetration testing
 
 An extensive set of penetration tests should be executed on the deployment to figure out potential security issues and then address those issues accordingly.
+
+## Distribution-less Docker Images
+
+High security environments demand that the Docker image is not based on a specific Distribution, it should be custom built, as in define exactly what it will contain.
+
+### Goals:
+
+- Add support for Distribution-less Docker images
