@@ -1,6 +1,6 @@
 # CORDA KUBERNETES DEPLOYMENT
 
-This repository (<https://github.com/corda/corda-kubernetes-deployment>) contains the means with which you can stand up a Corda Node (<https://www.corda.net/).>
+This repository (<https://github.com/corda/corda-kubernetes-deployment>) contains the means with which you can stand up a [Corda](https://www.corda.net/) Node.
 
 This is meant to be a customizable version of the Node deployment that you can take as-is if it fits your needs or then customize it to your liking.
 
@@ -8,13 +8,13 @@ This is meant to be a customizable version of the Node deployment that you can t
 
 This Kubernetes deployment for a Corda Node is considered **experimental** and should not be used in a production environment until sufficient testing has been done.
 
-Licensed under Apache License, version 2.0 (<https://www.apache.org/licenses/LICENSE-2.0).>
+Licensed under [Apache License, version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
 ---
 
 ## MORE INFORMATION
 
-Additional information on setup and usage of this Corda Kubernetes Deployment can be found on the Corda Solutions Docs site: <https://solutions.corda.net/deployment/kubernetes/intro.html>
+Additional information on setup and usage of this Corda Kubernetes Deployment can be found on the [Corda Solutions Docs](https://solutions.corda.net/deployment/kubernetes/intro.html) site.
 
 It is strongly recommended you review all of the documentation there before setting this up for the first time.
 
@@ -24,9 +24,9 @@ It is strongly recommended you review all of the documentation there before sett
 
 * A cloud environment with Kubernetes Cluster Services that has access to a Docker Container Registry
 * Note! The current version of the scripts only supports Azure out of the box by way of Azure Kubernetes Service and Azure Container Registry, future versions of the scripts may add support for other cloud providers
-* Building the images requires local Docker installation (<https://www.docker.com/)>
-* kubectl is used to manage Kubernetes cluster (<https://kubernetes.io/docs/tasks/tools/install-kubectl/)>
-* Helm (<https://helm.sh/)>
+* Building the images requires local [Docker](https://www.docker.com/) installation
+* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) is used to manage Kubernetes cluster
+* [Helm](https://helm.sh/)
 * Corda Enterprise jars downloaded and stored in 'bin' folder
 
 ---
@@ -38,7 +38,7 @@ This deployment is targeting an Enterprise deployment, which should include a Co
 In order to execute the following scripts correctly, you will have to have access to the Corda Enterprise binaries.
 The files should be downloaded first and placed in the following folder: ``docker-images/bin``
 
-Please see ``docker-images/README.md`` for more information.
+Please see [docker-images/README.md](docker-images/README.md) for more information.
 
 ---
 
@@ -95,7 +95,7 @@ The scripts contained within require you to have the necessary binaries in place
 
 #### CONFIGURATION VALUES
 
-You must completely fill out the ``helm/values.yaml`` file according to your configuration.
+You must completely fill out the [helm/values.yaml](helm/values.yaml) file according to your configuration.
 
 Last time I ran this script in a fresh installation, I only had to modify the following fields:
 
