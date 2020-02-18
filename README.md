@@ -191,7 +191,7 @@ The generated files from this folder should then be copied to the following fold
 
 The following is performed by initiating an initial-registration step:
 
-- Contacts the Corda Network (<https://corda.network/)> or a private Corda Network with a request to join the network with a CSR (Certificate Signing Request).
+- Contacts the [Corda Network](<https://corda.network/)> or a private Corda Network with a request to join the network with a CSR (Certificate Signing Request).
 - Generates Node signing keys and TLS keys for communicating with other Nodes on the network
 
 The scripted initial-registration step can be found in the following folder ``helm/initial-registration/``.
@@ -216,6 +216,10 @@ The following steps should also be performed in a scripted manner, however, they
 
 For more details and instructions it is strongly recommended to visit the following page on the Corda Solutions docs site: 
 <https://solutions.corda.net/deployment/kubernetes/intro.html>
+
+## ROADMAP
+
+To see the intended direction that this deployment should take, please have a look at the [Roadmap](<https://github.com/corda/corda-kubernetes-deployment/ROADMAP.md>)
 
 ### Feedback
 
