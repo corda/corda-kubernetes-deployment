@@ -156,7 +156,7 @@ main () {
     local CORDA_BIN=$BIN_DIR/$CORDA_VERSION.jar
     local NODE_CONF=$DIR/node.conf
     local TRUST_STORE=$ROOT_FOLDER/helm/files/network/networkRootTrustStore.jks
-    local TRUST_STORE_PASSWORD=trustpass
+    local TRUST_STORE_PASSWORD={{ .Values.corda.node.conf.truststorePassword }}
 
     echo "Starting Corda Node initial registration..."
 

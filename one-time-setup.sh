@@ -21,7 +21,7 @@ $DIR/docker-images/build_docker_images.sh
 checkStatus $?
 $DIR/docker-images/push_docker_images.sh
 checkStatus $?
-$DIR/corda-pki-generator/pki-firewall/generate_pki.sh
+$DIR/corda-pki-generator/generate_firewall_pki.sh
 checkStatus $?
 $DIR/helm/initial_registration/initial_registration.sh
 checkStatus $?

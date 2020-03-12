@@ -140,7 +140,7 @@ corda:
       # ssh defines the SSH access options
       ssh:
         # enabled is a boolean value for the above parameter
-        enabled: false
+        enabled: true
         # sshdPort is the Node Shell access port (https://docs.corda.net/shell.html)
         sshdPort: 2223
       # rpc defines the RPC options
@@ -151,8 +151,11 @@ corda:
         adminPort: 30009
         # users defines the list of RPC users and the permissions they have (see https://docs.corda.net/clientrpc.html#granting-flow-permissions)
         users:
+        # name defines the name of the RPC user
         - name: user1
+          # password defines the password for the RPC user
           password: test
+          # permissions defines the RPC permissions available (see https://docs.corda.net/clientrpc.html?highlight=rpc%20permission#rpc-permissions)
           permissions: ALL
       # dataSource defines the database options
       dataSource:
@@ -174,4 +177,14 @@ corda:
       allowDevCorDapps:
         # enabled is a boolean value for the above parameter
         enabled: true
+  # firewall is the options that define how to define the bridge.conf and float.conf files which defines how the Corda Firewall will function
+  firewall: 
+    # Values that will end up in the bridge.conf/float.conf files
+    conf: 
+      # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named 'trust.jks'.
+      truststorePassword: "trustpass" # NOTE! The link to corda-pki-generator/pki-firewall/generate_pki.sh is not automated yet, if you change this parameter you would have to manually edit the "sh" file as well.
+      # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named 'trust.jks'.
+      bridgeKeystorePassword: "bridgepass" # NOTE! The link to corda-pki-generator/pki-firewall/generate_pki.sh is not automated yet, if you change this parameter you would have to manually edit the "sh" file as well.
+      # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named 'trust.jks'.
+      floatKeystorePassword: "floatpass" # NOTE! The link to corda-pki-generator/pki-firewall/generate_pki.sh is not automated yet, if you change this parameter you would have to manually edit the "sh" file as well.
 # fin.
