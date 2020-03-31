@@ -37,7 +37,6 @@ function GetPathToCurrentlyExecutingScript () {
 	DIR=$(dirname "$ABS_PATH")
 }
 GetPathToCurrentlyExecutingScript
-set -eux
 
 helm version | grep "v2."
 if [ "$?" -ne "0" ] ; then
@@ -50,6 +49,8 @@ if [ "$?" -ne "0" ] ; then
 	echo "kubectl must be connected to the Kubernetes cluster in order to continue. Please see https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/"
 	exit 1
 fi
+
+set -eux
 
 TEMPLATE_NAMESPACE="cordatest"
 
