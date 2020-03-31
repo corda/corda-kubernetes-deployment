@@ -6,6 +6,6 @@ metadata:
 provisioner: kubernetes.io/{{ .Values.config.storage.azureFile.provisioner }}
 parameters:
   skuName: {{ .Values.config.storage.azureFile.skuName }}
-  storageAccount: {{ .Values.config.storage.azureFile.account }}
+  storageAccount: {{ .Values.config.storage.azureFile.azureStorageAccountName }}
   location: {{ .Values.config.storage.azureFile.location }}
 {{- end }}
