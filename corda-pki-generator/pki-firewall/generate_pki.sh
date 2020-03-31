@@ -37,13 +37,11 @@ function GetPathToCurrentlyExecutingScript () {
 	DIR=$(dirname "$ABS_PATH")
 }
 GetPathToCurrentlyExecutingScript
-set -eux
 
 WORKDIR=$DIR/certs
 mkdir $WORKDIR -p
 rm $WORKDIR/* -rf
 
-set -ux
 # C:\Program Files\Java\jre1.8.0_201\bin or if in PATH just keytool.exe
 KEYTOOL_EXE=keytool
 $KEYTOOL_EXE &>/dev/null
