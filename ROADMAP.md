@@ -79,6 +79,16 @@ There are many upgrading scenarios that should be tackled. These include, but ar
 - Define upgrading best practices for the deployment to tackle the above 3 scenarios
 - Define the designs for these upgrading options and place them in the roadmap
 
+## Monitoring and Health Probes
+
+It is important to be able to monitor and probe the pods health to be able to react to any detrimental changes over time.
+For example, if the memory usage goes above 80%, take an action. Or if the pod is restarting regularly, take an action.
+
+### Goals: 
+
+- Define the best practices of health probing for the different components
+- Define and design a monitoring solution that is standardized
+
 ## Testing
 
 ### Performance testing
