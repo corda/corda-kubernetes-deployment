@@ -6,7 +6,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: {{ .Values.config.storage.azureFile.resourceName }}
+  storageClassName: {{ .Values.config.storage.resourceName }}
   volumeName: {{ .Values.config.resourceName }}-float-pv-volume
   resources:
     requests:
@@ -17,15 +17,21 @@ apiVersion: v1
 metadata:
   name: {{ .Values.config.resourceName }}-float-pv-volume
 spec:
-  storageClassName: {{ .Values.config.storage.azureFile.resourceName }}
+  storageClassName: {{ .Values.config.storage.resourceName }}
   capacity:
     storage: {{ .Values.config.storage.float.size }}
   accessModes:
     - ReadWriteOnce
+{{- if .Values.config.storage.azureFile.enabled }}
   azureFile:
-    secretName: {{ .Values.config.storage.azureFile.resourceName }}-secret
+    secretName: {{ .Values.config.storage.resourceName }}-secret
     shareName: {{ .Values.config.storage.float.fileShareName }}
     readOnly: false
+{{- else if .Values.config.storage.awsEBS.enabled }}
+  awsElasticBlockStore:
+    volumeID: "{{ .Values.config.storage.float.volumeId }}"
+    fsType: "{{ .Values.config.storage.awsEBS.fsType }}"
+{{- end }}
   mountOptions:
   - dir_mode=0777
   - file_mode=0777
