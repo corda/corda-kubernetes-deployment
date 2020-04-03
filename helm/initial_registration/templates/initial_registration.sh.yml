@@ -210,6 +210,8 @@ main () {
                 
                 echo "Corda Node network-parameters step"
                 downloadNetworkParameters $CORDA_BIN $NODE_CONF
+                
+                echo "Initial registration completed successfully! You can now deploy to Kubernetes cluster."
             else
                 echo "node.conf not found as $NODE_CONF"
                 exit
