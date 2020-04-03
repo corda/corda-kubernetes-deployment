@@ -35,7 +35,7 @@ spec:
         configMap:
           name: {{ .Values.config.resourceName }}-corda-configmap
       imagePullSecrets:
-      - name: container-registry-secret   
+      - name: container-registry-secret
       containers:
       - name: {{ .Values.config.resourceName }}-bridge
         image: {{ .Values.config.containerRegistry.serverAddress }}/{{ .Values.config.dockerImageFirewall }}
