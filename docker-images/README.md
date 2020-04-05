@@ -18,13 +18,15 @@ Before executing the above mentioned scripts, the scripts need access to the Cor
 
 Either you can download them from the [R3 Artifactory](https://ci-artifactory.corda.r3cev.com/artifactory/webapp/#/artifacts/browse/tree/General/corda-enterprise) (login details required) or then you may have these files shared with you separately, in which case you just have to copy them to the correct folder.
 
+If you do not have a license for Corda Enterprise, you can apply for an evaluation version here (you have to sign the Corda evaluation license agreement): [Corda Enterprise Evaluation](https://www.r3.com/download-corda-enterprise/)
+
 ## CONFIGURATION
 
 Main configuration options in the file ``docker_config.sh`` are as follows:
 
 - ``DOCKER_REGISTRY``, defines the Container Registry location to use, example: <container-registry.mydomain.com>
 - ``VERSION``, defines the version of Corda Enterprise we are using, default is 4.0
-- ``HEALTH_CHECK_VERSION``, defines the version of the Corda Health Survey version to use, the default is 4.0, for more information see <https://solutions.corda.net/deployment/corda-health-checker.html>
+- ``HEALTH_CHECK_VERSION``, defines the version of the Corda Health Survey version to use, the default is 4.0, for more information see <https://solutions.corda.net/deployment/onprem/corda-health-checker.html>
 - ``CORDA_DOCKER_IMAGE_VERSION``, the published version number of the Docker image for the Node, the default is ``v1.00``, which you can use as starting point an increment if you make changes to your Docker file
 - ``FIREWALL_DOCKER_IMAGE_VERSION``, the published version number of the Docker image for the Corda Firewall, the default is ``v1.00``, which you can use as starting point an increment if you make changes to your Docker file
 

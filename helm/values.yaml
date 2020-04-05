@@ -39,7 +39,7 @@ setup:
 # config defines the options that relate to the deployment but not specifically to the Corda Node
 config:
   # resourceName defines the Kubernetes resource Name that all resources will share (with some added extensions to differentiate the different resources)
-  resourceName: "corda-node-1" # Does not need editing unless deploying multiple nodes which should use unique resource names
+  resourceName: "corda-node-1" # Does not need editing unless deploying multiple nodes in the same cluster which should use unique resource names
   # dockerImageNode defines the Docker Image we will be deploying for the Corda Node
   dockerImageNode: "corda_image_ent_4.0:v1.00"
   # dockerImageFirewall defines the Docker Image we will be deploying for the Corda Firewall
@@ -54,20 +54,20 @@ config:
     password: ""
     # email is the email address corresponding to the Container Registry
     email: ""
-  # nodeLoadBalancerIP defines the public / private IP address for the Kubernetes Cluster on which there will be an ingress to the Corda Nodes RPC endpoint
+  # nodeLoadBalancerIP defines the public / private IP address (NOTE: DNS name is not allowed) for the Kubernetes Cluster on which there will be an ingress to the Corda Nodes RPC endpoint
   nodeLoadBalancerIP: ""
-  # floatLoadBalancerIP defines the public / private IP address for the Kubernetes Cluster on which there will be an ingress to the Corda Firewalls Float endpoint
+  # floatLoadBalancerIP defines the public / private IP address (NOTE: DNS name is not allowed) for the Kubernetes Cluster on which there will be an ingress to the Corda Firewalls Float endpoint
   floatLoadBalancerIP: ""
   # storage defines the Storage options
   storage:
     # local defines the local storage options, only used if it is enabled
     local: 
       # enabled is a boolean value for the above parameter
-      enabled: true
+      enabled: false
       # provisioner defines the type of storage being used (https://kubernetes.io/docs/concepts/storage/storage-classes/)
       provisioner: "no-provisioner"
       # resourceName defines the Kubernetes resource Name to use for this resource
-      resourceName: "local-storage" # Does not need editing unless deploying multiple nodes which should use unique resource names    
+      resourceName: "local-storage" # Does not need editing unless deploying multiple nodes in the same cluster which should use unique resource names    
     # azureFile defines the Azure specific storage options, only used if it is enabled
     azureFile:
       # enabled is a boolean value for the above parameter
@@ -75,11 +75,9 @@ config:
       # provisioner defines the type of storage being used (https://kubernetes.io/docs/concepts/storage/storage-classes/)
       provisioner: "azure-file"
       # resourceName defines the Kubernetes resource Name to use for this resource
-      resourceName: "azurefile-1" # Does not need editing unless deploying multiple nodes which should use unique resource names
+      resourceName: "azurefile-1" # Does not need editing unless deploying multiple nodes in the same cluster which should use unique resource names
       # skuName defines the  Azure specific skuName
       skuName: "Standard_LRS"
-      # skuName defines the  Azure specific account
-      account: ""
       # skuName defines the  Azure specific location
       location: "westeurope"
       # azureStorageAccountName is only used if provisioner = azure-file, it determines the Azure storage account name
@@ -89,19 +87,19 @@ config:
     # node defines the storage options for the Node information
     node:
       # fileShareName defines the volume share name, with which Kubernetes will be able to map the volume to the Deployment
-      fileShareName: "node-storage" # Does not need editing unless deploying multiple nodes which should use unique share names
+      fileShareName: "node-storage"  # Does not need editing unless deploying multiple nodes in the same cluster which should use unique share names
       # size specifies the size to reserve for this volume
       size: "2Gi"
     # bridge defines the storage options for the Bridge information
     bridge:
       # fileShareName defines the volume share name, with which Kubernetes will be able to map the volume to the Deployment
-      fileShareName: "bridge-storage" # Does not need editing unless deploying multiple nodes which should use unique share names
+      fileShareName: "bridge-storage"  # Does not need editing unless deploying multiple nodes in the same cluster which should use unique share names
       # size specifies the size to reserve for this volume
       size: "1Gi"
     # float defines the storage options for the float information
     float:
       # fileShareName defines the volume share name, with which Kubernetes will be able to map the volume to the Deployment
-      fileShareName: "float-storage" # Does not need editing unless deploying multiple nodes which should use unique share names
+      fileShareName: "float-storage"  # Does not need editing unless deploying multiple nodes in the same cluster which should use unique share names
       # size specifies the size to reserve for this volume
       size: "1Gi"
 
@@ -140,7 +138,7 @@ corda:
       # ssh defines the SSH access options
       ssh:
         # enabled is a boolean value for the above parameter
-        enabled: false
+        enabled: true
         # sshdPort is the Node Shell access port (https://docs.corda.net/shell.html)
         sshdPort: 2223
       # rpc defines the RPC options
@@ -151,8 +149,11 @@ corda:
         adminPort: 30009
         # users defines the list of RPC users and the permissions they have (see https://docs.corda.net/clientrpc.html#granting-flow-permissions)
         users:
+        # name defines the name of the RPC user
         - name: user1
+          # password defines the password for the RPC user
           password: test
+          # permissions defines the RPC permissions available (see https://docs.corda.net/clientrpc.html?highlight=rpc%20permission#rpc-permissions)
           permissions: ALL
       # dataSource defines the database options
       dataSource:
@@ -174,4 +175,14 @@ corda:
       allowDevCorDapps:
         # enabled is a boolean value for the above parameter
         enabled: true
+  # firewall is the options that define how to define the bridge.conf and float.conf files which defines how the Corda Firewall will function
+  firewall: 
+    # Values that will end up in the bridge.conf/float.conf files
+    conf: 
+      # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named 'trust.jks'.
+      truststorePassword: "trustpass" # NOTE! The link to corda-pki-generator/pki-firewall/generate_pki.sh is not automated yet, if you change this parameter you would have to manually edit the "sh" file as well.
+      # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named 'trust.jks'.
+      bridgeKeystorePassword: "bridgepass" # NOTE! The link to corda-pki-generator/pki-firewall/generate_pki.sh is not automated yet, if you change this parameter you would have to manually edit the "sh" file as well.
+      # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named 'trust.jks'.
+      floatKeystorePassword: "floatpass" # NOTE! The link to corda-pki-generator/pki-firewall/generate_pki.sh is not automated yet, if you change this parameter you would have to manually edit the "sh" file as well.
 # fin.
