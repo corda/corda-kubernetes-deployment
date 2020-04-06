@@ -56,14 +56,12 @@ ensureFileExistsAndCopy () {
     TO=$2
     if [ -f "$FROM" ]
     then
-        if [ ! -f "$TO" ]
+        if [ -f "$TO" ]
         then
+		echo "Existing certificate already existed, but it is safe to replace, since this is just the Corda Firewall tunnel keys."
+        fi
             cp -f $FROM $TO
         else
-			echo "Existing certificate already existed, skipping copying as a safe-guard: $TO"
-            exit 1
-        fi
-    else
 		echo "File did not exist, probably an issue with certificate creation: $FROM"
         exit 1
     fi

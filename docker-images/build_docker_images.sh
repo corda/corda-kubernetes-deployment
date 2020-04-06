@@ -59,6 +59,14 @@ then
 	NO_CACHE=--no-cache
 fi 
 
+if [ ! -f "$DIR/bin/$CORDA_VERSION.jar" -o  ! -f "$DIR/bin/corda-tools-health-survey-$HEALTH_CHECK_VERSION.jar" -o  ! -f "$DIR/bin/$CORDA_FIREWALL_VERSION.jar" ]; then
+	echo "Missing binaries, check that you have the correct files with the correct names in the following folder $DIR/bin"
+	echo "$DIR/bin/$CORDA_VERSION.jar"
+	echo "$DIR/bin/$CORDA_FIREWALL_VERSION.jar"
+	echo "$DIR/bin/corda-tools-health-survey-$HEALTH_CHECK_VERSION.jar"
+	exit 1
+fi
+
 cp $DIR/bin/$CORDA_VERSION.jar $DIR/$CORDA_IMAGE_PATH/corda.jar
 cp $DIR/bin/corda-tools-health-survey-$HEALTH_CHECK_VERSION.jar $DIR/$CORDA_IMAGE_PATH/corda-tools-health-survey.jar
 cd $DIR/$CORDA_IMAGE_PATH
