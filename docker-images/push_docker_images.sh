@@ -41,6 +41,11 @@ set -eux
 
 source $DIR/docker_config.sh
 
+if [ "$DOCKER_REGISTRY" == "" ]; then
+	echo "You must specify a valid container registry in the values.yaml file"
+	exit 1
+fi
+
 docker login $DOCKER_REGISTRY
 
 docker tag $CORDA_IMAGE_PATH:$CORDA_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/$CORDA_IMAGE_PATH:$CORDA_DOCKER_IMAGE_VERSION
