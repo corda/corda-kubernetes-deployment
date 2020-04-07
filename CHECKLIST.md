@@ -73,6 +73,30 @@ Configuration:
 			- Please have a look at the logs files for the three pods to make sure they are running without errors (kubectl get pods + kubectl logs -f <pod name>)
 			- Run delete_all.sh to remove all resources from the Kubernetes cluster if you need to start fresh
 
+Testnet configuration:
+
+	- Retrieve certificates and config:
+      - Register on corda marketplace : https://marketplace.r3.com/register
+      - Go to https://marketplace.r3.com/network/testnet/install-node
+      - Choose 
+        - node version: "Enterprise"
+        - Corda version : 4.0
+      - Click on "Create new node"
+      - Click on download corda node. It should download a `node.zip` file
+    - Update certificates with your keypair:
+      - unzip the `node.zip` on a PC or a VM with internet access. (We are going to call it NODE_DIR)
+      - Edit `node.conf` and change `p2pAddress` 
+      - Run in a shell: `java -jar corda.jar` 
+      - Wait for node to start. That will enrich `certificates/nodekeystore.jks` with the node legal entity key pair
+      - kill the node process
+      - Copy certificates `cp $NODE_DIR/certificates/*.jks ./helm/files/certificates/node`
+    - Values.yaml:
+      - Fill variables  `keystorePassword` and `truststorePassword` from unzipped `node.conf` to  `.Values.corda.firewall.conf.nodeKeystorePassword` and `.Values.corda.firewall.conf.nodeTruststorePassword`
+      - Fill variable `myLegalName` from node.conf to `.Values.corda.node.conf.legalName`
+      - Fill variable `corda.node.conf.compatibilityZoneEnabled`  with `true` in `helm/values.yaml` 
+      - Fill variable `corda.node.conf.compatibilityZoneURL` with `https://netmap.testnet.r3.com`
+
+
 Useful commands:
 
 	- Check deployment status with: kubectl get pods, expect to see 'Running' if the pods are working normally

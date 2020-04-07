@@ -127,9 +127,9 @@ corda:
       identityManagerAddress: ""
       # networkmapAddress defines the accesspoint for the Network Map server (public domain name+port)
       networkmapAddress: ""
-      # compatibilityZoneEnabled set to true for testnet
+      # compatibilityZoneEnabled defines if you are connecting to a compatibility zone rather than using the above identityManagerAddress+networkmapAddress. Set this to true to be able to join Corda Testnet along with compatibilityZoneURL.
       compatibilityZoneEnabled: false
-      # compatibilityZoneURL The root address of Corda compatibility zone network management services
+      # compatibilityZoneURL defines the root address of Corda compatibility zone network management services. For Corda Testnet you can use "https://netmap.testnet.r3.com"
       compatibilityZoneURL: "" # Exemple for testnet "https://netmap.testnet.r3.com"     
       # truststorePassword defines the password with which to unlock the network root truststore file usually named 'networkRootTrustStore.jks'.
       truststorePassword: "trustpass"
@@ -181,12 +181,6 @@ corda:
       allowDevCorDapps:
         # enabled is a boolean value for the above parameter
         enabled: true
-  # nodebridge is the options that define how to define the node.conf and bridge.conf files which defines the bridge/node tunnel      
-  nodebridge:
-    # Values that will end up in the node.conf/bridge.conf
-    conf:
-      nodeKeystorePassword: "cordacadevpass"
-      nodeTruststorePassword: "trustpass"
   # firewall is the options that define how to define the bridge.conf and float.conf files which defines how the Corda Firewall will function
   firewall: 
     # Values that will end up in the bridge.conf/float.conf files
@@ -197,4 +191,8 @@ corda:
       bridgeKeystorePassword: "bridgepass" # NOTE! The link to corda-pki-generator/pki-firewall/generate_pki.sh is not automated yet, if you change this parameter you would have to manually edit the "sh" file as well.
       # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named 'trust.jks'.
       floatKeystorePassword: "floatpass" # NOTE! The link to corda-pki-generator/pki-firewall/generate_pki.sh is not automated yet, if you change this parameter you would have to manually edit the "sh" file as well.
+      # Value that will end up in the node.conf/bridge.conf
+      nodeKeystorePassword: "cordacadevpass"
+      # Value that will end up in the node.conf/bridge.conf
+      nodeTruststorePassword: "trustpass"
 # fin.
