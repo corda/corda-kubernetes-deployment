@@ -19,7 +19,15 @@ checkStatus () {
 }
 
 isRegistered () {
-	if [ -f ./workspace/nodeInfo-* ]
+	if grep -q "compatibilityZoneURL" ./workspace/node.conf ;
+	then 
+		IS_REGISTERED_PATH="./workspace/nodeInfo-*";
+	else
+		IS_REGISTERED_PATH="./workspace/certificates/nodekeystore.jks";
+	fi
+
+
+	if [ -f $IS_REGISTERED_PATH ]
     then
         return 1
     else
