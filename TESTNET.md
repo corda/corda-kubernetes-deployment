@@ -29,6 +29,8 @@ Repo steps :
 - Copy certificates `cp $NODE_DIR/certificates/*.jks ./helm/files/certificates/node`
 - Fill variables  `keystorePassword` and `truststorePassword` from unzipped `node.conf` to `helm/values.yaml` `nodeKeystorePassword` and `nodeTruststorePassword`
 - Fill variable `myLegalName` from node.conf to `helm/values.yaml` `corda.node.conf.legalName`
+- Fill variable `corda.node.conf.compatibilityZoneEnabled`  with `true` in `helm/values.yaml` 
+- Fill variable `corda.node.conf.compatibilityZoneURL` with `https://netmap.testnet.r3.com` in `helm/values.yaml` 
 - `kubectl create namespace cordatest`
 - `kubectl config set-context --current --namespace=cordatest`
 - `deploy.sh`
