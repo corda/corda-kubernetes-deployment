@@ -52,7 +52,13 @@ fi
 
 set -eux
 
-TEMPLATE_NAMESPACE="cordatest"
+TEMPLATE_NAMESPACE=""
+TEMPLATE_NAMESPACE=$(grep -A 3 'config:' $DIR/values.yaml | grep 'namespace: "' | cut -d '"' -f 2)
+
+if [ "$TEMPLATE_NAMESPACE" == "" ]; then
+	echo "Kubernetes requires a namespace to deploy resources to, no namespace is defined in values.yaml, please define one."
+	exit 1
+fi
 
 helm template $DIR --name $TEMPLATE_NAMESPACE --namespace $TEMPLATE_NAMESPACE --output-dir $DIR/output
 mv $DIR/output/corda/templates/pre-install.sh.yml $DIR/output/corda/templates/pre-install.sh
