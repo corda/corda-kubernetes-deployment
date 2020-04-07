@@ -57,5 +57,15 @@ $DIR/docker-images/push_docker_images.sh
 checkStatus $?
 $DIR/corda-pki-generator/generate_firewall_pki.sh
 checkStatus $?
-$DIR/helm/initial_registration/initial_registration.sh
-checkStatus $?
+
+INITIAL_REGISTRATION=""
+INITIAL_REGISTRATION=$(grep -A 3 'initialRegistration:' $DIR/helm/values.yaml | grep 'enabled: ' | cut -d ':' -f 2 | xargs)
+
+if [ "$INITIAL_REGISTRATION" == "true" ]; then
+	$DIR/helm/initial_registration/initial_registration.sh
+	checkStatus $?
+else 
+	echo "Skipping initial registration step. (disabled in values.yaml)"
+fi
+
+echo "One time setup script complete."

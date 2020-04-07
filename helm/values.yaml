@@ -39,6 +39,8 @@ setup:
 
 # config defines the options that relate to the deployment but not specifically to the Corda Node
 config:
+  # namespace defines the Kubernetes namespace that all resources will be deployed to
+  namespace: "cordatest"
   # resourceName defines the Kubernetes resource Name that all resources will share (with some added extensions to differentiate the different resources)
   resourceName: "corda-node-1" # Does not need editing unless deploying multiple nodes in the same cluster which should use unique resource names
   # dockerImageNode defines the Docker Image we will be deploying for the Corda Node

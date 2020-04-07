@@ -38,6 +38,7 @@ function GetPathToCurrentlyExecutingScript () {
 }
 GetPathToCurrentlyExecutingScript
 
+set -eux
 APP={{ .Values.config.resourceName }}-node
 POD=$(kubectl get pod -l app=$APP -o jsonpath="{.items[0].metadata.name}")
 CORDAPPS_PATH=$(readlink -f "$DIR/../../../files/cordapps")

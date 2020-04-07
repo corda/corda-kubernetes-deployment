@@ -30,16 +30,6 @@ It is strongly recommended you review all of the documentation there before sett
 * Corda Enterprise jars downloaded and stored in 'bin' folder
 
 ---
-
-## BINARIES
-
-This deployment is targeting an Enterprise deployment, which should include a Corda Node, but also the Corda Firewall, which is an Enterprise only feature.
-
-In order to execute the following scripts correctly, you will have to have access to the Corda Enterprise binaries.
-The files should be downloaded first and placed in the following folder: ``docker-images/bin``
-
-Please see [docker-images/README.md](docker-images/README.md) for more information.
-
 ---
 
 ## SETUP
@@ -48,7 +38,20 @@ Please see [docker-images/README.md](docker-images/README.md) for more informati
 
 #### BINARIES
 
-The scripts contained within require you to have the necessary binaries in place, as previously mentioned in this document.
+This deployment is targeting an Enterprise deployment, which should include a Corda Node, but also the Corda Firewall, which is an Enterprise only feature.
+
+In order to execute the following scripts correctly, you will have to have access to the Corda Enterprise binaries.
+The files should be downloaded first and placed in the following folder: ``docker-images/bin``
+
+Please see [docker-images/README.md](docker-images/README.md) for more information.
+
+#### SETUP CHECKLIST
+
+Since there are a number of prerequisites that need to be met and then a certain order of running everything, a checklist has been collated that you may find useful.
+
+Please see [CHECKLIST.md](CHECKLIST.md) for more information.
+
+---
 
 #### CONFIGURATION VALUES
 
