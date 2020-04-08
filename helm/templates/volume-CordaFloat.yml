@@ -24,7 +24,7 @@ spec:
     - ReadWriteOnce
   azureFile:
     secretName: {{ .Values.config.storage.azureFile.resourceName }}-secret
-    shareName: {{ .Values.config.storage.float.fileShareName }}
+    shareName: {{ .Values.config.resourceName}}-{{ .Values.config.storage.float.fileShareName }}
     readOnly: false
   mountOptions:
   - dir_mode=0777
