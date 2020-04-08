@@ -1,7 +1,7 @@
 #!/bin/sh
 set -ux
 DIR="."
-function GetPathToCurrentlyExecutingScript () {
+GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
 	ABS_PATH=$(readlink -f "$0")
 	if [ "$?" -ne "0" ]; then
