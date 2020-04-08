@@ -56,6 +56,7 @@ Configuration:
 			- Config fileShareName for node/bridge/float
 			- Config identityManagerAddress and networkmapAddress (without http:// prefix)
 				- You can use any network, but please note that if you want to use Testnet, we will have to skip the initial registration step and download the full Testnet node from the dashboard
+				- Alternative config to above if using Corda Testnet, see Testnet configuration below
 			- Config resourceName to reflect the x500 name of the node, please note to use lowercase letters and numbers only
 			- Config legalName to define the x500 name of the node
 		- Download network root truststore to ./helm/files/network with the name "networkRootTrustStore.jks"
@@ -73,28 +74,29 @@ Configuration:
 			- Please have a look at the logs files for the three pods to make sure they are running without errors (kubectl get pods + kubectl logs -f <pod name>)
 			- Run delete_all.sh to remove all resources from the Kubernetes cluster if you need to start fresh
 
-Testnet configuration:
+Corda Testnet configuration:
 
 	- Retrieve certificates and config:
-      - Register on corda marketplace : https://marketplace.r3.com/register
-      - Go to https://marketplace.r3.com/network/testnet/install-node
-      - Choose 
-        - node version: "Enterprise"
-        - Corda version : 4.0
-      - Click on "Create new node"
-      - Click on download corda node. It should download a `node.zip` file
-    - Update certificates with your keypair:
-      - unzip the `node.zip` on a PC or a VM with internet access. (We are going to call it NODE_DIR)
-      - Edit `node.conf` and change `p2pAddress` 
-      - Run in a shell: `java -jar corda.jar` 
-      - Wait for node to start. That will enrich `certificates/nodekeystore.jks` with the node legal entity key pair
-      - kill the node process
-      - Copy certificates `cp $NODE_DIR/certificates/*.jks ./helm/files/certificates/node`
-    - Values.yaml:
-      - Fill variables  `keystorePassword` and `truststorePassword` from unzipped `node.conf` to  `.Values.corda.firewall.conf.nodeKeystorePassword` and `.Values.corda.firewall.conf.nodeTruststorePassword`
-      - Fill variable `myLegalName` from node.conf to `.Values.corda.node.conf.legalName`
-      - Fill variable `corda.node.conf.compatibilityZoneEnabled`  with `true` in `helm/values.yaml` 
-      - Fill variable `corda.node.conf.compatibilityZoneURL` with `https://netmap.testnet.r3.com`
+		- Register on R3 Corda Marketplace: https://marketplace.r3.com/register
+		- Go to https://marketplace.r3.com/network/testnet/dashboard
+		- Click Create Node: https://marketplace.r3.com/network/testnet/install-node
+		- Choose 
+			- Node version: "Enterprise"
+			- Corda version: 4.0
+		- Click on "Create new node"
+		- Click on "Download Corda Node". A "node.zip" file should be prepared and downloaded
+	- Update certificates with legal entity keys ("identity-private-key" section in "nodekeystore.jks"):
+		- Unzip the "node.zip" to a folder with JVM 1.8 installed and Internet access. (Let's call the full path to download folder NODE_DIR)
+		- Edit "node.conf" and change "p2pAddress" from "0.0.0.0" to "localhost" 
+		- Run in a shell: "java -jar corda.jar"
+		- Wait for node to start. This will enrich "certificates/nodekeystore.jks" with the Nodes legal entity key pair
+		- Kill the node process (ctrl+c)
+		- Copy certificates from Testnet node folder to deployment folder: "cp NODE_DIR/certificates/*.jks ./helm/files/certificates/node"
+	- In "helm/values.yaml":
+		- Copy variables "keystorePassword" and "truststorePassword" from unzipped "node.conf" to sections matching paths ".Values.corda.node.conf.keystorePassword" and ".Values.corda.node.conf.truststorePassword" respectively
+		- Fill variable "myLegalName" from "node.conf" to ".Values.corda.node.conf.legalName"
+		- Fill variable "corda.node.conf.compatibilityZoneEnabled"  with "true"
+		- Fill variable "corda.node.conf.compatibilityZoneURL" with "https://netmap.testnet.r3.com"
 
 
 Useful commands:
