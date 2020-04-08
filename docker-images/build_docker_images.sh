@@ -39,7 +39,7 @@ GetPathToCurrentlyExecutingScript () {
 GetPathToCurrentlyExecutingScript
 set -eux
 
-source $DIR/docker_config.sh
+. $DIR/docker_config.sh
 
 # Make sure Docker is ready
 docker ps &>/dev/null

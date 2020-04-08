@@ -39,7 +39,7 @@ GetPathToCurrentlyExecutingScript () {
 GetPathToCurrentlyExecutingScript
 set -eux
 
-source $DIR/docker_config.sh
+. $DIR/docker_config.sh
 
 if [ "$DOCKER_REGISTRY" == "" ]; then
 	echo "You must specify a valid container registry in the values.yaml file"

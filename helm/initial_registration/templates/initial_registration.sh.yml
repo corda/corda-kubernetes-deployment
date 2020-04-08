@@ -185,7 +185,7 @@ initialRegistration () {
 main () {
     DOCKER_IMAGES_FOLDER=$ROOT_FOLDER/docker-images
     # Load version numbers from docker_config.sh
-    source $DOCKER_IMAGES_FOLDER/docker_config.sh
+    . $DOCKER_IMAGES_FOLDER/docker_config.sh
 
     local BIN_DIR=$DOCKER_IMAGES_FOLDER/bin
     local CORDA_BIN=$BIN_DIR/$CORDA_VERSION.jar
