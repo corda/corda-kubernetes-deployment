@@ -2,7 +2,7 @@
 
 set -ux
 DIR="."
-function GetPathToCurrentlyExecutingScript () {
+GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
 	ABS_PATH=$(readlink -f "$0")
 	if [ "$?" -ne "0" ]; then
@@ -39,7 +39,7 @@ function GetPathToCurrentlyExecutingScript () {
 GetPathToCurrentlyExecutingScript
 set -eux
 
-source $DIR/docker_config.sh
+. $DIR/docker_config.sh
 
 if [ "$DOCKER_REGISTRY" == "" ]; then
 	echo "You must specify a valid container registry in the values.yaml file"
