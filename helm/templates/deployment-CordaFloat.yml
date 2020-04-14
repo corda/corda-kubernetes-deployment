@@ -19,7 +19,7 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Values.config.resourceName }}-float-internal-service
+  name: {{ .Values.config.resourceName }}-float-internal
 spec:
   selector:
     app: {{ .Values.config.resourceName }}-float
