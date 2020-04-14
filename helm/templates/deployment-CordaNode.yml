@@ -8,7 +8,7 @@ spec:
   selector:
     app: {{ .Values.config.resourceName }}-node
   ports:
-{{- if ne .Values.setup.cordaFirewall.enabled }}
+{{- if not .Values.setup.cordaFirewall.enabled }}
   - name: p2p
     protocol: TCP
     port: {{ .Values.corda.node.conf.p2pPort }}
