@@ -72,10 +72,10 @@ spec:
         resources:
           requests:
             memory: "1Gi"
-            cpu: "50m"
+            cpu: "500m"
           limits:
-            memory: "4Gi"
-            cpu: "1500m"
+            memory: "2Gi"
+            cpu: "1000m"
         ports:
         - containerPort: {{ .Values.corda.node.conf.p2pPort }}
         - containerPort: {{ .Values.corda.node.conf.rpc.port }}
