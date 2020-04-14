@@ -8,10 +8,12 @@ spec:
   selector:
     app: {{ .Values.config.resourceName }}-node
   ports:
+{{- if ne .Values.setup.cordaFirewall.enabled }}
   - name: p2p
     protocol: TCP
     port: {{ .Values.corda.node.conf.p2pPort }}
     targetPort: {{ .Values.corda.node.conf.p2pPort }}
+{{- end }}
   - name: rpc
     protocol: TCP
     port: {{ .Values.corda.node.conf.rpc.port }}
@@ -23,6 +25,21 @@ spec:
     targetPort: {{ .Values.corda.node.conf.ssh.sshdPort }}
 {{- end }}
 ---
+{{- if .Values.setup.cordaFirewall.enabled }}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.config.resourceName }}-node-internal
+spec:
+  selector:
+    app: {{ .Values.config.resourceName }}-node
+  ports:
+  - name: p2p
+    protocol: TCP
+    port: {{ .Values.corda.node.conf.p2pPort }}
+    targetPort: {{ .Values.corda.node.conf.p2pPort }}
+---
+{{- end }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:

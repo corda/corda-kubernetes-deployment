@@ -1,13 +1,12 @@
 {{- if .Values.setup.cordaFirewall.destination.internalKubernetesCluster.enabled }}
+{{- if .Values.setup.cordaFirewall.enabled }}
 kind: Service
 apiVersion: v1
 metadata:
-  name: {{ .Values.config.resourceName }}-float-service
+  name: {{ .Values.config.resourceName }}-float-p2p-service
 spec:
-{{- if and .Values.setup.cordaFirewall.enabled .Values.setup.cordaFirewall.destination.internalKubernetesCluster.enabled }}
   loadBalancerIP: "{{ .Values.config.floatLoadBalancerIP }}"
   type: LoadBalancer
-{{- end }}
   selector:
     app: {{ .Values.config.resourceName }}-float
   ports:
@@ -15,11 +14,21 @@ spec:
     protocol: TCP
     port: {{ .Values.corda.node.conf.p2pPort }}
     targetPort: {{ .Values.corda.node.conf.p2pPort }}
+---
+{{- end }}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.config.resourceName }}-float-internal-service
+spec:
+  selector:
+    app: {{ .Values.config.resourceName }}-float
+  ports:
   - name: bridge-tunnel
     protocol: TCP
     port: {{ .Values.corda.node.conf.bridgeTunnelPort }}
     targetPort: {{ .Values.corda.node.conf.bridgeTunnelPort }}
----
+---  
 apiVersion: apps/v1
 kind: Deployment
 metadata:
