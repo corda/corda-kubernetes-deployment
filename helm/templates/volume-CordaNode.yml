@@ -5,7 +5,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: {{ .Values.config.storage.azureFile.resourceName }}
+  storageClassName: {{ .Values.config.storage.resourceName }}
   volumeName: {{ .Values.config.resourceName }}-pv-volume
   resources:
     requests:
@@ -16,13 +16,14 @@ apiVersion: v1
 metadata:
   name: {{ .Values.config.resourceName }}-pv-volume
 spec:
-  storageClassName: {{ .Values.config.storage.azureFile.resourceName }}
+  storageClassName: {{ .Values.config.storage.resourceName }}
   capacity:
     storage: {{ .Values.config.storage.node.size }}
   accessModes:
     - ReadWriteOnce
+{{- if .Values.config.storage.azureFile.enabled }}
   azureFile:
-    secretName: {{ .Values.config.storage.azureFile.resourceName }}-secret
+    secretName: {{ .Values.config.storage.resourceName }}-secret
     shareName: {{ .Values.config.storage.node.fileShareName }}
     readOnly: false
   mountOptions:
@@ -30,4 +31,16 @@ spec:
   - file_mode=0777
   - uid=1000
   - gid=1000
-
+{{- else if .Values.config.storage.awsEBS.enabled }}
+  awsElasticBlockStore:
+    volumeID: "{{ .Values.config.storage.node.volumeId }}"
+    fsType: "{{ .Values.config.storage.awsEBS.fsType }}"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .Values.config.storage.node.volumeHost }}
+{{- end }}
