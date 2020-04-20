@@ -1,4 +1,4 @@
-{{- if .Values.setup.firewall.destination.internalKubernetesCluster.enabled }}
+{{- if .Values.setup.cordaFirewall.destination.internalKubernetesCluster.enabled }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:

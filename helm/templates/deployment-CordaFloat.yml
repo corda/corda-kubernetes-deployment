@@ -1,10 +1,10 @@
-{{- if .Values.setup.firewall.destination.internalKubernetesCluster.enabled }}
+{{- if .Values.setup.cordaFirewall.destination.internalKubernetesCluster.enabled }}
 kind: Service
 apiVersion: v1
 metadata:
   name: {{ .Values.config.resourceName }}-float-service
 spec:
-{{- if and .Values.setup.firewall.enabled .Values.setup.firewall.destination.internalKubernetesCluster.enabled }}
+{{- if and .Values.setup.cordaFirewall.enabled .Values.setup.cordaFirewall.destination.internalKubernetesCluster.enabled }}
   loadBalancerIP: "{{ .Values.config.floatLoadBalancerIP }}"
   type: LoadBalancer
 {{- end }}

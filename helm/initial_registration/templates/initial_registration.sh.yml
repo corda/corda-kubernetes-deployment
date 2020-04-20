@@ -2,7 +2,7 @@
 
 set -ux
 DIR="."
-function GetPathToCurrentlyExecutingScript () {
+GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
 	ABS_PATH=$(readlink -f "$0")
 	if [ "$?" -ne "0" ]; then
@@ -185,13 +185,13 @@ initialRegistration () {
 main () {
     DOCKER_IMAGES_FOLDER=$ROOT_FOLDER/docker-images
     # Load version numbers from docker_config.sh
-    source $DOCKER_IMAGES_FOLDER/docker_config.sh
+    . $DOCKER_IMAGES_FOLDER/docker_config.sh
 
     local BIN_DIR=$DOCKER_IMAGES_FOLDER/bin
     local CORDA_BIN=$BIN_DIR/$CORDA_VERSION.jar
     local NODE_CONF=$DIR/node.conf
     local TRUST_STORE=$ROOT_FOLDER/helm/files/network/networkRootTrustStore.jks
-    local TRUST_STORE_PASSWORD={{ .Values.corda.node.conf.truststorePassword }}
+    local TRUST_STORE_PASSWORD={{ .Values.corda.node.conf.networkRootTruststorePassword }}
 
     echo "Starting Corda Node initial registration..."
 

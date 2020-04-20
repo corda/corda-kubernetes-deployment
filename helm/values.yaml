@@ -7,8 +7,8 @@ setup:
   initialRegistration:
     # enabled is a boolean value for the above parameter
     enabled: true
-  # firewall defines if we should activate the Corda Firewall component as part of the installation or not
-  firewall:
+  # cordaFirewall defines if we should activate the Corda Firewall component as part of the installation or not
+  cordaFirewall:
     # enabled is a boolean value for the above parameter
     enabled: true
     # destination defines where the Float will be deployed
@@ -160,7 +160,15 @@ corda:
       identityManagerAddress: ""
       # networkmapAddress defines the accesspoint for the Network Map server (public domain name+port)
       networkmapAddress: ""
-      # truststorePassword defines the password with which to unlock the network root truststore file usually named 'networkRootTrustStore.jks'.
+      # compatibilityZoneEnabled defines if you are connecting to a compatibility zone rather than using the above identityManagerAddress+networkmapAddress. Set this to true to be able to join Corda Testnet along with compatibilityZoneURL.
+      compatibilityZoneEnabled: false
+      # compatibilityZoneURL defines the root address of Corda compatibility zone network management services. For Corda Testnet you can use "https://netmap.testnet.r3.com"
+      compatibilityZoneURL: ""
+      # networkRootTruststorePassword defines the password with which to unlock the network root truststore file usually named 'networkRootTrustStore.jks'.
+      networkRootTruststorePassword: "trustpass"
+      # keystorePassword defines the password with which to unlock the Node keystore file, usually named "nodekeystore.jks". This value will also end up in the "bridge.conf" file
+      keystorePassword: "cordacadevpass"
+      # truststorePassword defines the password with which to unlock the Node truststore file, usually named "truststore.jks". This value will also end up in the "bridge.conf" file
       truststorePassword: "trustpass"
       # crlCheckSoftFail defines if CRL failure is a critical error or if we can just fail softly (by logging an error) and continuing
       crlCheckSoftFail: true
@@ -215,10 +223,16 @@ corda:
   firewall: 
     # Values that will end up in the bridge.conf/float.conf files
     conf: 
-      # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named 'trust.jks'.
-      truststorePassword: "trustpass" # NOTE! The link to corda-pki-generator/pki-firewall/generate_pki.sh is not automated yet, if you change this parameter you would have to manually edit the "sh" file as well.
-      # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named 'trust.jks'.
-      bridgeKeystorePassword: "bridgepass" # NOTE! The link to corda-pki-generator/pki-firewall/generate_pki.sh is not automated yet, if you change this parameter you would have to manually edit the "sh" file as well.
-      # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named 'trust.jks'.
-      floatKeystorePassword: "floatpass" # NOTE! The link to corda-pki-generator/pki-firewall/generate_pki.sh is not automated yet, if you change this parameter you would have to manually edit the "sh" file as well.
+      # certificateValidityInDays defines how long the tunnel certificates will be valid for, in days
+      certificateValidityInDays: "3650"
+      # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named "trust.jks".
+      truststorePassword: "trustpass"
+      # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named "trust.jks".
+      bridgeKeystorePassword: "bridgepass"
+      # truststorePassword defines the password with which to unlock the firewall tunnel root truststore file usually named "trust.jks".
+      floatKeystorePassword: "floatpass"
+      # keystorePasswordCA defines the password for the tunnel certificates root CA
+      keystorePasswordCA: "capass"
+      # keyPasswordCA defines the password for the tunnel certificates root CA key
+      keyPasswordCA: "cakeypass"
 # fin.
