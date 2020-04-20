@@ -23,10 +23,9 @@ It is strongly recommended you review all of the documentation there before sett
 ## PREREQUISITES
 
 * A cloud environment with Kubernetes Cluster Services that has access to a Docker Container Registry, see [CLOUD_SETUP.md](CLOUD_SETUP.md)
-* Note! The current version of the scripts only supports Azure out of the box by way of Azure Kubernetes Service and Azure Container Registry, future versions of the scripts may add support for other cloud providers
 * Building the images requires local [Docker](https://www.docker.com/) installation
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) is used to manage Kubernetes cluster
-* [Helm](https://helm.sh/)
+* [Helm](https://helm.sh/) version 2.x
 * Corda Enterprise jars downloaded and stored in 'bin' folder
 
 ---
@@ -45,7 +44,7 @@ The files should be downloaded first and placed in the following folder: ``docke
 
 Please see [docker-images/README.md](docker-images/README.md) for more information.
 
-#### SETUP CHECKLIST
+## SETUP CHECKLIST
 
 Since there are a number of prerequisites that need to be met and then a certain order of running everything, a checklist has been collated that you may find useful.
 
@@ -180,6 +179,12 @@ For more details and instructions it is strongly recommended to visit the follow
 ## ROADMAP
 
 To see the intended direction that this deployment should take, please have a look at the [Roadmap](ROADMAP.md)
+
+## Contributing
+
+The Corda Kubernetes Deployment is an open-source project and contributions are welcome as seen here: [Contributing](CONTRIBUTING.md)
+
+The contributors can be found here: [Contributers](CONTRIBUTERS.md)
 
 ### Feedback
 

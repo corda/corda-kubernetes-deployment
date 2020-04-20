@@ -7,18 +7,6 @@ Setting up the relevant cloud services is currently left to the reader, this may
 
 ---
 
-## AWS cloud instructions
-
-These are the services you will need to have set up in order to execute the deployment scripts correctly.
-
-### Amazon EKS - Elastic Kubernetes Service (EKS)
-
-### Amazon ECR - Elastic Container Registry (ECR)
-
-### Amazon EFS - Elastic File System (EFS)
-
----
-
 ## Azure cloud instructions
 
 These are the services you will need to have set up in order to execute the deployment scripts correctly.
@@ -61,14 +49,50 @@ A guide on setting up Public IP addresses in Azure: [Create, change, or delete a
 
 ---
 
-## GCP cloud instructions
+## AWS cloud instructions
 
 These are the services you will need to have set up in order to execute the deployment scripts correctly.
 
-### GCP kub
+### Amazon EKS - Elastic Kubernetes Service (EKS)
 
-### GCP cr
+Amazon EKS is the Kubernetes cluster on AWS. 
 
-File storage
+Here is a nice guide on setting up an EKS [Creating an Amazon EKS cluster](https://docs.aws.amazon.com/eks/latest/userguide/create-cluster.html).
+
+You will need to create a VPC and IAM role for this to work, but the guide describes it quite well.
+
+We will need to set one up along with a node group (node pool), [Guide on node group setup](https://docs.aws.amazon.com/eks/latest/userguide/launch-workers.html)
+
+### Amazon ECR - Elastic Container Registry (ECR)
+
+The ECR is the container registry, and it is required in order to host our custom built Docker images.
+[Creating a Repository](https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-create.html).
+
+In addition to creating this ECR, you will have to remember to set the containerRegistry.username as "AWS" in the values.yaml file in the helm sub folder.
+
+### Amazon EBS - Elastic Block Storage (EBS)
+
+The way Amazon handles persistent storage for Kubernetes clusters is by way of EBS. We will have to provision some EBS volumes and dedicate a host for them.
+In order to set them up we should start by following this guide: [EC2 + EBS volumes](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/add-instance-store-volumes.html).
+
+Please make sure you create at least the following:
+
+* 1Gb EBS volume for the Float component
+* 1Gb EBS volume for the Bridge component
+* 2Gb EBS volume for the Node
+
+The volumes have to be assigned to a specific host, and that host also has to be specified in the values.yaml file in the helm sub folder later on in the installation, so keep the volume IDs and the host name (Private DNS) of the EC2 instance ready.
+
+The reason for this is that we will have to use [Topology-Aware Volume Provisioning in Kubernetes](https://kubernetes.io/blog/2018/10/11/topology-aware-volume-provisioning-in-kubernetes/).
+
+For more information on Amazons EBS read [Block Device Mapping](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/block-device-mapping-concepts.html).
+
+The Kubernetes deployments will later on also be using nodeAffinity [](https://success.docker.com/article/how-to-control-container-placement-in-kubernetes-deployments) to successfully target the specific EC2 instance.
+
+---
+
+## GCP cloud instructions
+
+Coming soon...
 
 ---

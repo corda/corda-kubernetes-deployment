@@ -35,7 +35,7 @@ setup:
     enabled: false
   # cloudProvider defines what provider the deployment should be targeting, a lot of options are provider specific. Use 'local' for doing local deployments. 
   # Accepted options: 'azure', 'aws'
-  cloudProvider: "aws"
+  cloudProvider: "azure"
 
 # config defines the options that relate to the deployment but not specifically to the Corda Node
 config:
@@ -51,8 +51,9 @@ config:
   containerRegistry: 
     # serverAddress is the name of the server that corresponds with the Container Registry
     serverAddress: ""
-    # username is the username for the Container Registry access
-    username: "AWS"
+    # username is the username for the Container Registry access.
+    # Please note that if using Amazon ECR you must use the special username "AWS"
+    username: ""
     # password is the password for the Container Registry access
     password: ""
     # email is the email address corresponding to the Container Registry
