@@ -26,13 +26,21 @@ spec:
     secretName: {{ .Values.config.storage.resourceName }}-secret
     shareName: {{ .Values.config.storage.bridge.fileShareName }}
     readOnly: false
-{{- else if .Values.config.storage.awsEBS.enabled }}
-  awsElasticBlockStore:
-    volumeID: "{{ .Values.config.storage.bridge.volumeId }}"
-    fsType: "{{ .Values.config.storage.awsEBS.fsType }}"
-{{- end }}
   mountOptions:
   - dir_mode=0777
   - file_mode=0777
   - uid=1000
   - gid=1000
+{{- else if .Values.config.storage.awsEBS.enabled }}
+  awsElasticBlockStore:
+    volumeID: "{{ .Values.config.storage.bridge.volumeId }}"
+    fsType: "{{ .Values.config.storage.awsEBS.fsType }}"
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values:
+          - {{ .Values.config.storage.node.volumeHost }}
+{{- end }}

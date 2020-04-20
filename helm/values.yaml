@@ -104,8 +104,8 @@ config:
       kmsKeyId: ""
       # zones defines the list of zones where this resource will be available
       zones: 
-      # zone defines the zone name where this resource will be available.
-      - zone: "eu-west-1"
+      # name defines the zone name where this resource will be available.
+      - name: "eu-west-2b"
     # node defines the storage options for the Node information
     node:
       # fileShareName defines the volume share name, with which Kubernetes will be able to map the volume to the Deployment
@@ -114,6 +114,8 @@ config:
       size: "2Gi"
       # volumeId defines the id of the volume. This is currently only used if AWS EBS is enabled.
       volumeId: ""
+      # volumeHost defines which EC2 instance the volume is connected to (the value can be found in AWS portal -> EC2 Instances -> Private DNS of the VM). This is currently only used if AWS EBS is enabled.
+      volumeHost: ""
     # bridge defines the storage options for the Bridge information
     bridge:
       # fileShareName defines the volume share name, with which Kubernetes will be able to map the volume to the Deployment
@@ -122,6 +124,9 @@ config:
       size: "1Gi"
       # volumeId defines the id of the volume. This is currently only used if AWS EBS is enabled.
       volumeId: ""
+      # volumeHost defines which EC2 instance the volume is connected to (the value can be found in AWS portal -> EC2 Instances -> Private DNS of the VM). This is currently only used if AWS EBS is enabled.
+      volumeHost: ""
+
     # float defines the storage options for the float information
     float:
       # fileShareName defines the volume share name, with which Kubernetes will be able to map the volume to the Deployment
@@ -130,6 +135,8 @@ config:
       size: "1Gi"
       # volumeId defines the id of the volume. This is currently only used if AWS EBS is enabled.
       volumeId: ""
+      # volumeHost defines which EC2 instance the volume is connected to (the value can be found in AWS portal -> EC2 Instances -> Private DNS of the VM). This is currently only used if AWS EBS is enabled.
+      volumeHost: ""
 
 # corda is the Corda specific deployment options
 corda:

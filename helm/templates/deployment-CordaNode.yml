@@ -39,6 +39,22 @@ spec:
       labels:
         app: {{ .Values.config.resourceName }}-node
     spec:
+{{- if .Values.config.storage.awsEBS.enabled }}
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: kubernetes.io/hostname
+                operator: In
+                values:
+                - {{ .Values.config.storage.node.volumeHost }}
+{{- end }}
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
       volumes:
       - name: {{ .Values.config.resourceName }}-pv
         persistentVolumeClaim:

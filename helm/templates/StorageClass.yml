@@ -24,10 +24,11 @@ parameters:
   iopsPerGB: {{ .Values.config.storage.awsEBS.iopsPerGB }}
 {{- end }}
 volumeBindingMode: WaitForFirstConsumer
-#allowedTopologies:
-#- matchLabelExpressions:
-#  - key: failure-domain.beta.kubernetes.io/zone
-#    values:
-#    - us-central1-a
-#    - us-central1-b
+allowedTopologies:
+- matchLabelExpressions:
+  - key: failure-domain.beta.kubernetes.io/zone
+    values:
+{{- range $zone := .Values.config.storage.awsEBS.zones }}
+    - {{ $zone.name }}
+{{- end }}
 {{- end }}
