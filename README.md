@@ -184,7 +184,7 @@ To see the intended direction that this deployment should take, please have a lo
 
 The Corda Kubernetes Deployment is an open-source project and contributions are welcome as seen here: [Contributing](CONTRIBUTING.md)
 
-The contributors can be found here: [Contributers](CONTRIBUTERS.md)
+The contributors can be found here: [Contributors](CONTRIBUTORS.md)
 
 ### Feedback
 
