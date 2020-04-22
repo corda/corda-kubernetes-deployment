@@ -1,10 +1,12 @@
-Corda Kubernetes Depolyment checklist
+# Corda Kubernetes Deployment checklist
 
 Tested with:
 
 - Corda Enterprise version 4.0
 
-Pre-requisites:
+---
+
+## Pre-requisites:
 
 	- Clone the repository to any local folder
 	- Installation requires the following tools:
@@ -13,7 +15,11 @@ Pre-requisites:
 		- Helm (requires Helm version 2.x, tested with Helm v2.14.3, newer v2.x versions should be fine)
 		- Azure CLI (tested with az cli 2.1.0, newer versions should be fine)
 
-Azure Cloud Setup:
+---
+
+## Cloud setup, follow one of the following: Azure, AWS
+
+### Azure Cloud Setup:
 
 	- Azure Setup
 		- Azure Account connected to a subscription with permissions to create resources
@@ -33,11 +39,25 @@ Azure Cloud Setup:
 		- kubectl create namespace <name> # name could be for example firstname-lastname in lowercase, if you are deploying many instances in a test environment
 		- kubectl config set-context --current --namespace <name>
 
-AWS Cloud setup:
+### AWS Cloud setup:
 
-	- Coming soon
+	- AWS Setup
+		- AWS account with a subscription that has necessary permissions to create resources
+		- AWS VPC for the Kubernetes cluster
+		- AWS EKS (Elastic Kubernetes Service), with at least one VM (t3.medium or better recommended)
+		- AWS ECR (Elastic Container Registry)
+		- AWS EBS (Elastic Block System), with 3 dedicated volumes set up and mounted to the VM that the pods will be running on
+			- node volume, size 2Gb
+			- bridge volume, size 1Gb
+			- float volume, size 1Gb
+	- AWS Config
+		- kubectl config, follow https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html
+		- kubectl create namespace <name> # name could be for example firstname-lastname in lowercase, if you are deploying many instances in a test environment
+		- kubectl config set-context --current --namespace <name>
 
-Configuration:
+---
+
+## Deployment configuration:
 
 	- Deployment folder (repository folder)
 		- Binaries, jar files (the name of the jars should match the configuration)
@@ -74,7 +94,9 @@ Configuration:
 			- Please have a look at the logs files for the three pods to make sure they are running without errors (kubectl get pods + kubectl logs -f <pod name>)
 			- Run delete_all.sh to remove all resources from the Kubernetes cluster if you need to start fresh
 
-Corda Testnet configuration:
+---
+
+## Corda Testnet configuration:
 
 	- Retrieve certificates and config:
 		- Register on R3 Corda Marketplace: https://marketplace.r3.com/register
@@ -98,9 +120,12 @@ Corda Testnet configuration:
 		- Fill variable "corda.node.conf.compatibilityZoneEnabled"  with "true"
 		- Fill variable "corda.node.conf.compatibilityZoneURL" with "https://netmap.testnet.r3.com"
 
+---
 
-Useful commands:
+## Useful commands:
 
 	- Check deployment status with: kubectl get pods, expect to see 'Running' if the pods are working normally
 	- Check logs of running components with : kubectl logs -f <pod>
 	- Investigate Corda Node log by gaining a shell into the running pod with: (winpty on windows) kubectl exec -it <pod> bash, then cd to folder /opt/corda/workspace/logs and look at most recent node log file
+
+---
