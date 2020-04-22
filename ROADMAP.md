@@ -2,6 +2,8 @@
 
 This repository (<https://github.com/corda/corda-kubernetes-deployment>) is not complete, here is the roadmap for the next features to make the deployment more complete.
 
+---
+
 ## Support for Amazon Web Services (AWS)
 
 The first version of the deployment only added support for Microsoft's Azure cloud platform.
@@ -9,6 +11,8 @@ The first version of the deployment only added support for Microsoft's Azure clo
 ### Goals: 
 
 - Add support for AWS in the deployment
+
+---
 
 ## Support for Google Cloud Platform (GCP)
 
@@ -18,6 +22,8 @@ The first version of the deployment only added support for Microsoft's Azure clo
 
 - Add support for GCP in the deployment
 
+---
+
 ## Support for local Kubernetes clusters
 
 The first version of the deployment only added support for Microsoft's Azure cloud platform.
@@ -25,6 +31,8 @@ The first version of the deployment only added support for Microsoft's Azure clo
 ### Goals: 
 
 - Add support for deploying this setup on a local cluster
+
+---
 
 ## HA utilities support
 
@@ -34,6 +42,8 @@ It can even generate the configuration required to set up external Artemis (out-
 ### Goals: 
 
 - Change Initial registration step to use HA utilities.
+
+---
 
 ## HSM support
 
@@ -46,6 +56,8 @@ This is a requirement for many larger corporations and banks.
 - Enable Initial registration step to use HA utilities to add private key material directly to HSM.
 - Add support for the Corda Node and the Corda Firewall components to use the keys from the HSM.
 
+---
+
 ## Artemis support
 
 Artemis is the message queue that the Corda Node uses to communicate with other nodes on the network, whether it be via a Corda Firewall or not.
@@ -56,6 +68,8 @@ This can be both a cost benefit but also helps define the High Availability (HA)
 
 - Enable Initial registration step to generate the Artemis configuration and potentially the full installation of Artemis that could can then be deployed in between Corda Node and Corda Firewalls Bridge component.
 
+---
+
 ## CorDapp distribution
 
 The CorDapps are currently installed by a direct copy command during the deployment step.
@@ -65,6 +79,8 @@ This may not be the best way to handle CorDapps in the future, for example in or
 
 - Investigate different ways to handle CorDapp distribution for the deployment
 - Define a working design for the necessary new distribution options and add them back to the roadmap
+
+---
 
 ## Upgrading scenarios
 
@@ -79,6 +95,8 @@ There are many upgrading scenarios that should be tackled. These include, but ar
 - Define upgrading best practices for the deployment to tackle the above 3 scenarios
 - Define the designs for these upgrading options and place them in the roadmap
 
+---
+
 ## Monitoring and Health Probes
 
 It is important to be able to monitor and probe the pods health to be able to react to any detrimental changes over time.
@@ -88,6 +106,8 @@ For example, if the memory usage goes above 80%, take an action. Or if the pod i
 
 - Define the best practices of health probing for the different components
 - Define and design a monitoring solution that is standardized
+
+---
 
 ## Testing
 
@@ -99,6 +119,8 @@ An extensive set of performance tests should be executed on the deployment to fi
 
 An extensive set of penetration tests should be executed on the deployment to figure out potential security issues and then address those issues accordingly.
 
+---
+
 ## Distribution-less Docker Images
 
 High security environments demand that the Docker image is not based on a specific Distribution, it should be custom built, as in define exactly what it will contain.
@@ -106,3 +128,18 @@ High security environments demand that the Docker image is not based on a specif
 ### Goals:
 
 - Add support for Distribution-less Docker images
+
+---
+
+## Production grade pipelines
+
+In production you want to have everything run as smoothly as possible. In order to do so, we would like to automate the deployment of resources by use of a pipeline.
+There are many ways to build a fully automated pipeline that at the end of it deploys into Kubernetes.
+We can use CI/CD pipelines that we define ourselves, or use the Kubernetes Operator framework to define an implementation ourselves or use an existing framework, for example Flux, https://github.com/fluxcd/flux.
+
+### Goals:
+
+- Define the different options and for each, pros and cons
+- Decide on one to try out and if reasonable add as a reference implementation to this repository
+
+---
