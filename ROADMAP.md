@@ -4,16 +4,6 @@ This repository (<https://github.com/corda/corda-kubernetes-deployment>) is not 
 
 ---
 
-## Support for Amazon Web Services (AWS)
-
-The first version of the deployment only added support for Microsoft's Azure cloud platform.
-
-### Goals: 
-
-- Add support for AWS in the deployment
-
----
-
 ## Support for Google Cloud Platform (GCP)
 
 The first version of the deployment only added support for Microsoft's Azure cloud platform.
