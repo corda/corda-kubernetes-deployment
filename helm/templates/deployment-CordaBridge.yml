@@ -1,16 +1,3 @@
-kind: Service
-apiVersion: v1
-metadata:
-  name: {{ .Values.config.resourceName }}-bridge-service
-spec:
-  selector:
-    app: {{ .Values.config.resourceName }}-bridge
-  ports:
-  - name: p2p
-    protocol: TCP
-    port: {{ .Values.corda.node.conf.p2pPort }}
-    targetPort: {{ .Values.corda.node.conf.p2pPort }}
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
