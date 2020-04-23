@@ -1,0 +1,34 @@
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: {{ .Values.config.storage.resourceName }}
+{{- if .Values.config.storage.local.enabled }}
+provisioner: kubernetes.io/{{ .Values.config.storage.local.provisioner }}
+volumeBindingMode: WaitForFirstConsumer
+{{- else if .Values.config.storage.azureFile.enabled }}
+provisioner: kubernetes.io/{{ .Values.config.storage.azureFile.provisioner }}
+parameters:
+  skuName: {{ .Values.config.storage.azureFile.skuName }}
+  storageAccount: {{ .Values.config.storage.azureFile.azureStorageAccountName }}
+  location: {{ .Values.config.storage.azureFile.location }}
+{{- else if .Values.config.storage.awsEBS.enabled }}
+provisioner: kubernetes.io/{{ .Values.config.storage.awsEBS.provisioner }}
+parameters:
+  type: {{ .Values.config.storage.awsEBS.type }}
+  fstype: {{ .Values.config.storage.awsEBS.fsType }}
+  encrypted: "{{ .Values.config.storage.awsEBS.encrypted }}"
+{{- if and .Values.config.storage.awsEBS.encrypted (ne .Values.config.storage.awsEBS.kmsKeyId "") }}
+  kmsKeyId: {{ .Values.config.storage.awsEBS.kmsKeyId }}
+{{- end }}
+{{- if eq .Values.config.storage.awsEBS.type "io1" }}
+  iopsPerGB: {{ .Values.config.storage.awsEBS.iopsPerGB }}
+{{- end }}
+volumeBindingMode: WaitForFirstConsumer
+allowedTopologies:
+- matchLabelExpressions:
+  - key: failure-domain.beta.kubernetes.io/zone
+    values:
+{{- range $zone := .Values.config.storage.awsEBS.zones }}
+    - {{ $zone.name }}
+{{- end }}
+{{- end }}

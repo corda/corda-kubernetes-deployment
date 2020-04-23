@@ -22,56 +22,13 @@ It is strongly recommended you review all of the documentation there before sett
 
 ## PREREQUISITES
 
-* A cloud environment with Kubernetes Cluster Services that has access to a Docker Container Registry
-* Note! The current version of the scripts only supports Azure out of the box by way of Azure Kubernetes Service and Azure Container Registry, future versions of the scripts may add support for other cloud providers
+* A cloud environment with Kubernetes Cluster Services that has access to a Docker Container Registry, see [CLOUD_SETUP.md](CLOUD_SETUP.md)
 * Building the images requires local [Docker](https://www.docker.com/) installation
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) is used to manage Kubernetes cluster
-* [Helm](https://helm.sh/)
+* [Helm](https://helm.sh/) version 2.x
 * Corda Enterprise jars downloaded and stored in 'bin' folder
 
 ---
-
-## Azure cloud instructions
-
-Setting up the relevant cloud services is currently left to the reader, this may change in future versions of the scripts.
-Having said that though, these are the services you will need to have set up in order to execute the deployment scripts correctly.
-
-### Azure Kubernetes Service (AKS)
-
-This is the main Kubernetes cluster that we will be using. Setting up the AKS will also set up a NodePool resource group. The NodePool should also have a few public IP addresses configured as Front End IP addresses for the AKS cluster.
-
-A good guide to follow for setting up AKS: [Quickstart: Deploy an Azure Kubernetes Service cluster using the Azure CLI](https://docs.microsoft.com/en-us/azure/aks/kubernetes-walkthrough)
-
-Worth reading the ACR section at the same time to combine the knowledge and setup process.
-
-### Azure Container Registry (ACR)
-
-The ACR provides the Docker images for the AKS to use. Please make sure that the AKS can connect to the ACR using appropriate Service Principals. See: [Azure Container Registry authentication with service principals](https://docs.microsoft.com/en-us/azure/container-registry/container-registry-auth-service-principal). 
-
-Guide for setting up ACR: [Tutorial: Deploy and use Azure Container Registry](https://docs.microsoft.com/en-us/azure/aks/tutorial-kubernetes-prepare-acr)
-
-Guide for connecting ACR and AKS: [Authenticate with Azure Container Registry from Azure Kubernetes Service](https://docs.microsoft.com/en-us/azure/aks/cluster-container-registry-integration)
-
-Worth reading the AKS section at the same time to combine the knowledge and setup process.
-
-### Azure Service Principals
-
-Service Principals is Azures way of delegating permissions between different services within Azure. There should be at least one Service Principal for AKS which can access ACR to pull the Docker images from there.
-
-Here is a guide to get your started on SPs: [Service principals with Azure Kubernetes Service (AKS)](https://docs.microsoft.com/en-us/azure/aks/kubernetes-service-principal)
-
-### Azure Storage Account
-
-In addition to that there should be a storage account that will host the persistent volumes (File storage).
-
-Guide on setting up Storage Accounts: [Create an Azure Storage account](https://docs.microsoft.com/en-us/azure/storage/common/storage-account-create?tabs=azure-portal)
-
-### Public IP addresses
-
-You should have a few static public IP addresses available for each deployment. One for the Node to accept incoming RPC connections from an UI level and another one if running the Float component within the cluster, this would then be the public IP address that other nodes would see and connect to.
-
-A guide on setting up Public IP addresses in Azure: [Create, change, or delete a public IP address](https://docs.microsoft.com/en-us/azure/virtual-network/virtual-network-public-ip-address)
-
 ---
 
 ## SETUP
@@ -87,7 +44,7 @@ The files should be downloaded first and placed in the following folder: ``docke
 
 Please see [docker-images/README.md](docker-images/README.md) for more information.
 
-#### SETUP CHECKLIST
+## SETUP CHECKLIST
 
 Since there are a number of prerequisites that need to be met and then a certain order of running everything, a checklist has been collated that you may find useful.
 
@@ -222,6 +179,12 @@ For more details and instructions it is strongly recommended to visit the follow
 ## ROADMAP
 
 To see the intended direction that this deployment should take, please have a look at the [Roadmap](ROADMAP.md)
+
+## Contributing
+
+The Corda Kubernetes Deployment is an open-source project and contributions are welcome as seen here: [Contributing](CONTRIBUTING.md)
+
+The contributors can be found here: [Contributors](CONTRIBUTORS.md)
 
 ### Feedback
 
