@@ -58,6 +58,12 @@ config:
     password: ""
     # email is the email address corresponding to the Container Registry
     email: ""
+  # artifactoryR3 defines the options for accessing R3 Artifactory https://software.r3.com/
+  artifactoryR3: 
+    # artifactory_username is the username for the R3 Artifactory
+    artifactory_username: ""
+    # artifactory_password is the password for the R3 Artifactory
+    artifactory_password: ""
   # nodeLoadBalancerIP defines the public / private IP address (NOTE: DNS name is not allowed) for the Kubernetes Cluster on which there will be an ingress to the Corda Nodes RPC endpoint
   nodeLoadBalancerIP: ""
   # floatLoadBalancerIP defines the public / private IP address (NOTE: DNS name is not allowed) for the Kubernetes Cluster on which there will be an ingress to the Corda Firewalls Float endpoint
@@ -76,7 +82,7 @@ config:
     # azureFile defines the Azure specific storage options, only used if it is enabled
     azureFile:
       # enabled is a boolean value for the above parameter
-      enabled: false
+      enabled: true
       # provisioner defines the type of storage being used. See Storage Classes: https://kubernetes.io/docs/concepts/storage/storage-classes/ for more information.
       provisioner: "azure-file"
       # skuName defines the  Azure specific skuName
