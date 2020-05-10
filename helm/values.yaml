@@ -34,7 +34,8 @@ setup:
     # enabled is a boolean value for the above parameter
     enabled: false
   # cloudProvider defines what provider the deployment should be targeting, a lot of options are provider specific. Use 'local' for doing local deployments. 
-  # Accepted options: 'azure', 'aws'
+  # Accepted options: 'azure', 'aws', 'gcp'
+  # Please also configure the storage options to match your intended cloud provider solution (for example if using gcp as cloud provider, disable azureFile and enable gcpPD storage).
   cloudProvider: "azure"
 
 # config defines the options that relate to the deployment but not specifically to the Corda Node
@@ -113,13 +114,23 @@ config:
       zones: 
       # name defines the zone name where this resource will be available.
       - name: "eu-west-2b"
+    # gcpPD defines the Google Cloud Platform (GCP) persistent disk (GCP PD) specific storage options, only used if it is enabled
+    gcpPD:
+      # enabled is a boolean value for the above parameter
+      enabled: false
+      # provisioner defines the type of storage being used. See Storage Classes: https://kubernetes.io/docs/concepts/storage/storage-classes/ for more information.
+      provisioner: "gce-pd"
+      # fsType defines the file system type to use, default ext4.
+      fsType: "ext4"
+      # type defines the  GCP specific type, pd-standard is default
+      type: "pd-standard"
     # node defines the storage options for the Node information
     node:
       # fileShareName defines the volume share name, with which Kubernetes will be able to map the volume to the Deployment
       fileShareName: "node-storage"  # Does not need editing unless deploying multiple nodes in the same cluster which should use unique share names
       # size specifies the size to reserve for this volume
       size: "2Gi"
-      # volumeId defines the id of the volume. This is currently only used if AWS EBS is enabled.
+      # volumeId defines the id of the volume. This is currently only used if either AWS EBS or GCP PD is enabled.
       volumeId: ""
       # volumeHost defines which EC2 instance the volume is connected to (the value can be found in AWS portal -> EC2 Instances -> Private DNS of the VM). This is currently only used if AWS EBS is enabled.
       volumeHost: ""
@@ -129,7 +140,7 @@ config:
       fileShareName: "bridge-storage"  # Does not need editing unless deploying multiple nodes in the same cluster which should use unique share names
       # size specifies the size to reserve for this volume
       size: "1Gi"
-      # volumeId defines the id of the volume. This is currently only used if AWS EBS is enabled.
+      # volumeId defines the id of the volume. This is currently only used if either AWS EBS or GCP PD is enabled.
       volumeId: ""
       # volumeHost defines which EC2 instance the volume is connected to (the value can be found in AWS portal -> EC2 Instances -> Private DNS of the VM). This is currently only used if AWS EBS is enabled.
       volumeHost: ""
@@ -140,7 +151,7 @@ config:
       fileShareName: "float-storage"  # Does not need editing unless deploying multiple nodes in the same cluster which should use unique share names
       # size specifies the size to reserve for this volume
       size: "1Gi"
-      # volumeId defines the id of the volume. This is currently only used if AWS EBS is enabled.
+      # volumeId defines the id of the volume. This is currently only used if either AWS EBS or GCP PD is enabled.
       volumeId: ""
       # volumeHost defines which EC2 instance the volume is connected to (the value can be found in AWS portal -> EC2 Instances -> Private DNS of the VM). This is currently only used if AWS EBS is enabled.
       volumeHost: ""

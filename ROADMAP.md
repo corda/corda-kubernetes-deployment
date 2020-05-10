@@ -4,23 +4,16 @@ This repository (<https://github.com/corda/corda-kubernetes-deployment>) is not 
 
 ---
 
-## Support for Google Cloud Platform (GCP)
+## Support for other Corda Enterprise versions
 
-The first version of the deployment only added support for Microsoft's Azure cloud platform.
-
-### Goals: 
-
-- Add support for GCP in the deployment
-
----
-
-## Support for local Kubernetes clusters
-
-The first version of the deployment only added support for Microsoft's Azure cloud platform.
+The first version of the deployment scripts only offer support for Corda Enterprise 4.0.
+It makes sense for the deployment scripts to also support to the most recent versions of Corda.
 
 ### Goals: 
 
-- Add support for deploying this setup on a local cluster
+- Add support for deploying using a custom version number, in other words support for multiple Corda Enterprise versions
+- Per-version configuration files
+- Download binaries to use the selected version number
 
 ---
 
@@ -32,6 +25,18 @@ It can even generate the configuration required to set up external Artemis (out-
 ### Goals: 
 
 - Change Initial registration step to use HA utilities.
+
+---
+
+## Artemis support
+
+Artemis is the message queue that the Corda Node uses to communicate with other nodes on the network, whether it be via a Corda Firewall or not.
+Adding support for Artemis allows the option to host multiple Corda Nodes behind a shared Artemis <> Bridge <> Float setup.
+This can be both a cost benefit but also helps define the High Availability (HA) setup.
+
+### Goals: 
+
+- Enable Initial registration step to generate the Artemis configuration and potentially the full installation of Artemis that could can then be deployed in between Corda Node and Corda Firewalls Bridge component.
 
 ---
 
@@ -48,15 +53,13 @@ This is a requirement for many larger corporations and banks.
 
 ---
 
-## Artemis support
+## Support for local Kubernetes clusters
 
-Artemis is the message queue that the Corda Node uses to communicate with other nodes on the network, whether it be via a Corda Firewall or not.
-Adding support for Artemis allows the option to host multiple Corda Nodes behind a shared Artemis <> Bridge <> Float setup.
-This can be both a cost benefit but also helps define the High Availability (HA) setup.
+Consider the addition of support for local Kubernetes clusters, for example minikube, OpenShift etc.
 
 ### Goals: 
 
-- Enable Initial registration step to generate the Artemis configuration and potentially the full installation of Artemis that could can then be deployed in between Corda Node and Corda Firewalls Bridge component.
+- Add support for deploying this setup on a local cluster
 
 ---
 

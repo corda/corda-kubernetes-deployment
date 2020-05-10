@@ -6,20 +6,23 @@ Tested with:
 
 ---
 
-## Pre-requisites:
+## Prerequisites:
 
 	- Clone the repository to any local folder
 	- Installation requires the following tools:
 		- Docker (tested with Docker 19.03.5, API 1.40, newer versions should be fine)
 		- Kubectl (tested with kubectl v1.12.8, newer versions should be fine)
 		- Helm (requires Helm version 2.x, tested with Helm v2.14.3, newer v2.x versions should be fine)
-		- Azure CLI (tested with az cli 2.1.0, newer versions should be fine)
+		- Cloud specific CLI:
+			- Azure CLI (tested with az cli 2.1.0, newer versions should be fine) [az](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest)
+			- AWS CLI (tested with aws cli 2, newer versions should be fine) [aws](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-install.html)
+			- Google CLI (tested with gcloud 290.0.1, newer versions should be fine) [gcloud](https://cloud.google.com/sdk/gcloud)
 
 ---
 
 ## Cloud setup, follow one of the following: Azure, AWS
 
-### Azure Cloud Setup:
+### Microsoft Azure cloud setup checklist:
 
 	- Azure Setup
 		- Azure Account connected to a subscription with permissions to create resources
@@ -39,7 +42,7 @@ Tested with:
 		- kubectl create namespace <name> # name could be for example firstname-lastname in lowercase, if you are deploying many instances in a test environment
 		- kubectl config set-context --current --namespace <name>
 
-### AWS Cloud setup:
+### Amazon Web Services (AWS) cloud setup checklist:
 
 	- AWS Setup
 		- AWS account with a subscription that has necessary permissions to create resources
@@ -55,6 +58,21 @@ Tested with:
 		- kubectl create namespace <name> # name could be for example firstname-lastname in lowercase, if you are deploying many instances in a test environment
 		- kubectl config set-context --current --namespace <name>
 
+### Google Cloud Platform (GCP) cloud setup checklist:
+
+	- GCP Setup
+		- GCP account with a subscription that has necessary permissions to create resources
+		- GCP GKE (Google Kubernetes Engine), with at least one VM (n1-standard-4 or better recommended)
+		- GCP GCR (Google Container Registry)
+		- GCP PD (Persistent Disk), with 3 dedicated volumes set up and mounted to the VM that the pods will be running on
+			- node volume, size 10Gb
+			- bridge volume, size 10Gb
+			- float volume, size 10Gb
+	- GCP Config
+		- kubectl config, follow https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-access-for-kubectl
+		- kubectl create namespace <name> # name could be for example firstname-lastname in lowercase, if you are deploying many instances in a test environment
+		- kubectl config set-context --current --namespace <name>
+
 ---
 
 ## Deployment configuration:
@@ -66,7 +84,7 @@ Tested with:
 				- Health-survey-tool jar (eg. corda-tools-healthsurvey-4.0.jar)
 				- Corda Firewall jar (eg. corda-firewall-4.0.jar)
 			- Pki-firewall/bin
-				- Optional on windows: Copy Key tool jar + dll to bin folder (pki-firewall/bin)
+				- Optional step on windows: Copy Key tool jar + dll to bin folder (pki-firewall/bin)
 		- Config
 			- docker_config.sh
 				- Define versions so that they match what is in the values.yaml file.
