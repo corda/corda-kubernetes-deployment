@@ -1,12 +1,12 @@
 # CORDA KUBERNETES DEPLOYMENT
 
-This repository (<https://github.com/corda/corda-kubernetes-deployment>) contains the means with which you can stand up a [Corda](https://www.corda.net/) Node.
+This repository (<https://github.com/corda/corda-kubernetes-deployment>) contains the means with which you can stand up a [Corda Enterprise](https://www.r3.com/corda-platform/) Node.
 
 This is meant to be a customizable version of the Node deployment that you can take as-is if it fits your needs or then customize it to your liking.
 
 **DISCLAIMER:**
 
-This Kubernetes deployment for a Corda Node is considered **experimental** and should not be used in a production environment until sufficient testing has been done.
+This Kubernetes deployment for a Corda Enterprise Node is considered a **reference implementation** and should not be used in a production environment until sufficient testing has been done.
 
 Licensed under [Apache License, version 2.0](https://www.apache.org/licenses/LICENSE-2.0).
 
@@ -40,7 +40,10 @@ It is strongly recommended you review all of the documentation there before sett
 This deployment is targeting an Enterprise deployment, which should include a Corda Node, but also the Corda Firewall, which is an Enterprise only feature.
 
 In order to execute the following scripts correctly, you will have to have access to the Corda Enterprise binaries.
+
 The files should be downloaded first and placed in the following folder: ``docker-images/bin``
+
+You can use the helper script ``download_binaries.sh`` to download binaries for you, as long as you have the necessary login details available.
 
 Please see [docker-images/README.md](docker-images/README.md) for more information.
 

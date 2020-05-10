@@ -9,7 +9,7 @@ Setting up the relevant cloud services is currently left to the reader, this may
 
 ## Azure cloud instructions
 
-These are the services you will need to have set up in order to execute the deployment scripts correctly.
+These are the services you will need to have set up in order to execute the deployment scripts correctly using Microsoft Azure.
 
 ### Azure Kubernetes Service (AKS)
 
@@ -51,7 +51,7 @@ A guide on setting up Public IP addresses in Azure: [Create, change, or delete a
 
 ## AWS cloud instructions
 
-These are the services you will need to have set up in order to execute the deployment scripts correctly.
+These are the services you will need to have set up in order to execute the deployment scripts correctly using Amazon Web Services.
 
 ### Amazon EKS - Elastic Kubernetes Service (EKS)
 
@@ -93,6 +93,39 @@ The Kubernetes deployments will later on also be using nodeAffinity [](https://s
 
 ## GCP cloud instructions
 
-Coming soon...
+These are the services you will need to have set up in order to execute the deployment scripts correctly using Google Cloud Platform.
+
+### Google Kubernetes Engine (GKE)
+
+GKE is the Kubernetes cluster on Google Cloud Platform. 
+
+Setting up a GKE is quite easy using the [Google cloud console](https://console.cloud.google.com/).
+
+Here is a nice guide on setting up a GKE using gcloud [Creating a regional cluster](https://cloud.google.com/kubernetes-engine/docs/how-to/creating-a-regional-cluster).
+
+We will need to set up a node group (node pool), [Guide on node group setup](https://cloud.google.com/kubernetes-engine/docs/how-to/upgrading-a-cluster).
+
+For starters I would recommend creating a node pool with one VM backing it with 4 vCPU and 15 GB memory (n1-standard-4). Although by tweaking the deployment scripts minimum requirements for cpu you can deploy using a n1-standard-2 as well.
+
+### Google Container Registry (GCR)
+
+The GCR is the container registry, and it is required in order to host our custom built Docker images.
+
+In order to create your first Google Container Registry, you should read the following page: [Pushing and pulling images](https://cloud.google.com/container-registry/docs/pushing-and-pulling).
+
+### Google Persistent Disk (GCP PD)
+
+The way GCP handles persistent storage for Kubernetes clusters is by way of PD. We will have to provision some PD volumes for our components.
+
+You can create the disks directly from [Google cloud console](https://console.cloud.google.com/compute/disks).
+
+Please make sure you create at least the following (10Gb is the minimum size for PD's):
+
+* 10Gb PD volume for the Float component
+* 10Gb PD volume for the Bridge component
+* 10Gb PD volume for the Node
+
+Please make sure you create the volumes in the same zone as the node pools VM, so the node can mount the volumes.
+Also take note of the names of the PD's you create, since you will need to fill them into the ``values.yaml`` file in the helm sub folder.
 
 ---

@@ -11,6 +11,12 @@ parameters:
   skuName: {{ .Values.config.storage.azureFile.skuName }}
   storageAccount: {{ .Values.config.storage.azureFile.azureStorageAccountName }}
   location: {{ .Values.config.storage.azureFile.location }}
+{{- else if .Values.config.storage.gcpPD.enabled }}
+provisioner: kubernetes.io/{{ .Values.config.storage.gcpPD.provisioner }}
+parameters:
+  type: {{ .Values.config.storage.gcpPD.type }}
+  fstype: {{ .Values.config.storage.gcpPD.fsType }}
+  replication-type: none
 {{- else if .Values.config.storage.awsEBS.enabled }}
 provisioner: kubernetes.io/{{ .Values.config.storage.awsEBS.provisioner }}
 parameters:
