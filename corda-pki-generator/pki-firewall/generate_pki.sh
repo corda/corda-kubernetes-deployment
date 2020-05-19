@@ -83,7 +83,7 @@ CA_KEY_PASSWORD=$(echo "$FIREWALL_CONF_RAW" | grep 'keyPasswordCA: "' | cut -d '
 
 set -eux
 
-if [ "$CERTIFICATE_VALIDITY_DAYS" == "" -o "$TRUST_PASSWORD" == "" -o "$BRIDGE_PASSWORD" == "" -o "$FLOAT_PASSWORD" == "" -o "$CA_KEYSTORE_PASSWORD" == "" -o "$CA_KEY_PASSWORD" == "" ]; then
+if [ "$CERTIFICATE_VALIDITY_DAYS" = "" -o "$TRUST_PASSWORD" = "" -o "$BRIDGE_PASSWORD" = "" -o "$FLOAT_PASSWORD" = "" -o "$CA_KEYSTORE_PASSWORD" = "" -o "$CA_KEY_PASSWORD" = "" ]; then
 	echo "Some values were not set correctly from values.yaml file, please check the following values in the values.yaml file:"
 	echo "CERTIFICATE_VALIDITY_DAYS=$CERTIFICATE_VALIDITY_DAYS"
 	echo "TRUST_PASSWORD=$TRUST_PASSWORD"

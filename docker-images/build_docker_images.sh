@@ -54,7 +54,7 @@ fi
 
 
 NO_CACHE=
-if [ "${1-}" == "no-cache" ]
+if [ "${1-}" = "no-cache" ]
 then
 	NO_CACHE=--no-cache
 fi 

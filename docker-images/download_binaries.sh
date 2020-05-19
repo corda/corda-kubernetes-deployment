@@ -146,17 +146,17 @@ downloadBinaries () {
 }
 
 askForArtifactoryLoginInformation () {
-	if [ "$ARTIFACTORY_USER" == "" ]; then
+	if [ "$ARTIFACTORY_USER" = "" ]; then
 		echo "There is no value defined for artifactory_username in values.yaml, you can either interrupt this script with CTRL+C or enter your R3 Artifactory username next."
 		read -p "Enter your R3 Artifactory username to continue: " ARTIFACTORY_USER
 	fi
 	
-	if [ "$ARTIFACTORY_PASSWORD" == "" ]; then
+	if [ "$ARTIFACTORY_PASSWORD" = "" ]; then
 		echo "There is no value defined for artifactory_password in values.yaml, you can either interrupt this script with CTRL+C or enter your R3 Artifactory password next."
 		read -p "Enter your R3 Artifactory password to continue: " ARTIFACTORY_PASSWORD
 	fi
 	
-	if [ "$ARTIFACTORY_USER" == "" -o "$ARTIFACTORY_PASSWORD" == "" ]; then
+	if [ "$ARTIFACTORY_USER" = "" -o "$ARTIFACTORY_PASSWORD" = "" ]; then
 		echo "R3 Artifactory username or password missing!"
 		exit 1
 	fi

@@ -56,7 +56,7 @@ echo "This will remove certificates from your local file system."
 echo "If you are sure this is what you want to do, please type 'yes' and press enter."
 read -p "Enter 'yes' to continue: " confirm
 echo $confirm
-if [ "$confirm" == "yes" ]; then
+if [ "$confirm" = "yes" ]; then
 	echo "Resetting environment..."
 	rm -rf $DIR/corda-pki-generator/pki-firewall/certs/
 	checkStatus $?

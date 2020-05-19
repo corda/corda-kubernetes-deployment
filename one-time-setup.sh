@@ -61,7 +61,7 @@ checkStatus $?
 INITIAL_REGISTRATION=""
 INITIAL_REGISTRATION=$(grep -A 3 'initialRegistration:' $DIR/helm/values.yaml | grep 'enabled: ' | cut -d ':' -f 2 | xargs)
 
-if [ "$INITIAL_REGISTRATION" == "true" ]; then
+if [ "$INITIAL_REGISTRATION" = "true" ]; then
 	$DIR/helm/initial_registration/initial_registration.sh
 	checkStatus $?
 else 

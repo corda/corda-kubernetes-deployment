@@ -55,7 +55,7 @@ set -eu
 TEMPLATE_NAMESPACE=""
 TEMPLATE_NAMESPACE=$(grep -A 3 'config:' $DIR/values.yaml | grep 'namespace: "' | cut -d '"' -f 2)
 
-if [ "$TEMPLATE_NAMESPACE" == "" ]; then
+if [ "$TEMPLATE_NAMESPACE" = "" ]; then
 	echo "Kubernetes requires a namespace to deploy resources to, no namespace is defined in values.yaml, please define one."
 	exit 1
 fi
