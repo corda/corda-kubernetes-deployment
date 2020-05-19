@@ -46,6 +46,31 @@ if [ "$DOCKER_REGISTRY" = "" ]; then
 	exit 1
 fi
 
+EnsureDockerIsAvailableAndReachable () {
+	# Make sure Docker is ready
+	docker ps &>/dev/null
+	status=$?
+	if [ $status -eq 0 ]
+	then
+		echo "Docker is ready..."
+	else
+		if [[ `docker ps 2>&1 | grep "permission denied"` ]]; then 
+			echo "Docker requires sudo to execute, trying to substitute using alias docker='sudo docker'"
+			alias docker='sudo docker'
+			if [[ `docker ps 2>&1 | grep "permission denied"` ]]; then 
+				echo "Still issues with permissions, try a manual workaround where you set 'alias docker='sudo docker'' then run 'docker ps' to check that there is no 'permission denied' errors."
+				exit 1
+			else
+				echo "Docker now accessible by way of alias, continuing..."
+			fi
+		else
+			echo "!!! Docker engine not available, make sure your Docker is running and responds to command 'docker ps' !!!"
+			exit 1
+		fi
+	fi
+}
+EnsureDockerIsAvailableAndReachable
+
 docker login $DOCKER_REGISTRY
 
 docker tag ${CORDA_IMAGE_PATH}:$CORDA_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_IMAGE_PATH}_$VERSION:$CORDA_DOCKER_IMAGE_VERSION
