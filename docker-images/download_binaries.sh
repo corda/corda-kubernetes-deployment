@@ -68,7 +68,15 @@ wgetDownload () {
 	local OUTPUT_FILE=$1
 	local URL=$2
 	echo "Downloading $OUTPUT_FILE from $URL:"
-	if [[ `wget --user ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PASSWORD} -S --spider $URL 2>&1 | grep 'HTTP/1.1 200 OK'` ]]; then echo "URL check passed, target exists!"; else echo "UTL check failed, file not found! Check your version definition in values.yaml file!";exit 1; fi
+	wget --user ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PASSWORD} -S --spider $URL 2>&1 | grep 'HTTP/1.1 200 OK'
+	status=$?
+	if [ $status -eq 0 ]; then 
+		echo "URL check passed, target exists!"
+	else 
+		echo "URL check failed, file not found! Check your version definition in values.yaml file!"
+		exit 1
+	fi
+
 	echo -n "    "
 	wget -nc --user ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PASSWORD} --progress=dot $URL -O $OUTPUT_FILE 2>&1 | grep --line-buffered "%" | sed -u -e "s,\.,,g" | awk '{printf("\b\b\b\b%4s", $2)}'
 	echo -ne "\b\b\b\b"
