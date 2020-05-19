@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -ux
+set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
@@ -37,21 +37,19 @@ GetPathToCurrentlyExecutingScript () {
 	DIR=$(dirname "$ABS_PATH")
 }
 GetPathToCurrentlyExecutingScript
-set -eux
+set -eu
 
-. $DIR/docker_config.sh
+checkStatus () {
+	local status=$1
+	if [ $status -eq 0 ]
+		then
+			echo "."
+		else
+			echo "The previous step failed"
+			exit 1
+	fi	
+	return 0
+}
 
-if [ "$DOCKER_REGISTRY" == "" ]; then
-	echo "You must specify a valid container registry in the values.yaml file"
-	exit 1
-fi
-
-docker login $DOCKER_REGISTRY
-
-docker tag ${CORDA_IMAGE_PATH}:$CORDA_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_IMAGE_PATH}_$VERSION:$CORDA_DOCKER_IMAGE_VERSION
-docker tag ${CORDA_FIREWALL_IMAGE_PATH}:$FIREWALL_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_FIREWALL_IMAGE_PATH}_$VERSION:$FIREWALL_DOCKER_IMAGE_VERSION
-
-CORDA_DOCKER_REPOSITORY=$(echo $DOCKER_REGISTRY/${CORDA_IMAGE_PATH}_$VERSION:$CORDA_DOCKER_IMAGE_VERSION 2>&1 | tr '[:upper:]' '[:lower:]')
-CORDA_FIREWALL_DOCKER_REPOSITORY=$(echo $DOCKER_REGISTRY/${CORDA_FIREWALL_IMAGE_PATH}_$VERSION:$FIREWALL_DOCKER_IMAGE_VERSION 2>&1 | tr '[:upper:]' '[:lower:]')
-docker push $CORDA_DOCKER_REPOSITORY
-docker push $CORDA_FIREWALL_DOCKER_REPOSITORY
+$DIR/helm/delete-all.sh
+checkStatus $?

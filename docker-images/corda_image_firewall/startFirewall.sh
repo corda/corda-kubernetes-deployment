@@ -84,8 +84,14 @@ startFirewall () {
 	local status=$?
 	if [ $status -ne 0 ]
 	then
+		echo "DEBUG INFO on CRITICAL ERROR:"
 		ls /opt/corda -R -al
+		echo "Active firewall.conf file:"
 		less /opt/corda/workspace/firewall.conf
+		MACHINE_NAME=$(cat /proc/sys/kernel/hostname)
+		LOG_FILE="/opt/corda/workspace/logs/corda-firewall-${MACHINE_NAME}.log"
+		echo "Content of log file (${LOG_FILE}):"
+		tail -n 500 $LOG_FILE
 	fi
 	checkStatus $status
 }

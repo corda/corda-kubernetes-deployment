@@ -3,12 +3,14 @@
 set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
+	SCRIPT_SRC=${BASH_SOURCE[0]}
+	if [ "$SCRIPT_SRC" == "" ]; then SCRIPT_SRC=$0; fi
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
-	ABS_PATH=$(readlink -f "$0")
+	ABS_PATH=$(readlink -f "${SCRIPT_SRC}")
 	if [ "$?" -ne "0" ]; then
 		echo "readlink issue workaround..."
 		# Unfortunate MacOs issue with readlink functionality, see https://github.com/corda/corda-kubernetes-deployment/issues/4
-		TARGET_FILE=$0
+		TARGET_FILE=$SCRIPT_SRC
 
 		cd `dirname $TARGET_FILE`
 		TARGET_FILE=`basename $TARGET_FILE`
@@ -42,13 +44,16 @@ set -eu
 DOCKER_REGISTRY=""
 DOCKER_REGISTRY=$(grep -A 3 'containerRegistry:' $DIR/../helm/values.yaml | grep 'serverAddress: "' | cut -d '"' -f 2)
 
-VERSION="4.0"
-HEALTH_CHECK_VERSION="4.0"
+VERSION=""
+VERSION=$(grep 'cordaVersion:' $DIR/../helm/values.yaml | cut -d '"' -f 2 | tr '[:upper:]' '[:lower:]')
+HEALTH_CHECK_VERSION=$VERSION
 
 CORDA_VERSION="corda-ent-$VERSION"
-CORDA_IMAGE_PATH="corda_image_ent_$VERSION"
+CORDA_IMAGE_PATH="corda_image_ent"
 CORDA_DOCKER_IMAGE_VERSION="v1.00"
 
 CORDA_FIREWALL_VERSION="corda-firewall-$VERSION"
-CORDA_FIREWALL_IMAGE_PATH="corda_image_firewall_$VERSION"
+CORDA_FIREWALL_IMAGE_PATH="corda_image_firewall"
 FIREWALL_DOCKER_IMAGE_VERSION="v1.00"
+
+CORDA_HEALTH_CHECK_VERSION="corda-tools-health-survey-$HEALTH_CHECK_VERSION"
