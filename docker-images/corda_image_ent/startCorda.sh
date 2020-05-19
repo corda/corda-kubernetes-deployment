@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 echoMessage () {
-	local message=$1
+	message=$1
 
 	echo "====== $message ======"
 }
 
 checkStatus () {
-	local status=$1
+	status=$1
 	if [ $status -eq 0 ]
 		then
 			echoMessage "Success"

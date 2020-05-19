@@ -17,7 +17,7 @@ GetPathToCurrentlyExecutingScript () {
 
 		cd `dirname $TARGET_FILE`
 		TARGET_FILE=`basename $TARGET_FILE`
-		local ITERATIONS=0
+		ITERATIONS=0
 
 		# Iterate down a (possible) chain of symlinks
 		while [ -L "$TARGET_FILE" ]

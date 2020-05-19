@@ -14,7 +14,7 @@ GetPathToCurrentlyExecutingScript () {
 
 		cd `dirname $TARGET_FILE`
 		TARGET_FILE=`basename $TARGET_FILE`
-		local ITERATIONS=0
+		ITERATIONS=0
 
 		# Iterate down a (possible) chain of symlinks
 		while [ -L "$TARGET_FILE" ]
@@ -47,13 +47,13 @@ set -eu
 set +x
 
 echoMessage () {
-	local message=$1
+	message=$1
 
 	echo "====== $message ======"
 }
 
 checkStatus () {
-	local status=$1
+	status=$1
 	if [ $status -eq 0 ]
 		then
 			echoMessage "Success"
@@ -65,8 +65,8 @@ checkStatus () {
 }
 
 wgetDownload () {
-	local OUTPUT_FILE=$1
-	local URL=$2
+	OUTPUT_FILE=$1
+	URL=$2
 	echo "Downloading $OUTPUT_FILE from $URL:"
 	wget --user ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PASSWORD} -S --spider $URL 2>&1 | grep 'HTTP/1.1 200 OK'
 	status=$?

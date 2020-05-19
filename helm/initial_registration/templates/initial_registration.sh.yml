@@ -12,7 +12,7 @@ GetPathToCurrentlyExecutingScript () {
 
 		cd `dirname $TARGET_FILE`
 		TARGET_FILE=`basename $TARGET_FILE`
-		local ITERATIONS=0
+		ITERATIONS=0
 
 		# Iterate down a (possible) chain of symlinks
 		while [ -L "$TARGET_FILE" ]
@@ -44,7 +44,7 @@ ROOT_FOLDER=$DIR/../../../../..
 THIS_PATH=$DIR
 
 checkStatus () {
-    local status=$1
+    status=$1
     if [ $status -eq 0 ]
         then
             echo "The Corda Node initial registration was completed successfully. The certificates will now be copied to the correct folders."
@@ -83,7 +83,7 @@ copyCertificates () {
 }
 
 waitTillNetworkParametersIsAvailable () {
-    local NETWORK_PARAMETERS_EXISTS=0
+    NETWORK_PARAMETERS_EXISTS=0
     while [ $NETWORK_PARAMETERS_EXISTS -eq 0 ]
     do
         sleep 2
@@ -105,9 +105,9 @@ copyNetworkParameters () {
 }
 
 waitForNetworkParametersOrTimeout () {
-    local NP_PID=$1
-    local CORDA_PID=$2
-    local LOOPING=1
+    NP_PID=$1
+    CORDA_PID=$2
+    LOOPING=1
     while [ $LOOPING -eq 1 ]; do
         sleep 10 # seconds
         #NP_PROCESS_RESULT=$(kill -0 "$NP_PID" > /dev/null 2>&1)
@@ -145,8 +145,8 @@ waitForNetworkParametersOrTimeout () {
 }
 
 downloadNetworkParameters () {
-    local CORDA_BIN=$1
-    local NODE_CONF=$2
+    CORDA_BIN=$1
+    NODE_CONF=$2
     
     if [ -f $ROOT_FOLDER/helm/files/network/network-parameters.file ]; then
         echo "network-parameters file already existed in the correct folder $ROOT_FOLDER/helm/files/network/, skipping new download."
@@ -160,10 +160,10 @@ downloadNetworkParameters () {
 }
 
 initialRegistration () {
-    local CORDA_BIN=$1
-    local NODE_CONF=$2
-    local TRUST_STORE=$3
-    local TRUST_STORE_PASSWORD=$4
+    CORDA_BIN=$1
+    NODE_CONF=$2
+    TRUST_STORE=$3
+    TRUST_STORE_PASSWORD=$4
     #echo "Cleaning any previous initial-registration runs..."
     #rm -rf $THIS_PATH/workspace
     
@@ -187,15 +187,15 @@ initialRegistration () {
 main () {
     DOCKER_IMAGES_FOLDER=$ROOT_FOLDER/docker-images
 
-    local BIN_DIR=$DOCKER_IMAGES_FOLDER/bin
-    local NODE_CONF=$THIS_PATH/node.conf
-    local TRUST_STORE=$ROOT_FOLDER/helm/files/network/networkRootTrustStore.jks
-    local TRUST_STORE_PASSWORD={{ .Values.corda.node.conf.networkRootTruststorePassword }}
+    BIN_DIR=$DOCKER_IMAGES_FOLDER/bin
+    NODE_CONF=$THIS_PATH/node.conf
+    TRUST_STORE=$ROOT_FOLDER/helm/files/network/networkRootTrustStore.jks
+    TRUST_STORE_PASSWORD={{ .Values.corda.node.conf.networkRootTruststorePassword }}
 
     # Load version numbers from docker_config.sh    
     . $DOCKER_IMAGES_FOLDER/docker_config.sh
 
-    local CORDA_BIN=$BIN_DIR/$CORDA_VERSION.jar
+    CORDA_BIN=$BIN_DIR/$CORDA_VERSION.jar
 
     echo "Starting Corda Node initial registration..."
 
