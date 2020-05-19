@@ -39,12 +39,10 @@ GetPathToCurrentlyExecutingScript () {
 GetPathToCurrentlyExecutingScript
 set -eux
 
-. $DIR/docker_config.sh
-
 EnsureDockerIsAvailableAndReachable () {
 	# Make sure Docker is ready
 	set +e
-	docker ps &>/dev/null
+	docker ps > /dev/null 2>&1
 	status=$?
 	if [ $status -eq 0 ]
 	then
@@ -67,6 +65,8 @@ EnsureDockerIsAvailableAndReachable () {
 	set -e
 }
 EnsureDockerIsAvailableAndReachable
+
+. $DIR/docker_config.sh
 
 NO_CACHE=
 if [ "${1-}" = "no-cache" ]

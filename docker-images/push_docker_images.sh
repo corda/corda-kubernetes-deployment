@@ -39,17 +39,10 @@ GetPathToCurrentlyExecutingScript () {
 GetPathToCurrentlyExecutingScript
 set -eux
 
-. $DIR/docker_config.sh
-
-if [ "$DOCKER_REGISTRY" = "" ]; then
-	echo "You must specify a valid container registry in the values.yaml file"
-	exit 1
-fi
-
 EnsureDockerIsAvailableAndReachable () {
 	# Make sure Docker is ready
 	set +e
-	docker ps &>/dev/null
+	docker ps > /dev/null 2>&1
 	status=$?
 	if [ $status -eq 0 ]
 	then
@@ -72,6 +65,13 @@ EnsureDockerIsAvailableAndReachable () {
 	set -e
 }
 EnsureDockerIsAvailableAndReachable
+
+. $DIR/docker_config.sh
+
+if [ "$DOCKER_REGISTRY" = "" ]; then
+	echo "You must specify a valid container registry in the values.yaml file"
+	exit 1
+fi
 
 docker login $DOCKER_REGISTRY
 
