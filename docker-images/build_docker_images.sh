@@ -39,33 +39,6 @@ GetPathToCurrentlyExecutingScript () {
 GetPathToCurrentlyExecutingScript
 set -eux
 
-EnsureDockerIsAvailableAndReachable () {
-	# Make sure Docker is ready
-	set +e
-	docker ps > /dev/null 2>&1
-	status=$?
-	if [ $status -eq 0 ]
-	then
-		echo "Docker is ready..."
-	else
-		if [[ `docker ps 2>&1 | grep -q "permission denied"` -eq 0 ]]; then 
-			echo "Docker requires sudo to execute, trying to substitute using alias docker='sudo docker'"
-			alias docker='sudo docker'
-			if [[ `docker ps 2>&1 | grep -q "permission denied"` -eq 0 ]]; then 
-				echo "Still issues with permissions, try a manual workaround where you set 'alias docker='sudo docker'' then run 'docker ps' to check that there is no 'permission denied' errors."
-				exit 1
-			else
-				echo "Docker now accessible by way of alias, continuing..."
-			fi
-		else
-			echo "!!! Docker engine not available, make sure your Docker is running and responds to command 'docker ps' !!!"
-			exit 1
-		fi
-	fi
-	set -e
-}
-EnsureDockerIsAvailableAndReachable
-
 . $DIR/docker_config.sh
 
 NO_CACHE=
@@ -87,15 +60,15 @@ fi
 cp $DIR/bin/$CORDA_VERSION.jar $DIR/$CORDA_IMAGE_PATH/corda.jar
 cp $DIR/bin/$CORDA_HEALTH_CHECK_VERSION.jar $DIR/$CORDA_IMAGE_PATH/corda-tools-health-survey.jar
 cd $DIR/$CORDA_IMAGE_PATH
-docker build -t $CORDA_IMAGE_PATH:$CORDA_DOCKER_IMAGE_VERSION . -f Dockerfile $NO_CACHE
+$DOCKER_CMD build -t $CORDA_IMAGE_PATH:$CORDA_DOCKER_IMAGE_VERSION . -f Dockerfile $NO_CACHE
 rm corda.jar
 rm corda-tools-health-survey.jar
 cd ..
 
 cp $DIR/bin/$CORDA_FIREWALL_VERSION.jar $DIR/$CORDA_FIREWALL_IMAGE_PATH/corda-firewall.jar
 cd $DIR/$CORDA_FIREWALL_IMAGE_PATH
-docker build -t $CORDA_FIREWALL_IMAGE_PATH:$FIREWALL_DOCKER_IMAGE_VERSION . -f Dockerfile $NO_CACHE
+$DOCKER_CMD build -t $CORDA_FIREWALL_IMAGE_PATH:$FIREWALL_DOCKER_IMAGE_VERSION . -f Dockerfile $NO_CACHE
 rm corda-firewall.jar
 cd ..
 
-docker images "corda_*"
+$DOCKER_CMD images "corda_*"

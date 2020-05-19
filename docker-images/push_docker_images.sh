@@ -39,33 +39,6 @@ GetPathToCurrentlyExecutingScript () {
 GetPathToCurrentlyExecutingScript
 set -eux
 
-EnsureDockerIsAvailableAndReachable () {
-	# Make sure Docker is ready
-	set +e
-	docker ps > /dev/null 2>&1
-	status=$?
-	if [ $status -eq 0 ]
-	then
-		echo "Docker is ready..."
-	else
-		if [[ `docker ps 2>&1 | grep -q "permission denied"` -eq 0 ]]; then 
-			echo "Docker requires sudo to execute, trying to substitute using alias docker='sudo docker'"
-			alias docker='sudo docker'
-			if [[ `docker ps 2>&1 | grep -q "permission denied"` -eq 0 ]]; then 
-				echo "Still issues with permissions, try a manual workaround where you set 'alias docker='sudo docker'' then run 'docker ps' to check that there is no 'permission denied' errors."
-				exit 1
-			else
-				echo "Docker now accessible by way of alias, continuing..."
-			fi
-		else
-			echo "!!! Docker engine not available, make sure your Docker is running and responds to command 'docker ps' !!!"
-			exit 1
-		fi
-	fi
-	set -e
-}
-EnsureDockerIsAvailableAndReachable
-
 . $DIR/docker_config.sh
 
 if [ "$DOCKER_REGISTRY" = "" ]; then
@@ -73,12 +46,15 @@ if [ "$DOCKER_REGISTRY" = "" ]; then
 	exit 1
 fi
 
-docker login $DOCKER_REGISTRY
+echo "Logging in to Docker registry..."
+$DOCKER_CMD login $DOCKER_REGISTRY
 
-docker tag ${CORDA_IMAGE_PATH}:$CORDA_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_IMAGE_PATH}_$VERSION:$CORDA_DOCKER_IMAGE_VERSION
-docker tag ${CORDA_FIREWALL_IMAGE_PATH}:$FIREWALL_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_FIREWALL_IMAGE_PATH}_$VERSION:$FIREWALL_DOCKER_IMAGE_VERSION
+echo "Tagging Docker images..."
+$DOCKER_CMD tag ${CORDA_IMAGE_PATH}:$CORDA_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_IMAGE_PATH}_$VERSION:$CORDA_DOCKER_IMAGE_VERSION
+$DOCKER_CMD tag ${CORDA_FIREWALL_IMAGE_PATH}:$FIREWALL_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_FIREWALL_IMAGE_PATH}_$VERSION:$FIREWALL_DOCKER_IMAGE_VERSION
 
+echo "Pushing Docker images to Docker repository..."
 CORDA_DOCKER_REPOSITORY=$(echo $DOCKER_REGISTRY/${CORDA_IMAGE_PATH}_$VERSION:$CORDA_DOCKER_IMAGE_VERSION 2>&1 | tr '[:upper:]' '[:lower:]')
 CORDA_FIREWALL_DOCKER_REPOSITORY=$(echo $DOCKER_REGISTRY/${CORDA_FIREWALL_IMAGE_PATH}_$VERSION:$FIREWALL_DOCKER_IMAGE_VERSION 2>&1 | tr '[:upper:]' '[:lower:]')
-docker push $CORDA_DOCKER_REPOSITORY
-docker push $CORDA_FIREWALL_DOCKER_REPOSITORY
+$DOCKER_CMD push $CORDA_DOCKER_REPOSITORY
+$DOCKER_CMD push $CORDA_FIREWALL_DOCKER_REPOSITORY
