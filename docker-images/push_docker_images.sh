@@ -48,6 +48,7 @@ fi
 
 EnsureDockerIsAvailableAndReachable () {
 	# Make sure Docker is ready
+	set +e
 	docker ps &>/dev/null
 	status=$?
 	if [ $status -eq 0 ]
@@ -68,6 +69,7 @@ EnsureDockerIsAvailableAndReachable () {
 			exit 1
 		fi
 	fi
+	set -e
 }
 EnsureDockerIsAvailableAndReachable
 
