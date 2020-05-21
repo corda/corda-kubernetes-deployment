@@ -12,7 +12,7 @@ GetPathToCurrentlyExecutingScript () {
 
 		cd `dirname $TARGET_FILE`
 		TARGET_FILE=`basename $TARGET_FILE`
-		local ITERATIONS=0
+		ITERATIONS=0
 
 		# Iterate down a (possible) chain of symlinks
 		while [ -L "$TARGET_FILE" ]
@@ -40,7 +40,7 @@ GetPathToCurrentlyExecutingScript
 set -eux
 
 checkStatus () {
-	local status=$1
+	status=$1
 	if [ $status -eq 0 ]
 		then
 			echo "."
@@ -56,7 +56,7 @@ echo "This will remove certificates from your local file system."
 echo "If you are sure this is what you want to do, please type 'yes' and press enter."
 read -p "Enter 'yes' to continue: " confirm
 echo $confirm
-if [ "$confirm" == "yes" ]; then
+if [ "$confirm" = "yes" ]; then
 	echo "Resetting environment..."
 	rm -rf $DIR/corda-pki-generator/pki-firewall/certs/
 	checkStatus $?

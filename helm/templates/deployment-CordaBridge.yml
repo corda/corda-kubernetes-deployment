@@ -41,7 +41,7 @@ spec:
       - name: container-registry-secret
       containers:
       - name: {{ .Values.config.resourceName }}-bridge
-        image: {{ .Values.config.containerRegistry.serverAddress }}/{{ .Values.config.dockerImageFirewall }}
+        image: {{ .Values.config.containerRegistry.serverAddress }}/{{ printf .Values.config.dockerImageFirewall (.Values.setup.cordaVersion | lower) }}
         imagePullPolicy: Always
         resources:
           requests:

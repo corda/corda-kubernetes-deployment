@@ -37,23 +37,19 @@ GetPathToCurrentlyExecutingScript () {
 	DIR=$(dirname "$ABS_PATH")
 }
 GetPathToCurrentlyExecutingScript
-
 set -eu
-function main() {
-    SERVER="{{.Values.config.containerRegistry.serverAddress}}"
-    USERNAME="{{ .Values.config.containerRegistry.username }}"
-    PASSWORD="{{ .Values.config.containerRegistry.password }}"
-    EMAIL="{{ .Values.config.containerRegistry.email }}"
 
-    {{- if eq .Values.config.containerRegistry.username "AWS" }}
-    PASSWORD=$(aws ecr get-login-password)
-    {{- end }}
-
-    kubectl create secret docker-registry --dry-run=true container-registry-secret \
-    --docker-server=$SERVER \
-    --docker-username=$USERNAME \
-    --docker-password=$PASSWORD \
-    --docker-email=$EMAIL \
-    -o yaml > $DIR/docker-secret.yml
+checkStatus () {
+	status=$1
+	if [ $status -eq 0 ]
+		then
+			echo "."
+		else
+			echo "The previous step failed"
+			exit 1
+	fi	
+	return 0
 }
-main
+
+$DIR/helm/delete-all.sh
+checkStatus $?

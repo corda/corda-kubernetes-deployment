@@ -12,7 +12,7 @@ GetPathToCurrentlyExecutingScript () {
 
 		cd `dirname $TARGET_FILE`
 		TARGET_FILE=`basename $TARGET_FILE`
-		local ITERATIONS=0
+		ITERATIONS=0
 
 		# Iterate down a (possible) chain of symlinks
 		while [ -L "$TARGET_FILE" ]
@@ -40,7 +40,7 @@ GetPathToCurrentlyExecutingScript
 set -eux
 
 checkStatus () {
-	local status=$1
+	status=$1
 	if [ $status -eq 0 ]
 		then
 			echo "."
@@ -61,7 +61,7 @@ checkStatus $?
 INITIAL_REGISTRATION=""
 INITIAL_REGISTRATION=$(grep -A 3 'initialRegistration:' $DIR/helm/values.yaml | grep 'enabled: ' | cut -d ':' -f 2 | xargs)
 
-if [ "$INITIAL_REGISTRATION" == "true" ]; then
+if [ "$INITIAL_REGISTRATION" = "true" ]; then
 	$DIR/helm/initial_registration/initial_registration.sh
 	checkStatus $?
 else 

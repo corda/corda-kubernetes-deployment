@@ -4,11 +4,29 @@ metadata:
   name: {{ .Values.config.resourceName }}-corda-configmap
 data:
   node.conf: |+
-{{ tpl (.Files.Get "files/node.conf") . | indent 4 }}
+{{- $filename := (printf "%s-%s%s" "files/conf/node" .Values.setup.cordaVersion ".conf") }}
+{{- $file := .Files.Get $filename }}
+{{- if $file }}
+{{ tpl ($file) . | indent 4 }}
+{{- else }}
+{{ printf "ERROR: File not found %s, this probably means you are targetting a version of Corda that does not have an assigned node-<version>.conf file, you can in most cases just copy another version (the closest version you can find, eg for 4.4, choose 4.3, for 4.4.2, choose 4.4) of the node.conf file and name it accordingly." $filename }}
+{{- end }}
   bridge.conf: |+
-{{ tpl (.Files.Get "files/bridge.conf") . | indent 4 }}
+{{- $filename := (printf "%s-%s%s" "files/conf/bridge" .Values.setup.cordaVersion ".conf") }}
+{{- $file := .Files.Get $filename }}
+{{- if $file }}
+{{ tpl ($file) . | indent 4 }}
+{{- else }}
+{{ printf "ERROR: File not found %s, this probably means you are targetting a version of Corda that does not have an assigned bridge-<version>.conf file, you can in most cases just copy another version (the closest version you can find, eg for 4.4, choose 4.3, for 4.4.2, choose 4.4) of the bridge.conf file and name it accordingly." $filename }}
+{{- end }}
   float.conf: |+
-{{ tpl (.Files.Get "files/float.conf") . | indent 4 }}
+{{- $filename := (printf "%s-%s%s" "files/conf/float" .Values.setup.cordaVersion ".conf") }}
+{{- $file := .Files.Get $filename }}
+{{- if $file }}
+{{ tpl ($file) . | indent 4 }}
+{{- else }}
+{{ printf "ERROR: File not found %s, this probably means you are targetting a version of Corda that does not have an assigned float-<version>.conf file, you can in most cases just copy another version (the closest version you can find, eg for 4.4, choose 4.3, for 4.4.2, choose 4.4) of the float.conf file and name it accordingly." $filename }}
+{{- end }}
   ping.sh: |+
 {{ tpl (.Files.Get "files/ping.sh") . | indent 4 }}
 binaryData:

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-set -ux
+set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
@@ -12,7 +12,7 @@ GetPathToCurrentlyExecutingScript () {
 
 		cd `dirname $TARGET_FILE`
 		TARGET_FILE=`basename $TARGET_FILE`
-		local ITERATIONS=0
+		ITERATIONS=0
 
 		# Iterate down a (possible) chain of symlinks
 		while [ -L "$TARGET_FILE" ]
@@ -38,39 +38,46 @@ GetPathToCurrentlyExecutingScript () {
 }
 GetPathToCurrentlyExecutingScript
 
-helm version | grep "v2."
+helm version | grep "v2." > /dev/null 2>&1
 if [ "$?" -ne "0" ] ; then
 	echo "Helm version 2 has to be used for compiling these scripts. Please install it from https://github.com/helm/helm/releases"
 	exit 1
 fi
 
-kubectl cluster-info
+kubectl cluster-info > /dev/null 2>&1
 if [ "$?" -ne "0" ] ; then
 	echo "kubectl must be connected to the Kubernetes cluster in order to continue. Please see https://kubernetes.io/docs/tasks/access-application-cluster/configure-access-multiple-clusters/"
 	exit 1
 fi
 
-set -eux
+set -eu
 
 TEMPLATE_NAMESPACE=""
 TEMPLATE_NAMESPACE=$(grep -A 3 'config:' $DIR/values.yaml | grep 'namespace: "' | cut -d '"' -f 2)
 
-if [ "$TEMPLATE_NAMESPACE" == "" ]; then
+if [ "$TEMPLATE_NAMESPACE" = "" ]; then
 	echo "Kubernetes requires a namespace to deploy resources to, no namespace is defined in values.yaml, please define one."
 	exit 1
 fi
 
 helm template $DIR --name $TEMPLATE_NAMESPACE --namespace $TEMPLATE_NAMESPACE --output-dir $DIR/output
-mv $DIR/output/corda/templates/pre-install.sh.yml $DIR/output/corda/templates/pre-install.sh
 
-### docker secret ###
-mv $DIR/output/corda/templates/create-docker-secret.sh.yml $DIR/output/corda/templates/create-docker-secret.sh
-chmod +x $DIR/output/corda/templates/create-docker-secret.sh
-$DIR/output/corda/templates/create-docker-secret.sh
-###---------------###
+# pre-install script
+SCRIPT="$DIR/output/corda/templates/pre-install.sh"
+mv $SCRIPT.yml $SCRIPT
+# Helm always adds a few extra lines, which we want to remove from shell scripts
+tail -n +3 "$SCRIPT" > "$SCRIPT.tmp" && mv "$SCRIPT.tmp" "$SCRIPT"
+chmod +x $SCRIPT
+
+# docker secret script
+SCRIPT="$DIR/output/corda/templates/create-docker-secret.sh"
+mv $SCRIPT.yml $SCRIPT
+# Helm always adds a few extra lines, which we want to remove from shell scripts
+tail -n +3 "$SCRIPT" > "$SCRIPT.tmp" && mv "$SCRIPT.tmp" "$SCRIPT"
+chmod +x $SCRIPT
+$SCRIPT
 
 kubectl apply -f $DIR/output/corda/templates/ --namespace=$TEMPLATE_NAMESPACE
 
-chmod +x $DIR/output/corda/templates/pre-install.sh
 # Copy CorDapps etc.
 #$DIR/output/corda/templates/pre-install.sh
