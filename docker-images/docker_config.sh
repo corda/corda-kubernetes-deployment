@@ -11,9 +11,9 @@ GetPathToCurrentlyExecutingScript () {
 	
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
 	set +e
-	ABS_PATH=$(readlink -f "${SCRIPT_SRC}")
+	ABS_PATH=$(readlink -f "${SCRIPT_SRC}" 2>&1)
 	if [ "$?" -ne "0" ]; then
-		echo "readlink issue workaround..."
+		echo "Using macOS alternative to readlink -f command..."
 		# Unfortunate MacOs issue with readlink functionality, see https://github.com/corda/corda-kubernetes-deployment/issues/4
 		TARGET_FILE=$SCRIPT_SRC
 
