@@ -8,7 +8,9 @@ GetPathToCurrentlyExecutingScript () {
 	if [ "$BASH_SOURCE" = "" ]; then SCRIPT_SRC=""; else SCRIPT_SRC="${BASH_SOURCE[0]}"; fi
 	if [ "$SCRIPT_SRC" = "" ]; then SCRIPT_SRC=$0; fi
 	set -u
+	
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
+	set +e
 	ABS_PATH=$(readlink -f "${SCRIPT_SRC}")
 	if [ "$?" -ne "0" ]; then
 		echo "readlink issue workaround..."
