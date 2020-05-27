@@ -4,6 +4,7 @@ set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
+	set +e
 	ABS_PATH=$(readlink -f "$0")
 	if [ "$?" -ne "0" ]; then
 		echo "readlink issue workaround..."
