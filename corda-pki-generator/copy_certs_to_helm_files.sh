@@ -69,11 +69,11 @@ ensureFileExistsAndCopy () {
 
 CopyCertificatesToHelmFolder () {
 	echo "====== Copying PKI certificates to Helm folder next ... ====== "
-	echo "Copying trust.jks:"
+	echo "Copying trust.jks ..."
 	ensureFileExistsAndCopy $DIR/pki-firewall/certs/trust.jks $DIR/../helm/files/certificates/firewall_tunnel/trust.jks
-	echo "Copying float.jks:"
+	echo "Copying float.jks ..."
 	ensureFileExistsAndCopy $DIR/pki-firewall/certs/float.jks $DIR/../helm/files/certificates/firewall_tunnel/float.jks
-	echo "Copying bridge.jks:"
+	echo "Copying bridge.jks ..."
 	ensureFileExistsAndCopy $DIR/pki-firewall/certs/bridge.jks $DIR/../helm/files/certificates/firewall_tunnel/bridge.jks
 	echo "====== Copying PKI certificates to Helm folder completed. ====== "
 }
