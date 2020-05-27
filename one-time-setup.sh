@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ux
+set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
@@ -37,7 +37,7 @@ GetPathToCurrentlyExecutingScript () {
 	DIR=$(dirname "$ABS_PATH")
 }
 GetPathToCurrentlyExecutingScript
-set -eux
+set -eu
 
 checkStatus () {
 	status=$1
@@ -51,21 +51,25 @@ checkStatus () {
 	return 0
 }
 
-$DIR/docker-images/build_docker_images.sh
-checkStatus $?
-$DIR/docker-images/push_docker_images.sh
-checkStatus $?
-$DIR/corda-pki-generator/generate_firewall_pki.sh
-checkStatus $?
-
-INITIAL_REGISTRATION=""
-INITIAL_REGISTRATION=$(grep -A 3 'initialRegistration:' $DIR/helm/values.yaml | grep 'enabled: ' | cut -d ':' -f 2 | xargs)
-
-if [ "$INITIAL_REGISTRATION" = "true" ]; then
-	$DIR/helm/initial_registration/initial_registration.sh
+OneTimeSetup () {
+	echo "====== One Time Setup Script ====== "
+	$DIR/docker-images/build_docker_images.sh
 	checkStatus $?
-else 
-	echo "Skipping initial registration step. (disabled in values.yaml)"
-fi
+	$DIR/docker-images/push_docker_images.sh
+	checkStatus $?
+	$DIR/corda-pki-generator/generate_firewall_pki.sh
+	checkStatus $?
 
-echo "One time setup script complete."
+	INITIAL_REGISTRATION=""
+	INITIAL_REGISTRATION=$(grep -A 3 'initialRegistration:' $DIR/helm/values.yaml | grep 'enabled: ' | cut -d ':' -f 2 | xargs)
+
+	if [ "$INITIAL_REGISTRATION" = "true" ]; then
+		$DIR/helm/initial_registration/initial_registration.sh
+		checkStatus $?
+	else 
+		echo "Skipping initial registration step. (disabled in values.yaml)"
+	fi
+
+	echo "====== One Time Setup Script completed. ====== "
+}
+OneTimeSetup

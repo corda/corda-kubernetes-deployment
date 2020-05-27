@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ux
+set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
@@ -37,24 +37,31 @@ GetPathToCurrentlyExecutingScript () {
 	DIR=$(dirname "$ABS_PATH")
 }
 GetPathToCurrentlyExecutingScript
-set -eux
+set -eu
 
 . $DIR/docker_config.sh
 
-if [ "$DOCKER_REGISTRY" = "" ]; then
-	echo "You must specify a valid container registry in the values.yaml file"
-	exit 1
-fi
+PushDockerImages () {
+	echo "====== Pushing Docker images next ... ====== "
+	if [ "$DOCKER_REGISTRY" = "" ]; then
+		echo "You must specify a valid container registry in the values.yaml file"
+		exit 1
+	fi
 
-echo "Logging in to Docker registry..."
-$DOCKER_CMD login $DOCKER_REGISTRY
+	echo "Logging in to Docker registry..."
+	$DOCKER_CMD login $DOCKER_REGISTRY
 
-echo "Tagging Docker images..."
-$DOCKER_CMD tag ${CORDA_IMAGE_PATH}:$CORDA_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_IMAGE_PATH}_$VERSION:$CORDA_DOCKER_IMAGE_VERSION
-$DOCKER_CMD tag ${CORDA_FIREWALL_IMAGE_PATH}:$FIREWALL_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_FIREWALL_IMAGE_PATH}_$VERSION:$FIREWALL_DOCKER_IMAGE_VERSION
+	echo "Tagging Docker images..."
+	$DOCKER_CMD tag ${CORDA_IMAGE_PATH}:$CORDA_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_IMAGE_PATH}_$VERSION:$CORDA_DOCKER_IMAGE_VERSION
+	$DOCKER_CMD tag ${CORDA_FIREWALL_IMAGE_PATH}:$FIREWALL_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_FIREWALL_IMAGE_PATH}_$VERSION:$FIREWALL_DOCKER_IMAGE_VERSION
 
-echo "Pushing Docker images to Docker repository..."
-CORDA_DOCKER_REPOSITORY=$(echo $DOCKER_REGISTRY/${CORDA_IMAGE_PATH}_$VERSION:$CORDA_DOCKER_IMAGE_VERSION 2>&1 | tr '[:upper:]' '[:lower:]')
-CORDA_FIREWALL_DOCKER_REPOSITORY=$(echo $DOCKER_REGISTRY/${CORDA_FIREWALL_IMAGE_PATH}_$VERSION:$FIREWALL_DOCKER_IMAGE_VERSION 2>&1 | tr '[:upper:]' '[:lower:]')
-$DOCKER_CMD push $CORDA_DOCKER_REPOSITORY
-$DOCKER_CMD push $CORDA_FIREWALL_DOCKER_REPOSITORY
+	echo "Pushing Docker images to Docker repository..."
+	CORDA_DOCKER_REPOSITORY=$(echo $DOCKER_REGISTRY/${CORDA_IMAGE_PATH}_$VERSION:$CORDA_DOCKER_IMAGE_VERSION 2>&1 | tr '[:upper:]' '[:lower:]')
+	CORDA_FIREWALL_DOCKER_REPOSITORY=$(echo $DOCKER_REGISTRY/${CORDA_FIREWALL_IMAGE_PATH}_$VERSION:$FIREWALL_DOCKER_IMAGE_VERSION 2>&1 | tr '[:upper:]' '[:lower:]')
+	echo "Push for Corda Enterprise Docker image:"
+	$DOCKER_CMD push $CORDA_DOCKER_REPOSITORY
+	echo "Push for Corda Firewall Docker image:"
+	$DOCKER_CMD push $CORDA_FIREWALL_DOCKER_REPOSITORY
+	echo "====== Pushing Docker images completed. ====== "
+}
+PushDockerImages

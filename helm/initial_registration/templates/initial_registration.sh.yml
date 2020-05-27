@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ux
+set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
@@ -37,7 +37,7 @@ GetPathToCurrentlyExecutingScript () {
 	DIR=$(dirname "$ABS_PATH")
 }
 GetPathToCurrentlyExecutingScript
-set -eux
+set -eu
 
 ROOT_FOLDER=$DIR/../../../../..
 # Store DIR in another variable because including docker_config.sh will overwrite it

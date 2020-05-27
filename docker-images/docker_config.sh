@@ -52,7 +52,7 @@ EnsureDockerIsAvailableAndReachable () {
 	status=$?
 	if [ $status -eq 0 ]
 	then
-		echo "Docker is ready..."
+		echo "Docker is available and reachable..."
 	else
 		$DOCKER_CMD ps 2>&1 | grep -q "permission denied"
 		status=$?

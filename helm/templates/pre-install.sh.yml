@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ux
+set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
@@ -38,7 +38,7 @@ GetPathToCurrentlyExecutingScript () {
 }
 GetPathToCurrentlyExecutingScript
 
-set -eux
+set -eu
 APP={{ .Values.config.resourceName }}-node
 POD=$(kubectl get pod -l app=$APP -o jsonpath="{.items[0].metadata.name}")
 CORDAPPS_PATH=$(readlink -f "$DIR/../../../files/cordapps")

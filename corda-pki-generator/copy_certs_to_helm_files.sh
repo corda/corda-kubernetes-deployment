@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -ux
+set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
@@ -37,7 +37,7 @@ GetPathToCurrentlyExecutingScript () {
 	DIR=$(dirname "$ABS_PATH")
 }
 GetPathToCurrentlyExecutingScript
-set -eux
+set -eu
 
 checkStatus () {
 	status=$1
@@ -67,7 +67,14 @@ ensureFileExistsAndCopy () {
     fi
 }
 
-ensureFileExistsAndCopy $DIR/pki-firewall/certs/trust.jks $DIR/../helm/files/certificates/firewall_tunnel/trust.jks
-ensureFileExistsAndCopy $DIR/pki-firewall/certs/float.jks $DIR/../helm/files/certificates/firewall_tunnel/float.jks
-ensureFileExistsAndCopy $DIR/pki-firewall/certs/bridge.jks $DIR/../helm/files/certificates/firewall_tunnel/bridge.jks
-
+CopyCertificatesToHelmFolder () {
+	echo "====== Copying PKI certificates to Helm folder next ... ====== "
+	echo "Copying trust.jks:"
+	ensureFileExistsAndCopy $DIR/pki-firewall/certs/trust.jks $DIR/../helm/files/certificates/firewall_tunnel/trust.jks
+	echo "Copying float.jks:"
+	ensureFileExistsAndCopy $DIR/pki-firewall/certs/float.jks $DIR/../helm/files/certificates/firewall_tunnel/float.jks
+	echo "Copying bridge.jks:"
+	ensureFileExistsAndCopy $DIR/pki-firewall/certs/bridge.jks $DIR/../helm/files/certificates/firewall_tunnel/bridge.jks
+	echo "====== Copying PKI certificates to Helm folder completed. ====== "
+}
+CopyCertificatesToHelmFolder
