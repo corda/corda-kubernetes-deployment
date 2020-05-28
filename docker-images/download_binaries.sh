@@ -69,55 +69,85 @@ wgetDownload () {
 	OUTPUT_FILE=$1
 	URL=$2
 	echo "Downloading $OUTPUT_FILE from $URL:"
-	wget --user ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PASSWORD} -S --spider $URL 2>&1 | grep 'HTTP/1.1 200 OK'
+	set +e
+	wget --help > /dev/null 2>&1
 	status=$?
-	if [ $status -eq 0 ]; then 
-		echo "URL check passed, target exists!"
-	else 
-		echo "URL check failed, file not found! Check your version definition in values.yaml file!"
+	set -e
+	if [ $status -ne 0 ]; then 
+		echo "wget missing, cannot continue!"
 		exit 1
-	fi
+	else
+		wget --user ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PASSWORD} -S --spider $URL 2>&1 | grep 'HTTP/1.1 200 OK'
+		status=$?
+		if [ $status -eq 0 ]; then 
+			echo "URL check passed, target exists!"
+		else 
+			echo "URL check failed, file not found! Check your version definition in values.yaml file!"
+			exit 1
+		fi
 
-	echo -n "    "
-	wget -nc --user ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PASSWORD} --progress=dot $URL -O $OUTPUT_FILE 2>&1 | grep --line-buffered "%" | sed -u -e "s,\.,,g" | awk '{printf("\b\b\b\b%4s", $2)}'
-	echo -ne "\b\b\b\b"
-	echo " DONE"
+		echo -n "    "
+		wget -nc --user ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PASSWORD} --progress=dot $URL -O $OUTPUT_FILE 2>&1 | grep --line-buffered "%" | sed -u -e "s,\.,,g" | awk '{printf("\b\b\b\b%4s", $2)}'
+		echo -ne "\b\b\b\b"
+		echo " DONE"
+	fi
 }
 
 downloadBinaries () {
 	echoMessage "Downloading necessary binaries for Corda Enterprise version $CORDA_VERSION ..."
 	cd $DIR/bin
 	
+	CORDA_DOWNLOAD_URL="https://software.r3.com/artifactory/r3-corda-releases/com/r3/corda/corda/${VERSION}/corda-${VERSION}.jar"
+	CORDA_FIREWALL_DOWNLOAD_URL="https://software.r3.com/artifactory/r3-corda-releases/com/r3/corda/corda-firewall/${VERSION}/corda-firewall-${VERSION}.jar"
+	CORDA_HEALTH_CHECK_DOWNLOAD_URL="https://software.r3.com/artifactory/r3-corda-releases/com/r3/corda/corda-tools-health-survey/${VERSION}/corda-tools-health-survey-${VERSION}.jar"
+	CORDA_FINANCE_WORKFLOWS_DOWNLOAD_URL="https://software.r3.com/artifactory/r3-corda-releases/com/r3/corda/corda-finance-workflows/${VERSION}/corda-finance-workflows-${VERSION}.jar"
+	CORDA_FINANCE_CONTRACT_DOWNLOAD_URL="https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases/net/corda/corda-finance-contracts/${VERSION}/corda-finance-contracts-${VERSION}.jar"
+
+	echo "Checking that wget exists..."
+	set +e
+	wget --help > /dev/null 2>&1
+	status=$?
+	set -e
+	if [ $status -ne 0 ]; then 
+		echo "wget is not installed. You need to install it in order to download the binaries using this script. You may also download them manually."
+		echo "Manual download instructions, please download the following links and save as the name suggests:"
+		echo "docker-images/bin/$CORDA_VERSION.jar = $CORDA_DOWNLOAD_URL"
+		echo "docker-images/bin/$CORDA_FIREWALL_VERSION.jar = $CORDA_FIREWALL_DOWNLOAD_URL"
+		echo "docker-images/bin/$CORDA_HEALTH_CHECK_VERSION.jar = $CORDA_HEALTH_CHECK_DOWNLOAD_URL"
+		echo "docker-images/bin/corda-finance-workflows-${VERSION}.jar = $CORDA_FINANCE_WORKFLOWS_DOWNLOAD_URL"
+		echo "docker-images/bin/corda-finance-contracts-${VERSION}.jar = $CORDA_FINANCE_CONTRACT_DOWNLOAD_URL"
+	fi
+	
 	if [ ! -f "$CORDA_VERSION.jar" ]; then
-		wgetDownload $CORDA_VERSION.jar "https://software.r3.com/artifactory/r3-corda-releases/com/r3/corda/corda/${VERSION}/corda-${VERSION}.jar"
+		wgetDownload $CORDA_VERSION.jar "$CORDA_DOWNLOAD_URL"
 		checkStatus $?
 	else
 		echo "$CORDA_VERSION.jar already downloaded."
 	fi
 
 	if [ ! -f "$CORDA_FIREWALL_VERSION.jar" ]; then
-		wgetDownload $CORDA_FIREWALL_VERSION.jar "https://software.r3.com/artifactory/r3-corda-releases/com/r3/corda/corda-firewall/${VERSION}/corda-firewall-${VERSION}.jar"
+		wgetDownload $CORDA_FIREWALL_VERSION.jar "$CORDA_FIREWALL_DOWNLOAD_URL"
 		checkStatus $?
 	else
 		echo "$CORDA_FIREWALL_VERSION.jar already downloaded."
 	fi
 
 	if [ ! -f "$CORDA_HEALTH_CHECK_VERSION.jar" ]; then
-		wgetDownload $CORDA_HEALTH_CHECK_VERSION.jar "https://software.r3.com/artifactory/r3-corda-releases/com/r3/corda/corda-tools-health-survey/${VERSION}/corda-tools-health-survey-${VERSION}.jar"
+		wgetDownload $CORDA_HEALTH_CHECK_VERSION.jar "$CORDA_HEALTH_CHECK_DOWNLOAD_URL"
 		checkStatus $?
 	else
 		echo "$CORDA_HEALTH_CHECK_VERSION.jar already downloaded."
 	fi
 
 	if [ ! -f "corda-finance-workflows-${VERSION}.jar" ]; then
-		wgetDownload corda-finance-workflows-${VERSION}.jar "https://software.r3.com/artifactory/r3-corda-releases/com/r3/corda/corda-finance-workflows/${VERSION}/corda-finance-workflows-${VERSION}.jar"
+		wgetDownload corda-finance-workflows-${VERSION}.jar "$CORDA_FINANCE_WORKFLOWS_DOWNLOAD_URL"
 		checkStatus $?
 	else
 		echo "corda-finance-workflows-${VERSION}.jar already downloaded."
 	fi
 
 	if [ ! -f "corda-finance-contracts-${VERSION}.jar" ]; then
-		wgetDownload corda-finance-contracts-${VERSION}.jar "https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases/net/corda/corda-finance-contracts/${VERSION}/corda-finance-contracts-${VERSION}.jar"
+		wgetDownload corda-finance-contracts-${VERSION}.jar "$CORDA_FINANCE_CONTRACT_DOWNLOAD_URL"
 		checkStatus $?
 	else
 		echo "corda-finance-contracts-${VERSION}.jar already downloaded."
