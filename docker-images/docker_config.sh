@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 set -u
 DIR="."
@@ -8,24 +8,26 @@ GetPathToCurrentlyExecutingScript () {
 	if [ "$BASH_SOURCE" = "" ]; then SCRIPT_SRC=""; else SCRIPT_SRC="${BASH_SOURCE[0]}"; fi
 	if [ "$SCRIPT_SRC" = "" ]; then SCRIPT_SRC=$0; fi
 	set -u
+	
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
-	ABS_PATH=$(readlink -f "${SCRIPT_SRC}")
+	set +e
+	ABS_PATH=$(readlink -f "${SCRIPT_SRC}" 2>&1)
 	if [ "$?" -ne "0" ]; then
-		echo "readlink issue workaround..."
+		echo "Using macOS alternative to readlink -f command..."
 		# Unfortunate MacOs issue with readlink functionality, see https://github.com/corda/corda-kubernetes-deployment/issues/4
 		TARGET_FILE=$SCRIPT_SRC
 
-		cd `dirname $TARGET_FILE`
-		TARGET_FILE=`basename $TARGET_FILE`
+		cd $(dirname $TARGET_FILE)
+		TARGET_FILE=$(basename $TARGET_FILE)
 		ITERATIONS=0
 
 		# Iterate down a (possible) chain of symlinks
 		while [ -L "$TARGET_FILE" ]
 		do
-			TARGET_FILE=`readlink $TARGET_FILE`
-			cd `dirname $TARGET_FILE`
-			TARGET_FILE=`basename $TARGET_FILE`
-			((++ITERATIONS))
+			TARGET_FILE=$(readlink $TARGET_FILE)
+			cd $(dirname $TARGET_FILE)
+			TARGET_FILE=$(basename $TARGET_FILE)
+			ITERATIONS=$((ITERATIONS + 1))
 			if [ "$ITERATIONS" -gt 1000 ]; then
 				echo "symlink loop. Critical exit."
 				exit 1
@@ -34,7 +36,7 @@ GetPathToCurrentlyExecutingScript () {
 
 		# Compute the canonicalized name by finding the physical path 
 		# for the directory we're in and appending the target file.
-		PHYS_DIR=`pwd -P`
+		PHYS_DIR=$(pwd -P)
 		ABS_PATH=$PHYS_DIR/$TARGET_FILE
 	fi
 
@@ -52,7 +54,7 @@ EnsureDockerIsAvailableAndReachable () {
 	status=$?
 	if [ $status -eq 0 ]
 	then
-		echo "Docker is ready..."
+		echo "Docker is available and reachable..."
 	else
 		$DOCKER_CMD ps 2>&1 | grep -q "permission denied"
 		status=$?

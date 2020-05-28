@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 IP=$1
 PORT=$2
 (echo > /dev/tcp/$IP/$PORT) > /dev/null 2>&1 && echo "UP" || echo "DOWN"
