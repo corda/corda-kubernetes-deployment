@@ -50,7 +50,7 @@ PushDockerImages () {
 	fi
 
 	echo "Logging in to Docker registry..."
-	$DOCKER_CMD login $DOCKER_REGISTRY
+	$DOCKER_CMD login $DOCKER_REGISTRY --username $DOCKER_USER --password $DOCKER_PASSWORD
 
 	echo "Tagging Docker images..."
 	$DOCKER_CMD tag ${CORDA_IMAGE_PATH}:$CORDA_DOCKER_IMAGE_VERSION $DOCKER_REGISTRY/${CORDA_IMAGE_PATH}_$VERSION:$CORDA_DOCKER_IMAGE_VERSION
