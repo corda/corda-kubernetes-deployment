@@ -26,12 +26,4 @@ If you do not have a license for Corda Enterprise, you can apply for an evaluati
 
 ## CONFIGURATION
 
-Main configuration options in the file ``docker_config.sh`` are as follows:
-
-- ``DOCKER_REGISTRY``, defines the Container Registry location to use, example: <container-registry.mydomain.com>
-- ``VERSION``, defines the version of Corda Enterprise we are using, default is 4.0
-- ``HEALTH_CHECK_VERSION``, defines the version of the Corda Health Survey version to use, the default is 4.0, for more information see <https://solutions.corda.net/deployment/onprem/corda-health-checker.html>
-- ``CORDA_DOCKER_IMAGE_VERSION``, the published version number of the Docker image for the Node, the default is ``v1.00``, which you can use as starting point an increment if you make changes to your Docker file
-- ``FIREWALL_DOCKER_IMAGE_VERSION``, the published version number of the Docker image for the Corda Firewall, the default is ``v1.00``, which you can use as starting point an increment if you make changes to your Docker file
-
-Fin.
+All the relevant configuration options can be found in the file ``helm/values.yaml``.

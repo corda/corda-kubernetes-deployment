@@ -14,7 +14,7 @@ Licensed under [Apache License, version 2.0](https://www.apache.org/licenses/LIC
 
 ## IMPORTANT
 
-Kubernetes is a complex system and setting it up a successful deployment for the first time can be challenging as well.
+Kubernetes is a complex system and setting up a successful deployment for the first time can be challenging as well.
 
 Please make sure you step through the [SETUP CHECKLIST](#setup-checklist) section carefully the first time you deploy, to avoid problems down the road.
 
@@ -46,9 +46,7 @@ It is strongly recommended you follow the CHECKLIST, to not skip an important st
 ---
 ---
 
-## SETUP
-
-### BINARIES
+## BINARIES
 
 This deployment is targeting an Enterprise deployment, which should include a Corda Node, but also the Corda Firewall, which is an Enterprise only feature.
 
@@ -62,43 +60,16 @@ If you have R3 Artifactory access, the download will be automatic as part of the
 
 Please see [docker-images/README.md](docker-images/README.md) for more information.
 
-### CONFIGURATION VALUES
+---
+
+## CONFIGURATION
 
 You must completely fill out the [helm/values.yaml](helm/values.yaml) file according to your configuration.
-
-Last time I ran this script in a fresh installation, I only had to modify the following fields:
-
-``config.``:
-
-* nodeLoadBalancerIP
-* floatLoadBalancerIP
-
-``config.containerRegistry.``:
-
-* serverAddress
-* username
-* password
-* email
-
-``config.storage.azureFile.``:
-
-* account
-* azureStorageAccountName
-* azureStorageAccountKey
-
-``corda.node.conf.``:
-
-* legalName
-* emailAddress
-* p2pAddress
-* identityManagerAddress
-* networkmapAddress
-
-For the rest of the options the defaults worked for me, but you may find that you have to modify more configuration options for your deployment.
+For more details on how it should be filled out, follow the [CHECKLIST.md](CHECKLIST.md) document.
 
 ---
 
-## USAGE (ALSO SEE ``SETUP`` above)
+## SHORT USAGE GUIDE (see [SETUP CHECKLIST](#setup-checklist) for a full guide)
 
 This is a brief view of the steps you will take, for the full set of steps, please review [CHECKLIST.md](CHECKLIST.md).
 
@@ -118,6 +89,9 @@ For more details and instructions it is strongly recommended to visit the follow
 <https://solutions.corda.net/deployment/kubernetes/intro.html>
 
 For additional documentation please find it here [Documentation](DOCUMENTATION.md).
+
+It also contains a helpful [Cost calculation](COST_CALCULATION.md) for evaluating **production** costs.
+(you can test this out in a much more affordable setup, in a test cluster you can run it with just 2x(Standard DS2 v2 (2 vcpus, 7 GiB memory)) worker nodes)
 
 ---
 
