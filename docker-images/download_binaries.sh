@@ -74,7 +74,7 @@ wgetDownload () {
 	status=$?
 	set -e
 	if [ $status -ne 0 ]; then 
-		echo "wget missing, cannot continue!"
+		echo "wget missing, cannot continue (please install wget: https://stackoverflow.com/questions/33886917/how-to-install-wget-in-macos)!"
 		exit 1
 	else
 		wget --user ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PASSWORD} -S --spider $URL 2>&1 | grep 'HTTP/1.1 200 OK'
@@ -86,8 +86,19 @@ wgetDownload () {
 			exit 1
 		fi
 
+		set +e
+		echo "test for sed -u availability..." | sed -u -e "s,\.,,g" > /dev/null 2>&1
+		status=$?
+		set -e
+		
+		SED_U_OPTION="-u"
+		if [ $status -ne 0 ]; then 
+			SED_U_OPTION=""
+		fi
+
+		echo "Now downloading (please be patient) ..."
 		echo -n "    "
-		wget -nc --user ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PASSWORD} --progress=dot $URL -O $OUTPUT_FILE 2>&1 | grep --line-buffered "%" | sed -u -e "s,\.,,g" | awk '{printf("\b\b\b\b%4s", $2)}'
+		wget -nc --user ${ARTIFACTORY_USER} --password ${ARTIFACTORY_PASSWORD} --progress=dot $URL -O $OUTPUT_FILE 2>&1 | grep --line-buffered "%" | sed $SED_U_OPTION -e "s,\.,,g" | awk '{printf("\b\b\b\b%4s", $2)}'
 		echo -ne "\b\b\b\b"
 		echo " DONE"
 	fi
