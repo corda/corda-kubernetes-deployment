@@ -2,12 +2,18 @@
 
 ## Overview
 
-Cost calculation of Kubernetes deployment versus a traditional bare-metal deployment
+Cost calculation of Kubernetes deployment versus a traditional bare-metal deployment in a production environment.
 
 We have received many requests to compare the cost of deploying using Kubernetes versus a traditional bare-metal based installation.
 
 Although the answer will be dependent on the use-case specific details, for example are we talking about high-frequency trading with high number of transactions per second or 
 are we talking about high quality asset issuance which occurs much less frequently, we can still generate some rough estimates that hopefully will be useful as indications.
+
+#### Notes
+
+Note that if you just want to use this deployment for testing, you will have a fraction of the costs available to you. 
+You can eliminate the database costs by using H2 file database (built-in to Corda).
+You can also use just 1 large server (4 cores and 16 GB RAM) or 2 mid-sized servers (2 cores and 8 GB RAM) to host the whole cluster.
 
 ## Basic building blocks
 
