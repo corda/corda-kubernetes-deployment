@@ -12,11 +12,26 @@ Licensed under [Apache License, version 2.0](https://www.apache.org/licenses/LIC
 
 ---
 
-## MORE INFORMATION
+## IMPORTANT
+
+Kubernetes is a complex system and setting it up a successful deployment for the first time can be challenging as well.
+
+Please make sure you step through the [SETUP CHECKLIST](#setup-checklist) section carefully the first time you deploy, to avoid problems down the road.
 
 Additional information on setup and usage of this Corda Kubernetes Deployment can be found on the [Corda Solutions Docs](https://solutions.corda.net/deployment/kubernetes/intro.html) site.
 
-It is strongly recommended you review all of the documentation there before setting this up for the first time.
+It is strongly recommended you review the documentation there before setting this up for the first time to familiarize yourself with the topic at hand.
+
+---
+
+## SETUP CHECKLIST
+
+Since there are a number of prerequisites that need to be met and then a certain order of running everything, a checklist has been collated that you may find useful.
+
+Please see [CHECKLIST.md](CHECKLIST.md) for more information.
+
+**Note!**
+It is strongly recommended you follow the CHECKLIST, to not skip an important step, especially the first time you set up this deployment,
 
 ---
 
@@ -26,16 +41,14 @@ It is strongly recommended you review all of the documentation there before sett
 * Building the images requires local [Docker](https://www.docker.com/) installation
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) is used to manage Kubernetes cluster
 * [Helm](https://helm.sh/) version 2.x
-* Corda Enterprise jars downloaded and stored in 'bin' folder
+* Access to Corda Enterprise binary files or access to R3 Artifactory for Enterprise (licensed users)
 
 ---
 ---
 
 ## SETUP
 
-### READ ME FIRST
-
-#### BINARIES
+### BINARIES
 
 This deployment is targeting an Enterprise deployment, which should include a Corda Node, but also the Corda Firewall, which is an Enterprise only feature.
 
@@ -43,19 +56,13 @@ In order to execute the following scripts correctly, you will have to have acces
 
 The files should be downloaded first and placed in the following folder: ``docker-images/bin``
 
-You can use the helper script ``download_binaries.sh`` to download binaries for you, as long as you have the necessary login details available.
+You can use the helper script ``download_binaries.sh`` to download binaries for you, as long as you have the necessary login details available for the R3 Artifactory.
+
+If you have R3 Artifactory access, the download will be automatic as part of the ``one-time-setup.sh`` script, which is the recommended way of performing the first time setup.
 
 Please see [docker-images/README.md](docker-images/README.md) for more information.
 
-## SETUP CHECKLIST
-
-Since there are a number of prerequisites that need to be met and then a certain order of running everything, a checklist has been collated that you may find useful.
-
-Please see [CHECKLIST.md](CHECKLIST.md) for more information.
-
----
-
-#### CONFIGURATION VALUES
+### CONFIGURATION VALUES
 
 You must completely fill out the [helm/values.yaml](helm/values.yaml) file according to your configuration.
 
@@ -89,99 +96,44 @@ Last time I ran this script in a fresh installation, I only had to modify the fo
 
 For the rest of the options the defaults worked for me, but you may find that you have to modify more configuration options for your deployment.
 
-#### ONE-TIME SETUP
-
-There is an automated way to perform the one-time setup by executing ``one-time-setup.sh``, which does all the necessary steps, provided you have completed the previous sections.
-
 ---
-
-## KEY CONCEPTS / TOOLS
-
-### Docker image generation
-
-We need to have the relevant Docker images in the Container Registry for Kubernetes to access.
-This is accomplished by the following two scripts in the folder ``docker-images``:
-
-* build_docker_images.sh
-    Will compile the Dockerfiles into Docker images and tag them with the appropriate tags (that are customisable).
-* push_docker_images.sh
-    Pushes the created Docker images to the assigned Docker Registry.
-
-Both of the above scripts rely on configuration settings in the file ``docker_config.sh``. The main variables to set in this file are ``DOCKER_REGISTRY``, ``HEALTH_CHECK_VERSION`` and ``VERSION``, the rest of the options can use their default values.
-
-Execute build_docker_images.sh to compile the Docker image we will be using.
-
-Running docker images "corda_*" should reveal the newly created image:
-
-```
-	REPOSITORY		TAG	IMAGE ID	CREATED		SIZE
-	corda_image_ent_4.0	v1.0	4c037385e632	5 minutes ago	363MB
-```
-
-### HELM
-
-Helm is an orchestrator for Kubernetes, which allows us to parametrize the whole installation into a few simple values in one file (``helm/values.yaml``).
-This file is also used for the initial registration phase.
-
-### CONFIGURATION
-
-Notable configuration options in the Helm values file include the following:
-
-- Enable / disable Corda Firewall use
-- Enable / disable out-of-process Artemis use, with / without High-Availability setup
-- Enable / disable HSM (Hardware Security Module) use
-
-### Public Key Infrastructure (PKI) generation
-
-Some parts of the deployment use independent PKI structure. This is true for the Corda Firewall. The two components of the Corda Firewall, the Bridge and the Float communicate with each other using mutually authenticated TLS using a common certificate hierarchy with a shared trust root.
-One way to generate this certificate hierarchy is by use of the tools located in the folder ``corda-pki-generator``.
-This is just an example for setting up the necessary PKI structure and does not support storing the keys in HSMs, for that additional work is required and that is expected in an upcoming version of the scripts.
-
-### INITIAL REGISTRATION
-
-The initial registration of a Corda Node is a one-time step that issues a Certificate Signing Request (CSR) to the Identity Manager on the Corda Network and once approved returns with the capability to generate a full certificate chain which links the Corda Network Root CA to the Subordinate CA which in turn links to the Identity Manager CA and finally to the Node CA.
-This Node CA is then capable of generating the necessary TLS certificate and signing keys for use in transactions on the network.
-
-This process is generally initiated by executing ``java -jar corda.jar initial-registration``.
-The process will always need access to the Corda Network root truststore. This is usually assigned to the above command with additional parameters ``--network-root-truststore-password $TRUSTSTORE_PASSWORD --network-root-truststore ./workspace/networkRootTrustStore.jks``.
-
-The ``networkRootTrustStore.jks`` file should be placed in folder ``helm/files/network``.
-
-Once initiated the Corda Node will start the CSR request and wait indefinitely until the CSR request returns or is cancelled.
-If the CSR returns successfully, next the Node will generate the certificates in the folder ``certificates``.
-The generated files from this folder should then be copied to the following folder: ``helm/files/certificates/node``.
-
-The following is performed by initiating an initial-registration step:
-
-- Contacts the [Corda Network](https://corda.network/) or a private Corda Network with a request to join the network with a CSR (Certificate Signing Request).
-- Generates Node signing keys and TLS keys for communicating with other Nodes on the network
-
-The scripted initial-registration step can be found in the following folder ``helm/initial-registration/``.
-
-Just run script ``initial-registration.sh``
-
-The following steps should also be performed in a scripted manner, however, they are not implemented yet:
-
-- Places the Private keys corresponding to the generated certificates in an HSM (if HSM is configured to be used)
-- Generates Artemis configuration with / without High-Availability setup
 
 ## USAGE (ALSO SEE ``SETUP`` above)
 
-1. Start by downloading the required binaries
-2. Customize the Helm ``values.yaml`` file according to your deployment (this step is used by initial-registration and Helm compile, very important to fill in correctly and completely)
-3. Execute ``one-time-setup.sh`` which will do the following (you can also step through the steps on your own, just follow what the one-time-setup.sh would have done):
-	1. Generate the Corda Firewall PKI certificates
-	2. Execute initial registration step (which should copy certificates to the correct locations under ``helm/files``)
-	3. Build the docker images and push them to the Container Registry
-4. Build Helm templates and install them onto the Kubernetes Cluster (by way of executing either ``deploy.sh`` or ``helm/helm_compile.sh``)
-5. Ensure that the deployment has been successful (log in to the pods and check that they are working correctly, please see below link for information on how to do that)
+This is a brief view of the steps you will take, for the full set of steps, please review [CHECKLIST.md](CHECKLIST.md).
+
+1. Customize the Helm ``values.yaml`` file according to your deployment (this step is used by initial-registration and Helm compile, very important to fill in correctly and completely)
+2. Execute ``one-time-setup.sh`` which will do the following (you can also step through the steps on your own, just follow what the one-time-setup.sh would have done):
+	1. Build the docker images and push them to the Container Registry
+	2. Generate the Corda Firewall PKI certificates
+	3. Execute initial registration step (which should copy certificates to the correct locations under ``helm/files``)
+3. Build Helm templates and install them onto the Kubernetes Cluster (by way of executing either ``deploy.sh`` or ``helm/helm_compile.sh``)
+4. Ensure that the deployment has been successful (log in to the pods and check that they are working correctly, please see below link for information on how to do that)
+
+---
+
+## DOCUMENTATION
 
 For more details and instructions it is strongly recommended to visit the following page on the Corda Solutions docs site: 
 <https://solutions.corda.net/deployment/kubernetes/intro.html>
 
+For additional documentation please find it here [Documentation](DOCUMENTATION.md).
+
+---
+
+### KEY CONCEPTS & TOOLS
+
+You may want to familiarize yourself with the key concepts of a production grade deployment and the tools being used in this deployment.
+
+You can find the information in [Key Concepts](KEY_CONCEPTS.md).
+
+---
+
 ## ROADMAP
 
 To see the intended direction that this deployment should take, please have a look at the [Roadmap](ROADMAP.md)
+
+---
 
 ## Contributing
 
@@ -189,7 +141,9 @@ The Corda Kubernetes Deployment is an open-source project and contributions are 
 
 The contributors can be found here: [Contributors](CONTRIBUTORS.md)
 
-### Feedback
+---
+
+## Feedback
 
 Any suggestions / issues are welcome in the issues section: <https://github.com/corda/corda-kubernetes-deployment/issues/new>
 

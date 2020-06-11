@@ -2,7 +2,7 @@
 
 Tested with:
 
-- Corda Enterprise version 4.0
+- Corda Enterprise version 4.0, 4.1, 4.2, 4.3, 4.4, 4.5
 
 ---
 
@@ -79,33 +79,31 @@ Tested with:
 
 	- Deployment folder (repository folder)
 		- Binaries, jar files (the name of the jars should match the configuration)
-			- Docker-images/bin
+			- Use ``docker-images/download_binaries.sh`` to automatically download the binaries for the cordaVersion specified in ``values.yaml``.
+			- ``docker-images/bin``
 				- Corda Enterprise jar (eg. corda-ent-4.0.jar)
 				- Health-survey-tool jar (eg. corda-tools-healthsurvey-4.0.jar)
 				- Corda Firewall jar (eg. corda-firewall-4.0.jar)
-			- Pki-firewall/bin
+			- ``pki-firewall/bin``
 				- Optional step on windows: Copy Key tool jar + dll to bin folder (pki-firewall/bin)
-		- Config
-			- docker_config.sh
-				- Define versions so that they match what is in the values.yaml file.
-		- Values.yaml
+		- MAIN CONFIG in ``values.yaml``:
 			- Config containerRegistry section.
 			- Config storage section.
 			- Config fileShareName for node/bridge/float
 			- Config identityManagerAddress and networkmapAddress (without http:// prefix)
-				- You can use any network, but please note that if you want to use Testnet, we will have to skip the initial registration step and download the full Testnet node from the dashboard
-				- Alternative config to above if using Corda Testnet, see Testnet configuration below
+				- You can use any network, but for Testnet see next line
+				- Testnet - if you want to use Corda Testnet, follow the [Corda Testnet configuration](#corda-testnet-configuration) section
 			- Config resourceName to reflect the x500 name of the node, please note to use lowercase letters and numbers only
 			- Config legalName to define the x500 name of the node
-		- Download network root truststore to ./helm/files/network with the name "networkRootTrustStore.jks"
+		- Download network root truststore to ./helm/files/network with the name ``networkRootTrustStore.jks`` (must match spelling exactly)
 		- Configure matching truststorePassword to the truststore.
 	- Execution
-		- Run one-time-setup.sh once, which does the following:
+		- Run ``one-time-setup.sh`` once, which does the following:
 			- Creates and pushes Docker images to the container registry
 			- Generates certificates for the Corda Firewall TLS tunnel
 			- Performs initial registration of the node
 			- Copies the generates certificates for the next step, which is the deployment
-		- Deploy using deploy.sh or helm/helm_compile.sh, which does the following:
+		- Deploy using ``deploy.sh`` or ``helm/helm_compile.sh``, which does the following:
 			- Compiles the Helm charts from templates to Kubernetes resource definition files
 			- Applies the generated Kubernetes resources definition files to the Kubernetes cluster
 			- Three pods should be at status ‘Runningʼ for node, bridge and float after a while
