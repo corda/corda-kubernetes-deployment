@@ -88,6 +88,7 @@ Cloud HSM keys breakdown:
 | Type              | VMs |  HDD   |       AWS |     Azure |       GCP |
 | ----------------- |:---:|:------:| ---------:| ---------:| ---------:|
 | Corda Node        |  2  | 100 GB |   $155.00 |   $180.02 |   $149.76 |
+| Node Database(HA) |  2* | 500 GB |  $2012.04 |  $1851.32 |  $1128.20 |
 | Artemis MQ        |  2  | 100 GB |   $155.00 |   $180.02 |   $149.76 |
 | Corda Bridge      |  2  | 100 GB |   $155.00 |   $180.02 |   $149.76 |
 | Corda Float       |  2  | 100 GB |   $155.00 |   $180.02 |   $149.76 |
@@ -95,7 +96,7 @@ Cloud HSM keys breakdown:
 | Loadbalancer      |  -  |   -    |    $22.42 |    $23.25 |    $18.25 |
 | Cloud HSM Keys x6 |  -  |   -    |         - |         - |         - |
 |                   |     |        |           |           |           |
-| **Total**         | 10  |   -    |   $797.42 |   $923.35 |   $767.05 |
+| **Total**         | 10  |   -    |  $2809.46 |  $2774.67 |  $1895.25 |
 
 ---
 
@@ -129,6 +130,7 @@ A large cost saving comes from the fact that Kubernetes maintains the HA. Which 
 | Type              | VMs |  HDD   |       AWS |     Azure |       GCP |
 | ----------------- |:---:|:------:| ---------:| ---------:| ---------:|
 | Corda Node        |  1  | 100 GB |    $77.50 |    $90.01 |    $74.88 |
+| Node Database(HA) |  2* | 500 GB |  $2012.04 |  $1851.32 |  $1128.20 |
 | Artemis MQ        |  1  | 100 GB |    $77.50 |    $90.01 |    $74.88 |
 | Corda Bridge      |  1  | 100 GB |    $77.50 |    $90.01 |    $74.88 |
 | Corda Float       |  1  | 100 GB |    $77.50 |    $90.01 |    $74.88 |
@@ -136,9 +138,9 @@ A large cost saving comes from the fact that Kubernetes maintains the HA. Which 
 | Loadbalancer      |  -  |   -    |    $22.42 |    $23.25 |    $18.25 |
 | Cloud HSM Keys x3 |  -  |   -    |         - |         - |         - |
 |                   |     |        |           |           |           |
-| **Total**         |  5  |   -    |   $409.92 |    $473.3 |   $392.65 |
+| **Total**         |  5  |   -    |  $2421.96 |   $2324.62 | $1520.85 |
 
-Cost saving of 5 VM for each column compared to traditional bare-metal installation. This equates to roughly 50% cost reduction.
+Cost saving of 5 VM for each column compared to traditional bare-metal installation. This equates to 50% cost reduction for VMs and total cost reduction of 14-20%.
 (also note we use 50% less HSM Keys, due to just having one node instead of two in the traditional Hot-Cold HA setup)
 
 ---
