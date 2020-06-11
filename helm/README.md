@@ -1,6 +1,6 @@
 # Corda Kubernetes Deployment Chart
 
-This directory contains two Helm charts, one for initial registration of a Corda Node and one for deploying the Corda Node along  with optional Corda Firewall to a Kubernetes cluster.
+This directory contains two Helm charts, one for initial registration of a Corda Node and one for deploying the Corda Node along with optional Corda Firewall to a Kubernetes cluster.
 
 ---
 
@@ -36,7 +36,7 @@ This is the recommended mode of operation. (you may use ``delete-all.sh`` to cle
 
 ## Manual Installation
 
-First we have to create a namespace for this installation, if installing multiple nodes, the namespace should be customized per installation.
+First we have to create a namespace for this installation, if installing multiple nodes, the namespace should be customized per installation (and configured in ``values.yaml`` as well).
 
     kubectl create namespace corda
 

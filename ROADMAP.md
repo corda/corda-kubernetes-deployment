@@ -4,19 +4,6 @@ This repository (<https://github.com/corda/corda-kubernetes-deployment>) is not 
 
 ---
 
-## Support for other Corda Enterprise versions
-
-The first version of the deployment scripts only offer support for Corda Enterprise 4.0.
-It makes sense for the deployment scripts to also support to the most recent versions of Corda.
-
-### Goals: 
-
-- Add support for deploying using a custom version number, in other words support for multiple Corda Enterprise versions
-- Per-version configuration files
-- Download binaries to use the selected version number
-
----
-
 ## HA utilities support
 
 [HA utilities](<https://docs.corda.r3.com/ha-utilities.html>) adds support for Corda Firewall PKI generation and HSM integration for the initial registration phase. 
