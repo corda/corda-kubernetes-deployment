@@ -32,6 +32,10 @@ spec:
   - file_mode=0777
   - uid=1000
   - gid=1000
+{{- else if .Values.config.storage.gcpPD.enabled }}
+  gcePersistentDisk:
+    pdName: "{{ .Values.config.storage.float.volumeId }}"
+    fsType: "{{ .Values.config.storage.gcpPD.fsType }}"
 {{- else if .Values.config.storage.awsEBS.enabled }}
   awsElasticBlockStore:
     volumeID: "{{ .Values.config.storage.float.volumeId }}"

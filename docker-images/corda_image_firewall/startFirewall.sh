@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 echoMessage () {
-    local message=$1
+    message=$1
 
     echo "====== $message ======"
 }
 
 checkStatus () {
-	local status=$1
+	status=$1
 	if [ $status -eq 0 ]
 		then
 			echoMessage "Success"
@@ -81,11 +81,17 @@ startFirewall () {
 	waitForOtherCordaFirewallProcessToExit
 	echoMessage "Starting the firewall"
 	java -jar corda-firewall.jar --base-directory ./workspace --verbose --logging-level=INFO
-	local status=$?
+	status=$?
 	if [ $status -ne 0 ]
 	then
+		echo "DEBUG INFO on CRITICAL ERROR:"
 		ls /opt/corda -R -al
+		echo "Active firewall.conf file:"
 		less /opt/corda/workspace/firewall.conf
+		MACHINE_NAME=$(cat /proc/sys/kernel/hostname)
+		LOG_FILE="/opt/corda/workspace/logs/corda-firewall-${MACHINE_NAME}.log"
+		echo "Content of log file (${LOG_FILE}):"
+		tail -n 500 $LOG_FILE
 	fi
 	checkStatus $status
 }

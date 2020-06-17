@@ -52,30 +52,31 @@ checkStatus () {
 	return 0
 }
 
-ensureFileExistsAndCopy () {
-    FROM=$1
-    TO=$2
-    if [ -f "$FROM" ]
-    then
-        if [ -f "$TO" ]
-        then
-			echo "Existing certificate already existed, but it is safe to replace, since this is just the Corda Firewall tunnel keys."
-        fi
-		cp -f $FROM $TO
-    else
-		echo "File did not exist, probably an issue with certificate creation: $FROM"
-        exit 1
-    fi
+ResetEnvironment () {
+	echo "====== Resetting deployment environment next ... ====== "
+	echo "WARNING!"
+	echo "This will remove certificates from your local file system."
+	echo "If you are sure this is what you want to do, please type 'yes' and press enter."
+	read -p "Enter 'yes' to continue: " confirm
+	echo $confirm
+	if [ "$confirm" = "yes" ]; then
+		echo "Resetting environment..."
+		rm -rf $DIR/corda-pki-generator/pki-firewall/certs/
+		checkStatus $?
+		mkdir -p $DIR/corda-pki-generator/pki-firewall/certs/
+		rm -rf $DIR/helm/files/certificates/node/
+		checkStatus $?
+		mkdir -p $DIR/helm/files/certificates/node/
+		rm -rf $DIR/helm/files/certificates/firewall_tunnel/
+		checkStatus $?
+		mkdir -p $DIR/helm/files/certificates/firewall_tunnel/
+		rm -rf $DIR/helm/files/network/*.file
+		checkStatus $?
+		rm -rf $DIR/helm/initial_registration/output/corda/templates/workspace/
+		checkStatus $?
+		mkdir -p $DIR/helm/initial_registration/output/corda/templates/workspace/
+		echo "Environment now reset, you can execute one-time-setup.sh again."
+	fi
+	echo "====== Resetting deployment environment completed. ====== "
 }
-
-CopyCertificatesToHelmFolder () {
-	echo "====== Copying PKI certificates to Helm folder next ... ====== "
-	echo "Copying trust.jks ..."
-	ensureFileExistsAndCopy $DIR/pki-firewall/certs/trust.jks $DIR/../helm/files/certificates/firewall_tunnel/trust.jks
-	echo "Copying float.jks ..."
-	ensureFileExistsAndCopy $DIR/pki-firewall/certs/float.jks $DIR/../helm/files/certificates/firewall_tunnel/float.jks
-	echo "Copying bridge.jks ..."
-	ensureFileExistsAndCopy $DIR/pki-firewall/certs/bridge.jks $DIR/../helm/files/certificates/firewall_tunnel/bridge.jks
-	echo "====== Copying PKI certificates to Helm folder completed. ====== "
-}
-CopyCertificatesToHelmFolder
+ResetEnvironment

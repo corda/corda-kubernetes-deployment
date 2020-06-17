@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 
 echoMessage () {
-	local message=$1
+	message=$1
 
 	echo "====== $message ======"
 }
 
 checkStatus () {
-	local status=$1
+	status=$1
 	if [ $status -eq 0 ]
 		then
 			echoMessage "Success"
@@ -129,12 +129,12 @@ waitTillNetworkMapIsUpAndRunning () {
 
 checkNetworkMap () {
 	hash="" 
-	while [ -z "${hash}" -o "${hash}" == "null" ]
+	while [ -z "${hash}" -o "${hash}" = "null" ]
 	do
 		sleep 2
 		echoMessage "Checking network map for notary NodeInfo..."
 		hash=$(curl -m5 -s http://$NETMAP_ADDRESS/network-map-user/network-map | jq -r '.[0]')
-		if [ "$hash" == "null" ]
+		if [ "$hash" = "null" ]
 		then
 			echoMessage "The network map is currently empty, waiting for first registrations..."
 		fi

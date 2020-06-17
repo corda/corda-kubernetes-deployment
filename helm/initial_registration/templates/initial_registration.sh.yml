@@ -1,26 +1,27 @@
-#!/bin/sh
+#!/bin/bash
 
-set -ux
+set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
 	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
-	ABS_PATH=$(readlink -f "$0")
+	set +e
+	ABS_PATH=$(readlink -f "$0" 2>&1)
 	if [ "$?" -ne "0" ]; then
-		echo "readlink issue workaround..."
+		echo "Using macOS alternative to readlink -f command..."
 		# Unfortunate MacOs issue with readlink functionality, see https://github.com/corda/corda-kubernetes-deployment/issues/4
 		TARGET_FILE=$0
 
-		cd `dirname $TARGET_FILE`
-		TARGET_FILE=`basename $TARGET_FILE`
-		local ITERATIONS=0
+		cd $(dirname $TARGET_FILE)
+		TARGET_FILE=$(basename $TARGET_FILE)
+		ITERATIONS=0
 
 		# Iterate down a (possible) chain of symlinks
 		while [ -L "$TARGET_FILE" ]
 		do
-			TARGET_FILE=`readlink $TARGET_FILE`
-			cd `dirname $TARGET_FILE`
-			TARGET_FILE=`basename $TARGET_FILE`
-			((++ITERATIONS))
+			TARGET_FILE=$(readlink $TARGET_FILE)
+			cd $(dirname $TARGET_FILE)
+			TARGET_FILE=$(basename $TARGET_FILE)
+			ITERATIONS=$((ITERATIONS + 1))
 			if [ "$ITERATIONS" -gt 1000 ]; then
 				echo "symlink loop. Critical exit."
 				exit 1
@@ -29,7 +30,7 @@ GetPathToCurrentlyExecutingScript () {
 
 		# Compute the canonicalized name by finding the physical path 
 		# for the directory we're in and appending the target file.
-		PHYS_DIR=`pwd -P`
+		PHYS_DIR=$(pwd -P)
 		ABS_PATH=$PHYS_DIR/$TARGET_FILE
 	fi
 
@@ -37,12 +38,14 @@ GetPathToCurrentlyExecutingScript () {
 	DIR=$(dirname "$ABS_PATH")
 }
 GetPathToCurrentlyExecutingScript
-set -eux
+set -eu
 
 ROOT_FOLDER=$DIR/../../../../..
+# Store DIR in another variable because including docker_config.sh will overwrite it
+THIS_PATH=$DIR
 
 checkStatus () {
-    local status=$1
+    status=$1
     if [ $status -eq 0 ]
         then
             echo "The Corda Node initial registration was completed successfully. The certificates will now be copied to the correct folders."
@@ -81,12 +84,12 @@ copyCertificates () {
 }
 
 waitTillNetworkParametersIsAvailable () {
-    local NETWORK_PARAMETERS_EXISTS=0
+    NETWORK_PARAMETERS_EXISTS=0
     while [ $NETWORK_PARAMETERS_EXISTS -eq 0 ]
     do
         sleep 2
         echo "Checking for network-parameters file..."
-        if [ -f $DIR/workspace/network-parameters ]
+        if [ -f $THIS_PATH/workspace/network-parameters ]
         then
             echo "Found network-parameters file!"
             NETWORK_PARAMETERS_EXISTS=1
@@ -99,13 +102,13 @@ copyNetworkParameters () {
     waitTillNetworkParametersIsAvailable
     
     echo "Copying network-parameters to helm/files/network (for Corda Firewall use)."
-    cp -u $DIR/workspace/network-parameters $ROOT_FOLDER/helm/files/network/network-parameters.file
+    cp -u $THIS_PATH/workspace/network-parameters $ROOT_FOLDER/helm/files/network/network-parameters.file
 }
 
 waitForNetworkParametersOrTimeout () {
-    local NP_PID=$1
-    local CORDA_PID=$2
-    local LOOPING=1
+    NP_PID=$1
+    CORDA_PID=$2
+    LOOPING=1
     while [ $LOOPING -eq 1 ]; do
         sleep 10 # seconds
         #NP_PROCESS_RESULT=$(kill -0 "$NP_PID" > /dev/null 2>&1)
@@ -143,8 +146,8 @@ waitForNetworkParametersOrTimeout () {
 }
 
 downloadNetworkParameters () {
-    local CORDA_BIN=$1
-    local NODE_CONF=$2
+    CORDA_BIN=$1
+    NODE_CONF=$2
     
     if [ -f $ROOT_FOLDER/helm/files/network/network-parameters.file ]; then
         echo "network-parameters file already existed in the correct folder $ROOT_FOLDER/helm/files/network/, skipping new download."
@@ -152,18 +155,18 @@ downloadNetworkParameters () {
         echo "Next we will launch the Corda Node just in order to download network-parameters file. Please wait..."
         # Launching the network-parameters copy function async to Corda Node execution:
         copyNetworkParameters & NP_PID=$!
-        java -jar $CORDA_BIN --base-directory=$DIR/workspace --config-file=$NODE_CONF & CORDA_PID=$!
+        java -jar $CORDA_BIN --base-directory=$THIS_PATH/workspace --config-file=$NODE_CONF & CORDA_PID=$!
         waitForNetworkParametersOrTimeout $NP_PID $CORDA_PID
     fi
 }
 
 initialRegistration () {
-    local CORDA_BIN=$1
-    local NODE_CONF=$2
-    local TRUST_STORE=$3
-    local TRUST_STORE_PASSWORD=$4
+    CORDA_BIN=$1
+    NODE_CONF=$2
+    TRUST_STORE=$3
+    TRUST_STORE_PASSWORD=$4
     #echo "Cleaning any previous initial-registration runs..."
-    #rm -rf $DIR/workspace
+    #rm -rf $THIS_PATH/workspace
     
     TRUSTSTORE_JKS=$ROOT_FOLDER/helm/files/certificates/node/truststore.jks
     NODEKEYSTORE_JKS=$ROOT_FOLDER/helm/files/certificates/node/nodekeystore.jks
@@ -172,7 +175,7 @@ initialRegistration () {
     echo "Checking if certificates already exist..."
     if [ ! -f $TRUSTSTORE_JKS -a ! -f $NODEKEYSTORE_JKS -a ! -f $SSLKEYSTORE_JKS ]; then
         echo "Launching Corda Node with option initial_registration to download certificates..."
-        java -jar $CORDA_BIN initial-registration --network-root-truststore=$TRUST_STORE --network-root-truststore-password=$TRUST_STORE_PASSWORD --base-directory=$DIR/workspace --config-file=$NODE_CONF || checkStatus $?
+        java -jar $CORDA_BIN initial-registration --network-root-truststore=$TRUST_STORE --network-root-truststore-password=$TRUST_STORE_PASSWORD --base-directory=$THIS_PATH/workspace --config-file=$NODE_CONF || checkStatus $?
         checkStatus $?
         
         echo "Copying certificates from initial-registration step to the helm/files/certificates/node folder"
@@ -184,14 +187,16 @@ initialRegistration () {
 
 main () {
     DOCKER_IMAGES_FOLDER=$ROOT_FOLDER/docker-images
-    # Load version numbers from docker_config.sh
+
+    BIN_DIR=$DOCKER_IMAGES_FOLDER/bin
+    NODE_CONF=$THIS_PATH/node.conf
+    TRUST_STORE=$ROOT_FOLDER/helm/files/network/networkRootTrustStore.jks
+    TRUST_STORE_PASSWORD={{ .Values.corda.node.conf.networkRootTruststorePassword }}
+
+    # Load version numbers from docker_config.sh    
     . $DOCKER_IMAGES_FOLDER/docker_config.sh
 
-    local BIN_DIR=$DOCKER_IMAGES_FOLDER/bin
-    local CORDA_BIN=$BIN_DIR/$CORDA_VERSION.jar
-    local NODE_CONF=$DIR/node.conf
-    local TRUST_STORE=$ROOT_FOLDER/helm/files/network/networkRootTrustStore.jks
-    local TRUST_STORE_PASSWORD={{ .Values.corda.node.conf.networkRootTruststorePassword }}
+    CORDA_BIN=$BIN_DIR/$CORDA_VERSION.jar
 
     echo "Starting Corda Node initial registration..."
 

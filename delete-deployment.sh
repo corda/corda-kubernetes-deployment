@@ -52,30 +52,5 @@ checkStatus () {
 	return 0
 }
 
-ensureFileExistsAndCopy () {
-    FROM=$1
-    TO=$2
-    if [ -f "$FROM" ]
-    then
-        if [ -f "$TO" ]
-        then
-			echo "Existing certificate already existed, but it is safe to replace, since this is just the Corda Firewall tunnel keys."
-        fi
-		cp -f $FROM $TO
-    else
-		echo "File did not exist, probably an issue with certificate creation: $FROM"
-        exit 1
-    fi
-}
-
-CopyCertificatesToHelmFolder () {
-	echo "====== Copying PKI certificates to Helm folder next ... ====== "
-	echo "Copying trust.jks ..."
-	ensureFileExistsAndCopy $DIR/pki-firewall/certs/trust.jks $DIR/../helm/files/certificates/firewall_tunnel/trust.jks
-	echo "Copying float.jks ..."
-	ensureFileExistsAndCopy $DIR/pki-firewall/certs/float.jks $DIR/../helm/files/certificates/firewall_tunnel/float.jks
-	echo "Copying bridge.jks ..."
-	ensureFileExistsAndCopy $DIR/pki-firewall/certs/bridge.jks $DIR/../helm/files/certificates/firewall_tunnel/bridge.jks
-	echo "====== Copying PKI certificates to Helm folder completed. ====== "
-}
-CopyCertificatesToHelmFolder
+$DIR/helm/delete-all.sh
+checkStatus $?
