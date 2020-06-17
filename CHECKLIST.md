@@ -135,6 +135,7 @@ Tested with:
 		- Wait for node to start. This will enrich "certificates/nodekeystore.jks" with the Nodes legal entity key pair
 		- Kill the node process (ctrl+c)
 		- Copy certificates from Testnet node folder to deployment folder: "cp NODE_DIR/certificates/*.jks ./helm/files/certificates/node"
+                - Copy network-parameters from Testnet node folder to deployment folder `cp NODE_DIR/network_parameters ./helm/files/network/network_parameters.file` 
 	- In "helm/values.yaml":
 		- Copy variables "keystorePassword" and "truststorePassword" from unzipped "node.conf" to sections matching paths ".Values.corda.node.conf.keystorePassword" and ".Values.corda.node.conf.truststorePassword" respectively
 		- Fill variable "myLegalName" from "node.conf" to ".Values.corda.node.conf.legalName"
