@@ -69,31 +69,31 @@ HelmCompilePrerequisites () {
 		exit 1
 	fi
 	
-	if [ ! -f $DIR/helm/files/networkRootTrustStore.jks ]; then
+	if [ ! -f $DIR/files/network/networkRootTrustStore.jks ]; then
 		echo -e "${RED}ERROR${NC}"
-		echo "$DIR/helm/files/networkRootTrustStore.jks missing, this should have been copied to this folder before running one-time-setup.sh script."
+		echo "$DIR/files/networkRootTrustStore.jks missing, this should have been copied to this folder before running one-time-setup.sh script."
 		exit 1
 	fi
 	
-	if [ ! -f $DIR/helm/files/network-parameters.file ]; then
+	if [ ! -f $DIR/files/network/network-parameters.file ]; then
 		echo -e "${RED}ERROR${NC}"
-		echo "$DIR/helm/files/network-parameters.file missing, this should have been created by one-time-setup.sh script."
+		echo "$DIR/files/network-parameters.file missing, this should have been created by one-time-setup.sh script."
 		exit 1
 	fi
 	
-	if [ ! -f $DIR/helm/files/certificates/node/nodekeystore.jks -o ! -f $DIR/helm/files/certificates/node/sslkeystore.jks -o ! -f $DIR/helm/files/certificates/node/truststore.jks ]; then
+	if [ ! -f $DIR/files/certificates/node/nodekeystore.jks -o ! -f $DIR/files/certificates/node/sslkeystore.jks -o ! -f $DIR/files/certificates/node/truststore.jks ]; then
 		echo -e "${RED}ERROR${NC}"
-		echo "$DIR/helm/files/certificates/node/ missing certificates, expecting to see nodekeystore.jks, sslkeystore.jks and truststore.jks, these files should have been created by one-time-setup.sh script."
-		echo "Files in folder $DIR/helm/files/certificates/node:"
-		ls -al $DIR/helm/files/certificates/node
+		echo "$DIR/files/certificates/node/ missing certificates, expecting to see nodekeystore.jks, sslkeystore.jks and truststore.jks, these files should have been created by one-time-setup.sh script."
+		echo "Files in folder $DIR/files/certificates/node:"
+		ls -al $DIR/files/certificates/node
 		exit 1
 	fi
 	
-	if [ ! -f $DIR/helm/files/certificates/firewall_tunnel/bridge.jks -o ! -f $DIR/helm/files/certificates/firewall_tunnel/float.jks -o ! -f $DIR/helm/files/certificates/firewall_tunnel/trust.jks ]; then
+	if [ ! -f $DIR/files/certificates/firewall_tunnel/bridge.jks -o ! -f $DIR/files/certificates/firewall_tunnel/float.jks -o ! -f $DIR/files/certificates/firewall_tunnel/trust.jks ]; then
 		echo -e "${RED}ERROR${NC}"
-		echo "$DIR/helm/files/certificates/firewall_tunnel/ missing certificates, expecting to see bridge.jks, float.jks and trust.jks, these files should have been created by one-time-setup.sh script."
-		echo "Files in folder $DIR/helm/files/certificates/firewall_tunnel:"
-		ls -al $DIR/helm/files/certificates/firewall_tunnel
+		echo "$DIR/files/certificates/firewall_tunnel/ missing certificates, expecting to see bridge.jks, float.jks and trust.jks, these files should have been created by one-time-setup.sh script."
+		echo "Files in folder $DIR/files/certificates/firewall_tunnel:"
+		ls -al $DIR/files/certificates/firewall_tunnel
 		exit 1
 	fi
 }
