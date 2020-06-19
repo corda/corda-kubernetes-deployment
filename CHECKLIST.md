@@ -20,7 +20,9 @@ Corda Enterprise versions 4.0, 4.1, 4.2, 4.3, 4.4, 4.5
 
 ---
 
-## Cloud setup, follow one of the following: Azure, AWS
+## Cloud setup, follow one of the following: Azure, AWS, GCP
+
+Note, that if you already have your Kubernetes cluster with attached Container Registry and Persistent storage, you can skip this whole cloud setup section and skip straight to [Deployment configuration](#deployment-configuration).
 
 ### Microsoft Azure cloud setup checklist:
 
@@ -46,6 +48,8 @@ Corda Enterprise versions 4.0, 4.1, 4.2, 4.3, 4.4, 4.5
 - kubectl create namespace <name> # name could be for example firstname-lastname in lowercase, if you are deploying many instances in a test environment
 - kubectl config set-context --current --namespace <name>
 
+---
+
 ### Amazon Web Services (AWS) cloud setup checklist:
 
 #### AWS Setup
@@ -64,6 +68,8 @@ Corda Enterprise versions 4.0, 4.1, 4.2, 4.3, 4.4, 4.5
 - kubectl config, follow https://docs.aws.amazon.com/eks/latest/userguide/create-kubeconfig.html
 - kubectl create namespace <name> # name could be for example firstname-lastname in lowercase, if you are deploying many instances in a test environment
 - kubectl config set-context --current --namespace <name>
+
+---
 
 ### Google Cloud Platform (GCP) cloud setup checklist:
 
@@ -92,17 +98,17 @@ Corda Enterprise versions 4.0, 4.1, 4.2, 4.3, 4.4, 4.5
 #### MAIN CONFIG in ``values.yaml``:
 
 - Define cordaVersion, which Corda Enterprise version to use, for example 4.0, 4.1 or 4.5-SNAPSHOT. (any releases that are tagged are fine)
-- Config containerRegistry section in its entirety
-- Config storage section in its entirety
-- Config fileShareName for node/bridge/float
-- Config identityManagerAddress and networkmapAddress (with the http:// prefix)
+- Configure the containerRegistry section in its entirety, you'll find the details from your Container Registry you created in the Cloud setup
+- Configure the storage section in its entirety, you'll find the details from your Persistent Storage you created in the Cloud setup
+- Set the fileShareName for node/bridge/float to match the volumes you created in your Persistent Storage
+- Set the identityManagerAddress and networkmapAddress (with the http:// protocol prefix and the port number, eg. http://my-idman:1000)
 	- You can use any network, but for Testnet see next line
 	- Testnet - if you want to use Corda Testnet, follow the [Corda Testnet configuration](#corda-testnet-configuration) section
-- Config resourceName to reflect the x500 name of the node, please note to use lowercase letters and numbers only
-- Config legalName to define the x500 name of the node and a matching emailAddress as contact information
+- Set the resourceName to reflect the x500 name of the node, please note to use lowercase letters and numbers only
+- Set the legalName to define the x500 name of the node and a matching emailAddress as contact information
 - Define the p2pAddress where the Node will be reached by other nodes on the network (if deploying a Float, it should be the Floats DNS name)
-- Define the nodeLoadBalancerIP (it should map the Public STATIC IP address NUMBER of the Node)
-- Define the floatLoadBalancerIP (it should map the Public STATIC IP address NUMBER of the Float)
+- Define the nodeLoadBalancerIP (it should map the Public STATIC IP address NUMBER of the Node, do not use a DNS name here)
+- Define the floatLoadBalancerIP (it should map the Public STATIC IP address NUMBER of the Float, do not use a DNS name here)
 
 #### Network setup
 
@@ -144,6 +150,8 @@ Use ``docker-images/download_binaries.sh`` to automatically download the binarie
 ---
 
 ## Corda Testnet configuration:
+
+This section is only relevant should you choose to deploy your node to Corda Testnet. For more information on Corda Testnet see [Joining Corda Testnet](https://docs.corda.net/docs/corda-os/4.4/corda-testnet-intro.html).
 
 ### Retrieve certificates and config:
 
