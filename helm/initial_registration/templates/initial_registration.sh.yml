@@ -1,6 +1,7 @@
 #!/bin/bash
 
 RED='\033[0;31m' # Error color
+GREEN='\033[0;32m' # Success color
 YELLOW='\033[0;33m' # Warning color
 NC='\033[0m' # No Color
 
@@ -227,7 +228,7 @@ main () {
                 echo "Corda Node network-parameters step"
                 downloadNetworkParameters $CORDA_BIN $NODE_CONF
                 
-                echo "Initial registration completed successfully! You can now deploy to Kubernetes cluster."
+                echo -e "${GREEN}Initial registration completed successfully! You can now deploy to Kubernetes cluster.${NC}"
             else
                 echo -e "${RED}ERROR${NC}"
                 echo "node.conf not found as $NODE_CONF"
