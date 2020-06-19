@@ -6,53 +6,50 @@ NC='\033[0m' # No Color
 
 echoMessage () {
 	message=$1
-
 	echo "====== $message ======"
 }
 
 checkStatus () {
 	status=$1
-	if [ $status -eq 0 ]
-		then
-			echoMessage "Success"
-		else
-			echo -e "${RED}ERROR${NC}"
-			echoMessage "The previous step failed"
-			exit 1
+	if [ $status -eq 0 ]; then
+		echoMessage "Success"
+	else
+		echo -e "${RED}ERROR${NC}"
+		echoMessage "The previous step failed"
+		exit 1
 	fi	
 	return 0
 }
 
 isRegistered () {
-	if grep -q "compatibilityZoneURL" ./workspace/node.conf ;
-	then 
-		IS_REGISTERED_PATH="./workspace/certificates/nodekeystore.jks";
+	IS_REGISTERED=0
+	if grep -q "compatibilityZoneURL" ./workspace/node.conf ; then 
+		NODE_KEY_STORE="./workspace/certificates/nodekeystore.jks";
+		if [ -f "$NODE_KEY_STORE" ]; then
+			IS_REGISTERED=1
+		fi
 	else
-		IS_REGISTERED_PATH="./workspace/nodeInfo-*";
+		NODE_INFOS=(./workspace/nodeInfo-*)
+		# Check if NODE_INFOS is an glob array of size larger than zero and then check first array element if valid file
+		if [ ${#NODE_INFOS[@]} -gt 0 -a -f "${NODE_INFOS[0]}" ]; then
+			IS_REGISTERED=1
+		fi
 	fi
 
-
-	if [ -f $IS_REGISTERED_PATH ]
-    then
-        return 1
-    else
-        return 0
-    fi
+	return $IS_REGISTERED
 }
 
 ifSharedFolderExists () {
-    if [ -d /opt/corda/shared/ ]
-    then
-        return 1
-    else
-        return 0
-    fi
+	if [ -d /opt/corda/shared/ ]; then
+		return 1
+	else
+		return 0
+	fi
 }
 
 copySharedFiles () {
 	ifSharedFolderExists
-	if [ $? -eq 1 ]
-	then
+	if [ $? -eq 1 ]; then
 		waitTillNetworkParametersIsAvailable
 		echoMessage "Copying network-parameters & certificates to shared folder (for firewall)."
 		cp -u ./workspace/network-parameters /opt/corda/shared/
@@ -74,8 +71,7 @@ waitForOtherCordaNodeProcessToExit () {
 		sleep 2
 		echoMessage "Checking access for process-id file..."
 		PROCESS_ID_FILE=./workspace/process-id
-		if [ -f $PROCESS_ID_FILE ]
-		then
+		if [ -f $PROCESS_ID_FILE ]; then
 			echoMessage "File process-id exists, checking lock status..."
 			#flock -n /tmp/test.lock -c $PROCESS_ID_FILE
 			( flock -n 200 || exit 1
@@ -163,7 +159,7 @@ checkNetworkMap () {
 }
 
 registerNode () {
-    java -jar corda.jar initial-registration --base-directory ./workspace --network-root-truststore-password $TRUSTSTORE_PASSWORD --network-root-truststore ./workspace/networkRootTrustStore.jks
+	java -jar corda.jar initial-registration --base-directory ./workspace --network-root-truststore-password $TRUSTSTORE_PASSWORD --network-root-truststore ./workspace/networkRootTrustStore.jks
 	checkStatus $?
 }
 
@@ -175,28 +171,27 @@ startNode () {
 isRegistered
 registered=$?
 
-if [ $registered -eq 1 ]
-	then
-		echoMessage "Checking if other Corda Node process is running..."
-		waitForOtherCordaNodeProcessToExit
-		echoMessage "Starting the node"
-		startNode
-	else
-		echoMessage "Checking Identity Manager's availability"
-		waitTillIdentityManagerIsUpAndRunning
-		
-		echoMessage "Registering the node"
-		registerNode
-		
-		echoMessage "Checking network map's availability"
-		waitTillNetworkMapIsUpAndRunning
+if [ $registered -eq 1 ]; then
+	echoMessage "Checking if other Corda Node process is running..."
+	waitForOtherCordaNodeProcessToExit
+	echoMessage "Starting the node"
+	startNode
+else
+	echoMessage "Checking Identity Manager's availability"
+	waitTillIdentityManagerIsUpAndRunning
+	
+	echoMessage "Registering the node"
+	registerNode
+	
+	echoMessage "Checking network map's availability"
+	waitTillNetworkMapIsUpAndRunning
 
-		echoMessage "Checking network map"
-		checkNetworkMap
-		
-	    echoMessage "Sharing files..."
-		copySharedFiles &
-		
-		echoMessage "Now starting the node"
-		startNode
+	echoMessage "Checking network map"
+	checkNetworkMap
+	
+	echoMessage "Sharing files..."
+	copySharedFiles &
+	
+	echoMessage "Now starting the node"
+	startNode
 fi
