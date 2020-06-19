@@ -1,5 +1,9 @@
 #!/bin/bash
 
+RED='\033[0;31m' # Error color
+YELLOW='\033[0;33m' # Warning color
+NC='\033[0m' # No Color
+
 set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
@@ -54,8 +58,9 @@ PKI_Prerequisites () {
 			KEYTOOL_EXE=/usr/bin/keytool
 			$KEYTOOL_EXE &>/dev/null
 			if [ "$?" -ne "0" ]; then
+				echo -e "${RED}ERROR${NC}"
 				echo "!!! Keytool not found, please check to make sure you have it installed and in the path or in path $DIR/bin/ !!!"
-			exit 1
+				exit 1
 			fi
 		fi
 	fi
@@ -66,6 +71,7 @@ PKI_Prerequisites () {
 	then
 		echo "Keytool is ready..."
 	else
+		echo -e "${RED}ERROR${NC}"
 		echo "!!! Keytool is not available, make sure your Keytool is configured correctly !!!"
 		exit 1
 	fi
@@ -90,6 +96,7 @@ GeneratePKI () {
 	set -eu
 
 	if [ "$CERTIFICATE_VALIDITY_DAYS" = "" -o "$TRUST_PASSWORD" = "" -o "$BRIDGE_PASSWORD" = "" -o "$FLOAT_PASSWORD" = "" -o "$CA_KEYSTORE_PASSWORD" = "" -o "$CA_KEY_PASSWORD" = "" ]; then
+		echo -e "${RED}ERROR${NC}"
 		echo "Some values were not set correctly from values.yaml file, please check the following values in the values.yaml file:"
 		echo "CERTIFICATE_VALIDITY_DAYS=$CERTIFICATE_VALIDITY_DAYS"
 		echo "TRUST_PASSWORD=$TRUST_PASSWORD"
@@ -99,6 +106,7 @@ GeneratePKI () {
 		echo "CA_KEY_PASSWORD=$CA_KEY_PASSWORD"
 		echo "---"
 		echo "The raw contents that was read from values.yaml: $FIREWALL_CONF_RAW"
+		exit 1
 	fi
 
 	$KEYTOOL_EXE -genkeypair -keyalg EC -keysize 256 -alias firewallroot -validity $CERTIFICATE_VALIDITY_DAYS -dname "CN=Firewall Root,O=Local Only,L=London,C=GB" -ext bc:ca:true,pathlen:1 -keystore $WORKDIR/firewallca.jks -storepass $CA_KEYSTORE_PASSWORD -keypass $CA_KEY_PASSWORD

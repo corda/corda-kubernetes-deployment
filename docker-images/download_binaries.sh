@@ -1,5 +1,9 @@
 #!/bin/bash
 
+RED='\033[0;31m' # Error color
+YELLOW='\033[0;33m' # Warning color
+NC='\033[0m' # No Color
+
 set -u
 set +x
 
@@ -59,6 +63,7 @@ checkStatus () {
 		then
 			echoMessage "Success"
 		else
+			echo -e "${RED}ERROR${NC}"
 			echoMessage "The previous step failed"
 			exit 1
 	fi	
@@ -74,6 +79,7 @@ wgetDownload () {
 	status=$?
 	set -e
 	if [ $status -ne 0 ]; then 
+		echo -e "${RED}ERROR${NC}"
 		echo "wget missing, cannot continue (please install wget: https://stackoverflow.com/questions/33886917/how-to-install-wget-in-macos)!"
 		exit 1
 	else
@@ -82,7 +88,9 @@ wgetDownload () {
 		if [ $status -eq 0 ]; then 
 			echo "URL check passed, target exists!"
 		else 
+			echo -e "${RED}ERROR${NC}"
 			echo "URL check failed, file not found! Check your version definition in values.yaml file!"
+			echo "URL: $URL"
 			exit 1
 		fi
 
@@ -112,7 +120,7 @@ downloadBinaries () {
 	CORDA_FIREWALL_DOWNLOAD_URL="https://software.r3.com/artifactory/r3-corda-releases/com/r3/corda/corda-firewall/${VERSION}/corda-firewall-${VERSION}.jar"
 	CORDA_HEALTH_CHECK_DOWNLOAD_URL="https://software.r3.com/artifactory/r3-corda-releases/com/r3/corda/corda-tools-health-survey/${VERSION}/corda-tools-health-survey-${VERSION}.jar"
 	CORDA_FINANCE_WORKFLOWS_DOWNLOAD_URL="https://software.r3.com/artifactory/r3-corda-releases/com/r3/corda/corda-finance-workflows/${VERSION}/corda-finance-workflows-${VERSION}.jar"
-	CORDA_FINANCE_CONTRACT_DOWNLOAD_URL="https://ci-artifactory.corda.r3cev.com/artifactory/corda-releases/net/corda/corda-finance-contracts/${VERSION}/corda-finance-contracts-${VERSION}.jar"
+	CORDA_FINANCE_CONTRACT_DOWNLOAD_URL="https://software.r3.com/artifactory/corda-releases/net/corda/corda-finance-contracts/${VERSION}/corda-finance-contracts-${VERSION}.jar"
 
 	echo "Checking that wget exists..."
 	set +e
@@ -120,6 +128,7 @@ downloadBinaries () {
 	status=$?
 	set -e
 	if [ $status -ne 0 ]; then 
+		echo -e "${YELLOW}Warning${NC}"
 		echo "wget is not installed. You need to install it in order to download the binaries using this script. You may also download them manually."
 		echo "Manual download instructions, please download the following links and save as the name suggests:"
 		echo "docker-images/bin/$CORDA_VERSION.jar = $CORDA_DOWNLOAD_URL"
@@ -197,16 +206,19 @@ downloadBinaries () {
 
 askForArtifactoryLoginInformation () {
 	if [ "$ARTIFACTORY_USER" = "" ]; then
+		echo -e "${YELLOW}Warning${NC}"
 		echo "There is no value defined for artifactory_username in values.yaml, you can either interrupt this script with CTRL+C or enter your R3 Artifactory username next."
 		read -p "Enter your R3 Artifactory username to continue: " ARTIFACTORY_USER
 	fi
 	
 	if [ "$ARTIFACTORY_PASSWORD" = "" ]; then
+		echo -e "${YELLOW}Warning${NC}"
 		echo "There is no value defined for artifactory_password in values.yaml, you can either interrupt this script with CTRL+C or enter your R3 Artifactory password next."
 		read -p "Enter your R3 Artifactory password to continue: " ARTIFACTORY_PASSWORD
 	fi
 	
 	if [ "$ARTIFACTORY_USER" = "" -o "$ARTIFACTORY_PASSWORD" = "" ]; then
+		echo -e "${RED}ERROR${NC}"
 		echo "R3 Artifactory username or password missing!"
 		exit 1
 	fi

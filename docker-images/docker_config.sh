@@ -1,5 +1,9 @@
 #!/bin/bash
 
+RED='\033[0;31m' # Error color
+YELLOW='\033[0;33m' # Warning color
+NC='\033[0m' # No Color
+
 set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
@@ -59,17 +63,20 @@ EnsureDockerIsAvailableAndReachable () {
 		$DOCKER_CMD ps 2>&1 | grep -q "permission denied"
 		status=$?
 		if [ $status -eq 0 ]; then 
+			echo -e "${YELLOW}Warning${NC}"
 			echo "Docker requires sudo to execute, trying to substitute using 'sudo docker'"
 			DOCKER_CMD='sudo docker'
 			$DOCKER_CMD ps 2>&1 | grep -q "permission denied"
 			status=$?
 			if [ $status -eq 0 ]; then 
+				echo -e "${RED}ERROR${NC}"
 				echo "Still issues with permissions, try a manual workaround where you set 'alias docker='sudo docker'' then run 'docker ps' to check that there is no 'permission denied' errors."
 				exit 1
 			else
 				echo "Docker now accessible by way of sudo, continuing..."
 			fi
 		else
+			echo -e "${RED}ERROR${NC}"
 			echo "!!! Docker engine not available, make sure your Docker is running and responds to command 'docker ps' !!!"
 			exit 1
 		fi

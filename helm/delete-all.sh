@@ -15,11 +15,11 @@ DeleteAllKubernetesResources () {
 	kubectl delete --all pv --wait=false
 
 	while :; do
-	  n=$(kubectl get pods | wc -l)
-	  if [[ n -eq 0 ]]; then
-		break
-	  fi
-	  sleep 5
+		n=$(kubectl get pods | wc -l)
+		if [[ n -eq 0 ]]; then
+			break
+		fi
+		sleep 5
 	done
 	echo "====== Deleting all Kubernetes resources completed. ====== "
 }

@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+RED='\033[0;31m' # Error color
+YELLOW='\033[0;33m' # Warning color
+NC='\033[0m' # No Color
+
 echoMessage () {
 	message=$1
 
@@ -12,6 +16,7 @@ checkStatus () {
 		then
 			echoMessage "Success"
 		else
+			echo -e "${RED}ERROR${NC}"
 			echoMessage "The previous step failed"
 			exit 1
 	fi	
@@ -107,7 +112,7 @@ waitTillIdentityManagerIsUpAndRunning () {
 	do
 		sleep 2
 		echoMessage "Trying to contact Identity Manager @ ($IDENTITY_MANAGER_ADDRESS)..."
-		curl -m5 -s http://$IDENTITY_MANAGER_ADDRESS/status > /dev/null
+		curl -m5 -s $IDENTITY_MANAGER_ADDRESS/status > /dev/null
 		let EXIT_CODE=$?
 	done
 	
@@ -120,7 +125,7 @@ waitTillNetworkMapIsUpAndRunning () {
 	do
 		sleep 2
 		echoMessage "Trying to contact network map..."
-		curl -m5 -s http://$NETMAP_ADDRESS/network-map/my-hostname > /dev/null
+		curl -m5 -s $NETMAP_ADDRESS/network-map/my-hostname > /dev/null
 		let EXIT_CODE=$?
 	done
 	
@@ -133,7 +138,7 @@ checkNetworkMap () {
 	do
 		sleep 2
 		echoMessage "Checking network map for notary NodeInfo..."
-		hash=$(curl -m5 -s http://$NETMAP_ADDRESS/network-map-user/network-map | jq -r '.[0]')
+		hash=$(curl -m5 -s $NETMAP_ADDRESS/network-map-user/network-map | jq -r '.[0]')
 		if [ "$hash" = "null" ]
 		then
 			echoMessage "The network map is currently empty, waiting for first registrations..."
