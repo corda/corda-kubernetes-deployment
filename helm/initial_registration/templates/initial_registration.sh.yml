@@ -1,41 +1,45 @@
 #!/bin/bash
 
+RED='\033[0;31m' # Error color
+YELLOW='\033[0;33m' # Warning color
+NC='\033[0m' # No Color
+
 set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
-	# Absolute path of this script, e.g. /opt/corda/node/foo.sh
-	set +e
-	ABS_PATH=$(readlink -f "$0" 2>&1)
-	if [ "$?" -ne "0" ]; then
-		echo "Using macOS alternative to readlink -f command..."
-		# Unfortunate MacOs issue with readlink functionality, see https://github.com/corda/corda-kubernetes-deployment/issues/4
-		TARGET_FILE=$0
+    # Absolute path of this script, e.g. /opt/corda/node/foo.sh
+    set +e
+    ABS_PATH=$(readlink -f "$0" 2>&1)
+    if [ "$?" -ne "0" ]; then
+        echo "Using macOS alternative to readlink -f command..."
+        # Unfortunate MacOs issue with readlink functionality, see https://github.com/corda/corda-kubernetes-deployment/issues/4
+        TARGET_FILE=$0
 
-		cd $(dirname $TARGET_FILE)
-		TARGET_FILE=$(basename $TARGET_FILE)
-		ITERATIONS=0
+        cd $(dirname $TARGET_FILE)
+        TARGET_FILE=$(basename $TARGET_FILE)
+        ITERATIONS=0
 
-		# Iterate down a (possible) chain of symlinks
-		while [ -L "$TARGET_FILE" ]
-		do
-			TARGET_FILE=$(readlink $TARGET_FILE)
-			cd $(dirname $TARGET_FILE)
-			TARGET_FILE=$(basename $TARGET_FILE)
-			ITERATIONS=$((ITERATIONS + 1))
-			if [ "$ITERATIONS" -gt 1000 ]; then
-				echo "symlink loop. Critical exit."
-				exit 1
-			fi
-		done
+        # Iterate down a (possible) chain of symlinks
+        while [ -L "$TARGET_FILE" ]
+        do
+            TARGET_FILE=$(readlink $TARGET_FILE)
+            cd $(dirname $TARGET_FILE)
+            TARGET_FILE=$(basename $TARGET_FILE)
+            ITERATIONS=$((ITERATIONS + 1))
+            if [ "$ITERATIONS" -gt 1000 ]; then
+                echo "symlink loop. Critical exit."
+                exit 1
+            fi
+        done
 
-		# Compute the canonicalized name by finding the physical path 
-		# for the directory we're in and appending the target file.
-		PHYS_DIR=$(pwd -P)
-		ABS_PATH=$PHYS_DIR/$TARGET_FILE
-	fi
+        # Compute the canonicalized name by finding the physical path 
+        # for the directory we're in and appending the target file.
+        PHYS_DIR=$(pwd -P)
+        ABS_PATH=$PHYS_DIR/$TARGET_FILE
+    fi
 
-	# Absolute path of the directory this script is in, thus /opt/corda/node/
-	DIR=$(dirname "$ABS_PATH")
+    # Absolute path of the directory this script is in, thus /opt/corda/node/
+    DIR=$(dirname "$ABS_PATH")
 }
 GetPathToCurrentlyExecutingScript
 set -eu
@@ -50,6 +54,7 @@ checkStatus () {
         then
             echo "The Corda Node initial registration was completed successfully. The certificates will now be copied to the correct folders."
         else
+            echo -e "${RED}ERROR${NC}"
             echo "The Corda Node initial registration has failed unexpectedly. MANUAL intervention is required!"
             echo "You may have to clean out the workspace folder and start over with a new X500 name for your node. (depends on the error)"
             exit 1
@@ -66,10 +71,12 @@ ensureFileExistsAndCopy () {
         then
             cp -f $FROM $TO
         else
+            echo -e "${RED}ERROR${NC}"
             echo "Existing certificate already existed, skipping copying as a safe-guard: $TO"
             exit 1
         fi
     else
+        echo -e "${RED}ERROR${NC}"
         echo "File did not exist, probably an issue with initial-registration: $FROM"
         exit 1
     fi
@@ -102,7 +109,7 @@ copyNetworkParameters () {
     waitTillNetworkParametersIsAvailable
     
     echo "Copying network-parameters to helm/files/network (for Corda Firewall use)."
-    cp -u $THIS_PATH/workspace/network-parameters $ROOT_FOLDER/helm/files/network/network-parameters.file
+    cp -f $THIS_PATH/workspace/network-parameters $ROOT_FOLDER/helm/files/network/network-parameters.file
 }
 
 waitForNetworkParametersOrTimeout () {
@@ -127,6 +134,7 @@ waitForNetworkParametersOrTimeout () {
             if kill -0 "$CORDA_PID" > /dev/null 2>&1; then
                 echo "."
             else
+                echo -e "${RED}ERROR${NC}"
                 echo "Corda Node process terminated before network-parameters was completed. MANUAL investigation required."
                 LOOPING=0
             fi
@@ -140,6 +148,7 @@ waitForNetworkParametersOrTimeout () {
     if [ -f $ROOT_FOLDER/helm/files/network/network-parameters.file ]; then
         echo "network-parameters file was downloaded successfully and we are ready to continue deployment."
     else
+        echo -e "${RED}ERROR${NC}"
         echo "Unfortunately the network-parameters file was not downloaded/copied to the correct folder, MANUAL intervention is required."
         exit 1
     fi
@@ -150,6 +159,7 @@ downloadNetworkParameters () {
     NODE_CONF=$2
     
     if [ -f $ROOT_FOLDER/helm/files/network/network-parameters.file ]; then
+        echo -e "${YELLOW}Warning${NC}"
         echo "network-parameters file already existed in the correct folder $ROOT_FOLDER/helm/files/network/, skipping new download."
     else
         echo "Next we will launch the Corda Node just in order to download network-parameters file. Please wait..."
@@ -181,6 +191,7 @@ initialRegistration () {
         echo "Copying certificates from initial-registration step to the helm/files/certificates/node folder"
         copyCertificates
     else
+        echo -e "${YELLOW}Warning${NC}"
         echo "Skipping initial-registration step because $ROOT_FOLDER/helm/files/certificates/node/ already contains the certificates."
     fi
 }
@@ -218,16 +229,19 @@ main () {
                 
                 echo "Initial registration completed successfully! You can now deploy to Kubernetes cluster."
             else
+                echo -e "${RED}ERROR${NC}"
                 echo "node.conf not found as $NODE_CONF"
-                exit
+                exit 1
             fi
         else
+            echo -e "${RED}ERROR${NC}"
             echo "Corda Network root trust store file not found, expected: $TRUST_STORE"
-            exit
+            exit 1
         fi
     else
+        echo -e "${RED}ERROR${NC}"
         echo "Corda Enterprise binaries not found in folder $BIN_DIR"
-        exit
+        exit 1
     fi
 }
 

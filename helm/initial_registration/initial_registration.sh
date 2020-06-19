@@ -1,5 +1,9 @@
 #!/bin/bash
 
+RED='\033[0;31m' # Error color
+YELLOW='\033[0;33m' # Warning color
+NC='\033[0m' # No Color
+
 set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
@@ -51,10 +55,11 @@ InitialRegistration () {
 
 	if [ ! -f "$NODE_CONF" ]; then
 		set +x
-		echo "ERROR: The node.conf file could not be read, file path: $NODE_CONF"
-		echo "This most likely means you are targetting a cordaVersion in the helm/values.yaml file which does not have a corresponding node.conf file in the helm/files subfolder."
+		echo -e "${RED}ERROR${NC}"
+		echo "The node.conf file could not be read, file path: $NODE_CONF"
+		echo "This most likely means you are targeting a cordaVersion in the helm/values.yaml file which does not have a corresponding node.conf file in the helm/files subfolder."
 		echo "This can in most cases easily be fixed by copying an existing node.conf file and naming it according to the version you want to use."
-		echo "Please follow this guide: If you are deploying a version 4.3, and there is only a conf file for 4.2, copy that one. If you are deplying a version for 4.2.20190221, you should also copy the 4.2 node.conf file."
+		echo "Please follow this guide: If you are deploying a version 4.3, and there is only a conf file for 4.2, copy that one. If you are deploying a version for 4.2.20190221, you should also copy the 4.2 node.conf file."
 		echo "To avoid using a too new file, never copy a newer node.conf file as base, because it might contain new settings that your targeted Corda version does not know about."
 		echo "Should you run into any issues while starting up the Corda node with this node.conf file, just check the node workspace logs folder, there you will find the exact details of what the node.conf should look like in the case of errors."
 		echo ""

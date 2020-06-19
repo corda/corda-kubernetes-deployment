@@ -40,21 +40,8 @@ GetPathToCurrentlyExecutingScript () {
 GetPathToCurrentlyExecutingScript
 
 set -eu
-function main() {
-    SERVER="{{.Values.config.containerRegistry.serverAddress}}"
-    USERNAME="{{ .Values.config.containerRegistry.username }}"
-    PASSWORD="{{ .Values.config.containerRegistry.password }}"
-    EMAIL="{{ .Values.config.containerRegistry.email }}"
-
-    {{- if eq .Values.config.containerRegistry.username "AWS" }}
-    PASSWORD=$(aws ecr get-login-password)
-    {{- end }}
-
-    kubectl create secret docker-registry --dry-run=true container-registry-secret \
-    --docker-server=$SERVER \
-    --docker-username=$USERNAME \
-    --docker-password=$PASSWORD \
-    --docker-email=$EMAIL \
-    -o yaml > $DIR/docker-secret.yml
-}
-main
+APP={{ .Values.config.resourceName }}-node
+POD=$(kubectl get pod -l app=$APP -o jsonpath="{.items[0].metadata.name}")
+CORDAPPS_PATH=$(echo "$DIR/../../../files/cordapps")
+# Can run into issues if CorDapps locked by Corda process. TODO: refactor into a new manner of deploying CorDapps.
+kubectl cp "$CORDAPPS_PATH" "$POD:/opt/corda/workspace/"

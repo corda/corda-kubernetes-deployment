@@ -1,5 +1,9 @@
 #!/bin/bash
 
+RED='\033[0;31m' # Error color
+YELLOW='\033[0;33m' # Warning color
+NC='\033[0m' # No Color
+
 set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
@@ -46,6 +50,7 @@ checkStatus () {
 		then
 			echo "."
 		else
+			echo -e "${RED}ERROR${NC}"
 			echo "The previous step failed"
 			exit 1
 	fi	
@@ -63,6 +68,7 @@ ensureFileExistsAndCopy () {
         fi
 		cp -f $FROM $TO
     else
+		echo -e "${RED}ERROR${NC}"
 		echo "File did not exist, probably an issue with certificate creation: $FROM"
         exit 1
     fi

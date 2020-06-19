@@ -1,5 +1,9 @@
 #!/bin/bash
 
+RED='\033[0;31m' # Error color
+YELLOW='\033[0;33m' # Warning color
+NC='\033[0m' # No Color
+
 set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
@@ -46,6 +50,7 @@ checkStatus () {
 		then
 			echo "."
 		else
+			echo -e "${RED}ERROR${NC}"
 			echo "The previous step failed"
 			exit 1
 	fi	
@@ -54,7 +59,7 @@ checkStatus () {
 
 ResetEnvironment () {
 	echo "====== Resetting deployment environment next ... ====== "
-	echo "WARNING!"
+	echo -e "${YELLOW}Warning${NC}"
 	echo "This will remove certificates from your local file system."
 	echo "If you are sure this is what you want to do, please type 'yes' and press enter."
 	read -p "Enter 'yes' to continue: " confirm

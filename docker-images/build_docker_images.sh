@@ -1,5 +1,9 @@
 #!/bin/bash
 
+RED='\033[0;31m' # Error color
+YELLOW='\033[0;33m' # Warning color
+NC='\033[0m' # No Color
+
 set -u
 DIR="."
 GetPathToCurrentlyExecutingScript () {
@@ -52,10 +56,13 @@ fi
 BuildDockerImages () {
 	echo "====== Building Docker images next ... ====== "
 	if [ ! -f "$DIR/bin/$CORDA_VERSION.jar" -o  ! -f "$DIR/bin/$CORDA_HEALTH_CHECK_VERSION.jar" -o  ! -f "$DIR/bin/$CORDA_FIREWALL_VERSION.jar" ]; then
+		echo -e "${RED}ERROR${NC}"
 		echo "Missing binaries, check that you have the correct files with the correct names in the following folder $DIR/bin"
 		echo "$DIR/bin/$CORDA_VERSION.jar"
 		echo "$DIR/bin/$CORDA_FIREWALL_VERSION.jar"
 		echo "$DIR/bin/$CORDA_HEALTH_CHECK_VERSION.jar"
+		echo "$DIR/bin folder contents:"
+		ls -al $DIR/bin
 		exit 1
 	fi
 
