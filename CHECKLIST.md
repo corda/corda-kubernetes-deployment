@@ -24,6 +24,8 @@ Corda Enterprise versions 4.0, 4.1, 4.2, 4.3, 4.4, 4.5
 
 Note, that if you already have your Kubernetes cluster with attached Container Registry and Persistent storage, you can skip this whole cloud setup section and skip straight to [Deployment configuration](#deployment-configuration).
 
+See [CLOUD_SETUP.md](CLOUD_SETUP.md) for more information on setup steps.
+
 ### Microsoft Azure cloud setup checklist:
 
 #### Azure Setup
