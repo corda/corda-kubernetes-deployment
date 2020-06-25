@@ -1,0 +1,121 @@
+#!/bin/bash
+
+RED='\033[0;31m' # Error color
+YELLOW='\033[0;33m' # Warning color
+NC='\033[0m' # No Color
+
+set -u
+DIR="."
+GetPathToCurrentlyExecutingScript () {
+    # Absolute path of this script, e.g. /opt/corda/node/foo.sh
+    set +e
+    ABS_PATH=$(readlink -f "$0" 2>&1)
+    if [ "$?" -ne "0" ]; then
+        echo "Using macOS alternative to readlink -f command..."
+        # Unfortunate MacOs issue with readlink functionality, see https://github.com/corda/corda-kubernetes-deployment/issues/4
+        TARGET_FILE=$0
+
+        cd $(dirname $TARGET_FILE)
+        TARGET_FILE=$(basename $TARGET_FILE)
+        ITERATIONS=0
+
+        # Iterate down a (possible) chain of symlinks
+        while [ -L "$TARGET_FILE" ]
+        do
+            TARGET_FILE=$(readlink $TARGET_FILE)
+            cd $(dirname $TARGET_FILE)
+            TARGET_FILE=$(basename $TARGET_FILE)
+            ITERATIONS=$((ITERATIONS + 1))
+            if [ "$ITERATIONS" -gt 1000 ]; then
+                echo "symlink loop. Critical exit."
+                exit 1
+            fi
+        done
+
+        # Compute the canonicalized name by finding the physical path 
+        # for the directory we're in and appending the target file.
+        PHYS_DIR=$(pwd -P)
+        ABS_PATH=$PHYS_DIR/$TARGET_FILE
+    fi
+
+    # Absolute path of the directory this script is in, thus /opt/corda/node/
+    DIR=$(dirname "$ABS_PATH")
+}
+GetPathToCurrentlyExecutingScript
+
+CopyDatabaseDrivers () {
+    POD=$1
+    DB_DRIVERS_PATH=$2
+    
+    CUR_PATH=$(pwd)
+    cd $DB_DRIVERS_PATH
+    
+    set +e
+    ALL_DRIVER_JARS=(*.jar)
+    NUM_DRIVERS=${#ALL_DRIVER_JARS[@]}
+    echo "Copying $NUM_DRIVERS database driver(s) to persistent storage"
+    echo ""
+
+    echo "Ensuring persistent storage has the drivers folder..."
+    kubectl exec $POD -- mkdir -p workspace/drivers/
+    echo ""
+    
+    DRIVERS_IN_PERSISTENT_STORAGE=$(kubectl exec $POD -- ls -al workspace/drivers/)
+    
+    for f in "${ALL_DRIVER_JARS[@]}"
+    do
+        echo "Driver jar: $f"
+        echo "$DRIVERS_IN_PERSISTENT_STORAGE" | grep $(basename $f) &> /dev/null
+        if [ $? -eq 0 ]; then
+            echo "The driver already exists in persistent storage as:"
+            echo $(echo "$DRIVERS_IN_PERSISTENT_STORAGE" | grep $(basename $f))
+        else
+            echo "Copying driver to persistent storage..."
+            kubectl cp "$f" "$POD:/opt/corda/workspace/drivers/"
+        fi
+        echo ""
+    done
+    cd $CUR_PATH
+    set -e
+    echo "Database drivers copy complete."
+    echo ""
+    #kubectl exec $POD -- ls workspace/drivers/ | grep postgres
+    #kubectl exec $POD -- ls workspace/drivers/ | grep ojdbc
+    #kubectl exec $POD -- ls workspace/drivers/ | grep mssql
+}
+
+CopyCorDapps () {
+    APP=$1
+    CORDAPPS_PATH=$2
+    
+    # Can run into issues if CorDapps locked by Corda process. TODO: refactor into a new manner of deploying CorDapps.
+    echo "Copying $CORDAPPS_PATH to $POD:/opt/corda/workspace/"
+    echo "Contents of cordapps folder:"
+    ls $CORDAPPS_PATH
+    set +e
+    kubectl cp "$CORDAPPS_PATH" "$POD:/opt/corda/workspace/"
+    result=$?
+    set -e
+    if [ $result -eq 0 ]; then
+        echo "Copy operation completed successfully."
+    else
+        echo -e "${RED}ERROR${NC}"
+        echo "Copy operation failed! Perhaps the files are currently in use?"
+    fi
+
+    echo "CorDapps copy complete."
+    echo ""
+}
+
+CopyFilesToPersistentStorage () {
+    set -eu
+    APP={{ .Values.config.resourceName }}-node
+    POD=$(kubectl get pod -l app=$APP -o jsonpath="{.items[0].metadata.name}")
+
+    echo "Copy files to $APP with POD: $POD"
+    
+    CopyDatabaseDrivers $POD $(echo "$DIR/../../../../docker-images/bin/db_drivers")
+
+    CopyCorDapps $POD $(echo "$DIR/../../../files/cordapps")
+}
+CopyFilesToPersistentStorage

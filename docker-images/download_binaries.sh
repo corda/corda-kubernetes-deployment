@@ -182,21 +182,28 @@ downloadBinaries () {
 			echo "apache-artemis-2.6.4-bin.tar.gz already downloaded."
 	fi
 	
-	if [ ! -f zookeeper-3.5.4-beta.tar.gz ]
-		then
-			echoMessage "Downloading zookeeper-3.5.4-beta.tar.gz..."
-			curl -sSL https://apache.org/dist/zookeeper/zookeeper-3.5.4-beta/zookeeper-3.5.4-beta.tar.gz -o zookeeper-3.5.4-beta.tar.gz
-			#tar xvf zookeeper-3.5.4-beta.tar.gz
-		else
-			echo "zookeeper-3.5.4-beta.tar.gz already downloaded."
-	fi
-	
-	if [ ! -f mssql-jdbc-7.2.0.jre8.jar ]
+	if [ ! -f db_drivers/mssql-jdbc-7.2.0.jre8.jar ]
 		then
 			echoMessage "Downloading mssql-jdbc-7.2.0.jre8.jar..."
-			curl -sSL https://github.com/Microsoft/mssql-jdbc/releases/download/v7.2.0/mssql-jdbc-7.2.0.jre8.jar -o mssql-jdbc-7.2.0.jre8.jar
+			curl -sSL https://github.com/Microsoft/mssql-jdbc/releases/download/v7.2.0/mssql-jdbc-7.2.0.jre8.jar -o db_drivers/mssql-jdbc-7.2.0.jre8.jar
 		else
 			echo "mssql-jdbc-7.2.0.jre8.jar already downloaded."
+	fi
+	
+	if [ ! -f db_drivers/ojdbc8.jar ]
+		then
+			echoMessage "Downloading ojdbc8.jar..."
+			curl -sSL https://download.oracle.com/otn-pub/otn_software/jdbc/197/ojdbc8.jar -o db_drivers/ojdbc8.jar
+		else
+			echo "ojdbc8.jar already downloaded."
+	fi
+	
+	if [ ! -f db_drivers/postgresql-42.2.14.jar ]
+		then
+			echoMessage "Downloading postgresql-42.2.14.jar..."
+			curl -sSL https://jdbc.postgresql.org/download/postgresql-42.2.14.jar -o db_drivers/postgresql-42.2.14.jar
+		else
+			echo "postgresql-42.2.14.jar already downloaded."
 	fi
 	
 	cd ..
