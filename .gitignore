@@ -10,3 +10,12 @@ corda-pki-generator/pki-firewall/certs
 *.jks
 *.pem
 *.crl
+
+# Terraform
+*.retry
+*.tfstate*
+*.tfstate.backup*
+*.terraform
+
+.DS_Store
+.idea/
