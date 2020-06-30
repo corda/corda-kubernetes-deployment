@@ -82,7 +82,7 @@ checkIfIdentityManagerIsUpAndRunning () {
 	curl -m5 -s $IDENTITY_MANAGER_ADDRESS/status > /dev/null
 	result=$?
 	
-	if [ $result -eq 0]; then
+	if [ $result -eq 0 ]; then
 		echoMessage "Identity Manager is up and running"
 	else
 		echo -e "${YELLOW}Warning${NC}"
@@ -96,7 +96,7 @@ checkIfNetworkMapIsUpAndRunning () {
 	let EXIT_CODE=$?
 	result=$?
 	
-	if [ $result -eq 0]; then
+	if [ $result -eq 0 ]; then
 		echoMessage "Network map is up and running"
 	else
 		echo -e "${YELLOW}Warning${NC}"
