@@ -8,11 +8,11 @@ Please note that you may be able to work with other setups than the ones that ha
 
 This deployment supports the following databases:
 
-| Vendor        | Version | JDBC Driver                   |
-| ------------- |:-------:|:------------------------------|
-| MS SQL Server |  2017   | Microsoft JDBC                |
-| PostgreSQL    |  9.6    | Oracle JDBC 8                 |
-| Oracle        |  12cR2  | PostgreSQL JDBC Driver 42.1.4 |
+| Vendor        | Version | JDBC Driver                    |
+| ------------- |:-------:|:-------------------------------|
+| MS SQL Server |  2017   | Microsoft JDBC                 |
+| PostgreSQL    |  9.6    | Oracle JDBC 8                  |
+| Oracle        |  12cR2  | PostgreSQL JDBC Driver 42.2.14 |
 
 Please note that the JDBC driver is downloaded automatically as part of the deployment and may end up downloading an unsupported version in the future.
 
