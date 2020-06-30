@@ -47,7 +47,7 @@ It is strongly recommended you follow the CHECKLIST, to not skip an important st
 
 ## TESTED WITH
 
-This deployment has been tested and verified with the following information: SUPPORT_MATRIX.md
+This deployment has been tested and verified with the following information: [SUPPORT_MATRIX.md](SUPPORT_MATRIX.md)
 
 ---
 
