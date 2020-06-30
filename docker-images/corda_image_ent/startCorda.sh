@@ -39,31 +39,6 @@ isRegistered () {
 	return $IS_REGISTERED
 }
 
-ifSharedFolderExists () {
-	if [ -d /opt/corda/shared/ ]; then
-		return 1
-	else
-		return 0
-	fi
-}
-
-copySharedFiles () {
-	ifSharedFolderExists
-	if [ $? -eq 1 ]; then
-		waitTillNetworkParametersIsAvailable
-		echoMessage "Copying network-parameters & certificates to shared folder (for firewall)."
-		cp -u ./workspace/network-parameters /opt/corda/shared/
-		mkdir /opt/corda/shared/certificates
-		cp -u ./workspace/certificates/sslkeystore.jks /opt/corda/shared/certificates/
-		cp -u ./workspace/certificates/truststore.jks /opt/corda/shared/certificates/
-		echoMessage "Sharing complete."
-		return 1
-	else
-		echoMessage "No shared folder."
-		return 0
-	fi
-}
-
 waitForOtherCordaNodeProcessToExit () {
 	let PROCESS_ID_ACCESSIBLE=0
 	while [ ${PROCESS_ID_ACCESSIBLE} -eq 0 ]
@@ -88,7 +63,7 @@ waitForOtherCordaNodeProcessToExit () {
 	done
 }
 
-waitTillNetworkParametersIsAvailable () {
+checkIfNetworkParametersIsAvailable () {
 	let NETWORK_PARAMETERS_EXISTS=0
 	while [ ${NETWORK_PARAMETERS_EXISTS} -eq 0 ]
 	do
@@ -102,30 +77,31 @@ waitTillNetworkParametersIsAvailable () {
 	done
 }
 
-waitTillIdentityManagerIsUpAndRunning () {
-	let EXIT_CODE=255
-	while [ ${EXIT_CODE} -gt 0 ]
-	do
-		sleep 2
-		echoMessage "Trying to contact Identity Manager @ ($IDENTITY_MANAGER_ADDRESS)..."
-		curl -m5 -s $IDENTITY_MANAGER_ADDRESS/status > /dev/null
-		let EXIT_CODE=$?
-	done
+checkIfIdentityManagerIsUpAndRunning () {
+	echoMessage "Trying to contact Identity Manager @ ($IDENTITY_MANAGER_ADDRESS)..."
+	curl -m5 -s $IDENTITY_MANAGER_ADDRESS/status > /dev/null
+	result=$?
 	
-	echoMessage "Identity Manager is up and running"
+	if [ $result -eq 0 ]; then
+		echoMessage "Identity Manager is up and running"
+	else
+		echo -e "${YELLOW}Warning${NC}"
+		echoMessage "Identity Manager is unavailable"
+	fi
 }
 
-waitTillNetworkMapIsUpAndRunning () {
-	let EXIT_CODE=255
-	while [ ${EXIT_CODE} -gt 0 ]
-	do
-		sleep 2
-		echoMessage "Trying to contact network map..."
-		curl -m5 -s $NETMAP_ADDRESS/network-map/my-hostname > /dev/null
-		let EXIT_CODE=$?
-	done
+checkIfNetworkMapIsUpAndRunning () {
+	echoMessage "Trying to contact network map @ ($NETMAP_ADDRESS)..."
+	curl -m5 -s $NETMAP_ADDRESS/network-map/my-hostname > /dev/null
+	let EXIT_CODE=$?
+	result=$?
 	
-	echoMessage "Network map is up and running"
+	if [ $result -eq 0 ]; then
+		echoMessage "Network map is up and running"
+	else
+		echo -e "${YELLOW}Warning${NC}"
+		echoMessage "Network map is unavailable"
+	fi
 }
 
 checkNetworkMap () {
@@ -158,40 +134,22 @@ checkNetworkMap () {
 	# fi
 }
 
-registerNode () {
-	java -jar corda.jar initial-registration --base-directory ./workspace --network-root-truststore-password $TRUSTSTORE_PASSWORD --network-root-truststore ./workspace/networkRootTrustStore.jks
-	checkStatus $?
-}
-
 startNode () {
 	java -jar corda.jar --base-directory ./workspace
 	checkStatus $?
 }
 
-isRegistered
-registered=$?
-
-if [ $registered -eq 1 ]; then
+launchCordaNode () {
 	echoMessage "Checking if other Corda Node process is running..."
 	waitForOtherCordaNodeProcessToExit
+
+	echoMessage "Checking Identity Manager's availability"
+	checkIfIdentityManagerIsUpAndRunning
+
+	echoMessage "Checking network map's availability"
+	checkIfNetworkMapIsUpAndRunning
+
 	echoMessage "Starting the node"
 	startNode
-else
-	echoMessage "Checking Identity Manager's availability"
-	waitTillIdentityManagerIsUpAndRunning
-	
-	echoMessage "Registering the node"
-	registerNode
-	
-	echoMessage "Checking network map's availability"
-	waitTillNetworkMapIsUpAndRunning
-
-	echoMessage "Checking network map"
-	checkNetworkMap
-	
-	echoMessage "Sharing files..."
-	copySharedFiles &
-	
-	echoMessage "Now starting the node"
-	startNode
-fi
+}
+launchCordaNode

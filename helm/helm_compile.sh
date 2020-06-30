@@ -104,8 +104,8 @@ HelmCompile () {
 	echo "Compiling Helm templates..."
 	helm template $DIR --name $TEMPLATE_NAMESPACE --namespace $TEMPLATE_NAMESPACE --output-dir $DIR/output
 
-	# copy-cordapps script
-	SCRIPT="$DIR/output/corda/templates/copy-cordapps.sh"
+	# copy-files script
+	SCRIPT="$DIR/output/corda/templates/copy-files.sh"
 	mv $SCRIPT.yml $SCRIPT
 	# Helm always adds a few extra lines, which we want to remove from shell scripts
 	tail -n +3 "$SCRIPT" > "$SCRIPT.tmp" && mv "$SCRIPT.tmp" "$SCRIPT"
@@ -123,8 +123,8 @@ HelmCompile () {
 	echo "Applying templates to Kubernetes cluster:"
 	kubectl apply -f $DIR/output/corda/templates/ --namespace=$TEMPLATE_NAMESPACE
 
-	# Copy CorDapps etc.
-	#$DIR/output/corda/templates/copy-cordapps.sh
+	# Copy CorDapps, Database drivers etc.
+	#$DIR/output/corda/templates/copy-files.sh
 	echo "====== Deploying to Kubernetes cluster completed. ====== "
 }
 HelmCompile
