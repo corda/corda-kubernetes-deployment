@@ -44,6 +44,11 @@ It is strongly recommended you follow the CHECKLIST, to not skip an important st
 * Access to Corda Enterprise binary files or access to R3 Artifactory for Enterprise (licensed users)
 
 ---
+
+## TESTED WITH
+
+This deployment has been tested and verified with the following information: SUPPORT_MATRIX.md
+
 ---
 
 ## BINARIES
