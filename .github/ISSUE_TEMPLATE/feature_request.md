@@ -7,7 +7,7 @@ assignees: ''
 
 ---
 
-**First and foremost, review the [Roadmap](ROADMAP.md), if the feature is already described there, that's the main place to update the description of this feature.**
+**First and foremost, review the [Roadmap](/ROADMAP.md), if the feature is already described there, that's the main place to update the description of this feature.**
 
 **Is your feature request related to a problem? Please describe.**
 A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
