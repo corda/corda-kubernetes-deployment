@@ -31,7 +31,7 @@ In order to figure out how to perform the deployment successfully, and how to ha
 You may want to familiarize yourself with the key concepts of a production grade deployment and the tools being used in this deployment.
 You can find the information in: 
 
-[Key Concepts](KEY_CONCEPTS.md).
+[Key Concepts](KEY_CONCEPTS.md)
 
 ---
 
