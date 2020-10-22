@@ -43,12 +43,6 @@ It is strongly recommended you follow the CHECKLIST, to not skip an important st
 
 ---
 
-## TESTED WITH
-
-This deployment has been tested and verified with the following information: [SUPPORT_MATRIX.md](docs/SUPPORT_MATRIX.md)
-
----
-
 ## BINARIES
 
 This deployment is targeting an Enterprise deployment, which should include a Corda Node, but also the Corda Firewall, which is an Enterprise only feature.
@@ -91,14 +85,6 @@ This is a brief view of the steps you will take, for the full set of steps, plea
 For more details and instructions it is strongly recommended to visit the documentation:
 
 [Documentation](docs/README.md)
-
----
-
-### KEY CONCEPTS & TOOLS
-
-You may want to familiarize yourself with the key concepts of a production grade deployment and the tools being used in this deployment.
-
-You can find the information in [Key Concepts](docs/KEY_CONCEPTS.md).
 
 ---
 

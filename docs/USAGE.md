@@ -149,7 +149,7 @@ corda-node-3-deployment-5f7cbf95bd-bznpv        1/1     Running   1          28h
 corda-node-3-float-deployment-6c74fd895-ngdvd   1/1     Running   0          28h
 ```
 
-You should be looking at the STATUS column and verifying that it is listed as Running. If there are many RESTARTS listed for a given pod, it is likely to indicate an issue with the pod.
+You should be looking at the **STATUS** column and verifying that it is listed as **Running**. If there are many **RESTARTS** listed for a given pod, it is likely to indicate an issue with the pod.
 
 Next is to analyse the running pods, to see what the components inside them are doing.
 

@@ -16,9 +16,44 @@ If you would like to see the high-level architectural view of the deployment, th
 
 [Architecture Overview](ARCHITECTURE_OVERVIEW.md)
 
+---
+
 ### Usage: Deployment & Debugging issues
 
+In order to figure out how to perform the deployment successfully, and how to handle any issues that may come your way, please review the following:
+
 [Usage](USAGE.md)
+
+---
+
+### KEY CONCEPTS & TOOLS
+
+You may want to familiarize yourself with the key concepts of a production grade deployment and the tools being used in this deployment.
+You can find the information in: 
+
+[Key Concepts](KEY_CONCEPTS.md).
+
+---
+
+### SETUP CHECKLIST
+
+Since there are a number of prerequisites that need to be met and then a certain order of running everything, a checklist has been collated that you may find useful.
+
+Please see [CHECKLIST.md](CHECKLIST.md) for more information.
+
+**Note!**
+It is strongly recommended you follow the CHECKLIST, to not skip an important step, especially the first time you set up this deployment,
+
+---
+
+### Cloud infrastructure setup
+
+This deployment requires a working cloud environment with Kubernetes Cluster Services that has access to a Docker Container Registry.
+In order to set everything up, you may find the following document helpful:
+
+[CLOUD_SETUP.md](CLOUD_SETUP.md)
+
+---
 
 ### Cost calculation of Kubernetes deployment versus a traditional bare-metal deployment
 
@@ -29,3 +64,14 @@ are we talking about high quality asset issuance which occurs much less frequent
 
 The details can be found in this dedicated document: 
 [Cost calculation & comparison](COST_CALCULATION.md)
+
+---
+
+### TESTED WITH
+
+This deployment has been tested and verified with the following information: 
+
+[SUPPORT_MATRIX.md](SUPPORT_MATRIX.md)
+
+---
+
