@@ -18,9 +18,7 @@ Kubernetes is a complex system and setting up a successful deployment for the fi
 
 Please make sure you step through the [SETUP CHECKLIST](#setup-checklist) section carefully the first time you deploy, to avoid problems down the road.
 
-Additional information on setup and usage of this Corda Kubernetes Deployment can be found on the [Corda Solutions Docs](https://solutions.corda.net/deployment/kubernetes/intro.html) site.
-
-It is strongly recommended you review the documentation there before setting this up for the first time to familiarize yourself with the topic at hand.
+It is strongly recommended you review the [documentation](docs/README.md) before setting this up for the first time to familiarize yourself with the topic at hand.
 
 ---
 
@@ -28,7 +26,7 @@ It is strongly recommended you review the documentation there before setting thi
 
 Since there are a number of prerequisites that need to be met and then a certain order of running everything, a checklist has been collated that you may find useful.
 
-Please see [CHECKLIST.md](CHECKLIST.md) for more information.
+Please see [CHECKLIST.md](docs/CHECKLIST.md) for more information.
 
 **Note!**
 It is strongly recommended you follow the CHECKLIST, to not skip an important step, especially the first time you set up this deployment,
@@ -37,17 +35,11 @@ It is strongly recommended you follow the CHECKLIST, to not skip an important st
 
 ## PREREQUISITES
 
-* A cloud environment with Kubernetes Cluster Services that has access to a Docker Container Registry, see [CLOUD_SETUP.md](CLOUD_SETUP.md)
+* A cloud environment with Kubernetes Cluster Services that has access to a Docker Container Registry, see [CLOUD_SETUP.md](docs/CLOUD_SETUP.md)
 * Building the images requires local [Docker](https://www.docker.com/) installation
 * [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/) is used to manage Kubernetes cluster
 * [Helm](https://helm.sh/) version 2.x
 * Access to Corda Enterprise binary files or access to R3 Artifactory for Enterprise (licensed users)
-
----
-
-## TESTED WITH
-
-This deployment has been tested and verified with the following information: [SUPPORT_MATRIX.md](SUPPORT_MATRIX.md)
 
 ---
 
@@ -70,13 +62,13 @@ Please see [docker-images/README.md](docker-images/README.md) for more informati
 ## CONFIGURATION
 
 You must completely fill out the [helm/values.yaml](helm/values.yaml) file according to your configuration.
-For more details on how it should be filled out, follow the [CHECKLIST.md](CHECKLIST.md) document.
+For more details on how it should be filled out, follow the [CHECKLIST.md](docs/CHECKLIST.md) document.
 
 ---
 
 ## SHORT USAGE GUIDE (see [SETUP CHECKLIST](#setup-checklist) for a full guide)
 
-This is a brief view of the steps you will take, for the full set of steps, please review [CHECKLIST.md](CHECKLIST.md).
+This is a brief view of the steps you will take, for the full set of steps, please review [CHECKLIST.md](docs/CHECKLIST.md).
 
 1. Customize the Helm ``values.yaml`` file according to your deployment (this step is used by initial-registration and Helm compile, very important to fill in correctly and completely)
 2. Execute ``one-time-setup.sh`` which will do the following (you can also step through the steps on your own, just follow what the one-time-setup.sh would have done):
@@ -90,27 +82,9 @@ This is a brief view of the steps you will take, for the full set of steps, plea
 
 ## DOCUMENTATION
 
-For more details and instructions it is strongly recommended to visit the following page on the Corda Solutions docs site: 
-<https://solutions.corda.net/deployment/kubernetes/intro.html>
+For more details and instructions it is strongly recommended to visit the documentation:
 
-For additional documentation please find it here [Documentation](DOCUMENTATION.md).
-
-It also contains a helpful [Cost calculation](COST_CALCULATION.md) for evaluating **production** costs.
-(you can test this out in a much more affordable setup, in a test cluster you can run it with just 2x(Standard DS2 v2 (2 vcpus, 7 GiB memory)) worker nodes)
-
----
-
-### KEY CONCEPTS & TOOLS
-
-You may want to familiarize yourself with the key concepts of a production grade deployment and the tools being used in this deployment.
-
-You can find the information in [Key Concepts](KEY_CONCEPTS.md).
-
----
-
-## ROADMAP
-
-To see the intended direction that this deployment should take, please have a look at the [Roadmap](ROADMAP.md)
+[Documentation](docs/README.md)
 
 ---
 
