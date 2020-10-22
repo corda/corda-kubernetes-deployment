@@ -75,3 +75,11 @@ This deployment has been tested and verified with the following information:
 
 ---
 
+### ROADMAP
+
+To see the intended direction that this deployment should take, please have a look at the 
+
+[Roadmap](ROADMAP.md)
+
+---
+

@@ -88,12 +88,6 @@ For more details and instructions it is strongly recommended to visit the docume
 
 ---
 
-## ROADMAP
-
-To see the intended direction that this deployment should take, please have a look at the [Roadmap](ROADMAP.md)
-
----
-
 ## Contributing
 
 The Corda Kubernetes Deployment is an open-source project and contributions are welcome as seen here: [Contributing](CONTRIBUTING.md)
