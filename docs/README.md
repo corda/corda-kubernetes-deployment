@@ -39,10 +39,12 @@ You can find the information in:
 
 Since there are a number of prerequisites that need to be met and then a certain order of running everything, a checklist has been collated that you may find useful.
 
-Please see [CHECKLIST.md](CHECKLIST.md) for more information.
-
 **Note!**
-It is strongly recommended you follow the CHECKLIST, to not skip an important step, especially the first time you set up this deployment,
+It is strongly recommended you follow the CHECKLIST line by line, to not skip an important step, especially the first time you set up this deployment.
+
+Please find the complete list here:
+
+[Checklist](CHECKLIST.md)
 
 ---
 
@@ -51,7 +53,7 @@ It is strongly recommended you follow the CHECKLIST, to not skip an important st
 This deployment requires a working cloud environment with Kubernetes Cluster Services that has access to a Docker Container Registry.
 In order to set everything up, you may find the following document helpful:
 
-[CLOUD_SETUP.md](CLOUD_SETUP.md)
+[Cloud Setup](CLOUD_SETUP.md)
 
 ---
 
@@ -63,6 +65,7 @@ Although the answer will be dependent on the use-case specific details, for exam
 are we talking about high quality asset issuance which occurs much less frequently, we can still generate some rough estimates that hopefully will be useful as indications.
 
 The details can be found in this dedicated document: 
+
 [Cost calculation & comparison](COST_CALCULATION.md)
 
 ---
@@ -71,7 +74,7 @@ The details can be found in this dedicated document:
 
 This deployment has been tested and verified with the following information: 
 
-[SUPPORT_MATRIX.md](SUPPORT_MATRIX.md)
+[Support Matrix](SUPPORT_MATRIX.md)
 
 ---
 
